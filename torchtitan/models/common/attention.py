@@ -875,6 +875,11 @@ class GQAttention(BaseAttention):
         head_dim: int | None = None
         inner_attention: Module.Config
         rope: RoPE.Config
+        sliding_window_size: int | None = None
+        """Causal sliding-window size for this layer (e.g. Olmo3-style hybrid
+        attention). Not consumed by ``forward`` -- windowing is applied via
+        mask selection (flex) or ``inner_attention.window_size`` (varlen);
+        this field only tags the layer for that selection."""
 
     def __init__(self, config: Config):
         super().__init__()
