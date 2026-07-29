@@ -1,4 +1,4 @@
-cd ~/k50063112/torchtitan
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ cd ~/k50063112/torchtitan
 python - <<'PY'
 import sys
 import inspect
@@ -18,7 +18,12 @@ print(
     "get_mesh" in inspect.signature(PipelineStage.__init__).parameters,
 )
 PY
-
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 445, in <module>
+    from torch._C import *  # noqa: F403
+    ^^^^^^^^^^^^^^^^^^^^^^
+ImportError: /home/f00913055/.local/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so: undefined symbol: ncclGetLsaMultimemDevicePointer
 
 
 
