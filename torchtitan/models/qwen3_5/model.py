@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-#version1：2026.7.29 9：57
+#version1：2026.7.29 11:59
 
 from dataclasses import dataclass
 from typing import Literal
@@ -122,48 +122,13 @@ class OffsetRMSNorm(Module):
         self.weight = nn.Parameter(torch.zeros(config.dim))
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # 🛠️ 终极修复：处理所有场景的类型转换
-        # 场景1: 形状推理时输入是普通Tensor，参数是DTensor
-        # 场景2: 激活检查点重算时输入变普通Tensor
-        # 场景3: 正常训练时都是DTensor
-        
-        # 获取权重和设备网格
-        weight = self.weight
-        if isinstance(weight, DTensor):
-            weight_local = weight.to_local()
-            mesh = weight.device_mesh
-            placements = [Replicate()] * mesh.ndim
-        else:
-            weight_local = weight
-            mesh = None
-            placements = None
-            
-        # 处理输入
-        if isinstance(x, DTensor):
-            x_local = x.to_local()
-            is_dtensor = True
-            if mesh is None:  # 如果权重不是DTensor但输入是
-                mesh = x.device_mesh
-                placements = x.placements
-        else:
-            x_local = x
-            is_dtensor = False
-            # 如果权重是DTensor但输入不是，需要转换
-            if mesh is not None:
-                x_local = DTensor.from_local(x, mesh, placements, run_check=False).to_local()
-            
-        # 执行计算
-        input_dtype = x_local.dtype
-        x_local = x_local.float()
-        variance = x_local.pow(2).mean(-1, keepdim=True)
-        x_local = x_local * torch.rsqrt(variance + self.eps)
-        out = ((1.0 + weight_local.float()) * x_local).to(input_dtype)
-        
-        # 转换回DTensor
-        if is_dtensor and mesh is not None:
-            out = DTensor.from_local(out, mesh, placements, run_check=False)
-            
-        return out
+        # Keep DTensor semantics intact. Module.parallelize() handles input/state
+        # redistribution according to sharding.py; do not call to_local() here.
+        input_dtype = x.dtype
+        x = x.float()
+        variance = x.pow(2).mean(-1, keepdim=True)
+        x = x * torch.rsqrt(variance + self.eps)
+        return ((1.0 + self.weight.float()) * x).to(input_dtype)
 
 
 # -----------------------------------
@@ -182,47 +147,15 @@ class RMSNormGated(Module):
         self.weight = nn.Parameter(torch.ones(config.dim))
 
     def forward(self, x: torch.Tensor, gate: torch.Tensor) -> torch.Tensor:
-        # 🛠️ 终极修复：处理所有场景的类型转换
-        weight = self.weight
-        if isinstance(weight, DTensor):
-            weight_local = weight.to_local()
-            mesh = weight.device_mesh
-            placements = [Replicate()] * mesh.ndim
-        else:
-            weight_local = weight
-            mesh = None
-            placements = None
-            
-        # 处理输入
-        if isinstance(x, DTensor):
-            x_local = x.to_local()
-            gate_local = gate.to_local() if isinstance(gate, DTensor) else gate
-            is_dtensor = True
-            if mesh is None:
-                mesh = x.device_mesh
-                placements = x.placements
-        else:
-            x_local = x
-            gate_local = gate
-            is_dtensor = False
-            if mesh is not None:
-                x_local = DTensor.from_local(x, mesh, placements, run_check=False).to_local()
-                if isinstance(gate, torch.Tensor):
-                    gate_local = DTensor.from_local(gate, mesh, placements, run_check=False).to_local()
-            
-        # 执行计算
-        input_dtype = x_local.dtype
-        x_local = x_local.float()
-        variance = x_local.pow(2).mean(-1, keepdim=True)
-        x_local = x_local * torch.rsqrt(variance + self.eps)
-        x_local = (weight_local.float() * x_local).to(input_dtype)
-        x_local = x_local * F.silu(gate_local.float()).to(input_dtype)
-        
-        # 转换回DTensor
-        if is_dtensor and mesh is not None:
-            x_local = DTensor.from_local(x_local, mesh, placements, run_check=False)
-            
-        return x_local
+        # Preserve DTensor placement metadata. The norm's ShardingConfig aligns
+        # x/gate and the replicated weight before this function runs.
+        input_dtype = x.dtype
+        x = x.float()
+        variance = x.pow(2).mean(-1, keepdim=True)
+        x = x * torch.rsqrt(variance + self.eps)
+        x = (self.weight.float() * x).to(input_dtype)
+        x = x * F.silu(gate.float())
+        return x.to(input_dtype)
 
 
 
@@ -365,8 +298,6 @@ class GatedDeltaNet(Module):
         self.norm = config.norm.build()
         self.out_proj = config.out_proj.build()
 
-    def __call__(self, *args, **kwargs):
-        return nn.Module._call_impl(self, *args, **kwargs)
 
     def _causal_conv(self, x: torch.Tensor, conv: nn.Module) -> torch.Tensor:
         if isinstance(x, DTensor):
@@ -407,120 +338,32 @@ class GatedDeltaNet(Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         bs, seqlen, _ = x.shape
 
-        # 🔧 使用local_map包装线性层，避免DTensor分片问题
-        def _linear_dt(input, linear):
-            if isinstance(input, DTensor):
-                input_plc = input.placements
-                weight = linear.weight
-                weight_plc = weight.placements if isinstance(weight, DTensor) else [Replicate()] * weight.ndim
-            
-                def _linear_local(input_local, weight_local, bias_local):
-                    return F.linear(input_local, weight_local, bias_local)
-            
-                linear_dt = local_map(
-                    _linear_local,
-                    out_placements=(input_plc,),
-                    in_placements=(input_plc, weight_plc, [Replicate()] if linear.bias is not None else None),
-                    in_grad_placements=(input_plc, weight_plc, [Replicate()] if linear.bias is not None else None),
-                    device_mesh=input.device_mesh,
-                )
-                # 转换weight和bias为DTensor
-                if not isinstance(weight, DTensor):
-                    weight = DTensor.from_local(weight, input.device_mesh, weight_plc, run_check=False)
-                bias = linear.bias
-                if bias is not None and not isinstance(bias, DTensor):
-                    bias = DTensor.from_local(bias, input.device_mesh, [Replicate()] * bias.ndim, run_check=False)
-                return linear_dt(input, weight, bias)
-            else:
-                # 如果输入是普通Tensor但权重是DTensor，先转换
-                if isinstance(linear.weight, DTensor):
-                    mesh = linear.weight.device_mesh
-                    placements = [Replicate()] * mesh.ndim
-                    input = DTensor.from_local(input, mesh, placements, run_check=False)
-                    return _linear_dt(input, linear)
-                return linear(input)
+        # Call the configured modules directly. Module.parallelize() has wrapped
+        # their forward methods with the placements declared in sharding.py.
+        # Calling F.linear()/to_local() manually bypasses those wrappers.
+        xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
+        xk = self._causal_conv(self.in_proj_k(x), self.conv_k)
+        xv = self._causal_conv(self.in_proj_v(x), self.conv_v)
+        xz = self.in_proj_z(x)
+        xa = self.in_proj_a(x)
+        xb = self.in_proj_b(x)
 
-        # 使用包装后的线性层
-        xq = self._causal_conv(_linear_dt(x, self.in_proj_q), self.conv_q)
-        xk = self._causal_conv(_linear_dt(x, self.in_proj_k), self.conv_k)
-        xv = self._causal_conv(_linear_dt(x, self.in_proj_v), self.conv_v)
-        xz = _linear_dt(x, self.in_proj_z)
-        xa = _linear_dt(x, self.in_proj_a)
-        xb = _linear_dt(x, self.in_proj_b)
-
-        # FLA gated-delta kernel requires explicit head dimensions:
-        # q/k: [B, L, n_key_heads, key_head_dim]
-        # v/z: [B, L, n_value_heads, value_head_dim]
-        # The projections above return flattened [B, L, heads * head_dim].
+        # FLA expects explicit head dimensions.
         xq = xq.reshape(bs, seqlen, -1, self.key_head_dim)
         xk = xk.reshape(bs, seqlen, -1, self.key_head_dim)
         xv = xv.reshape(bs, seqlen, -1, self.value_head_dim)
         xz = xz.reshape(bs, seqlen, -1, self.value_head_dim)
 
-        # 🔧 确保参数是DTensor（兼容激活检查点）
-        def ensure_dtensor(param):
-            if not isinstance(param, DTensor) and isinstance(x, DTensor):
-                mesh = x.device_mesh
-                placements = [Replicate()] * mesh.ndim
-                return DTensor.from_local(param, mesh, placements, run_check=False)
-            return param
-
-        A_log = ensure_dtensor(self.A_log)
-        dt_bias = ensure_dtensor(self.dt_bias)
-
-        # 强制在float32下计算，并clamp防止exp溢出
-        A_log = A_log.float()
-        dt_bias = dt_bias.float()
-        xa_f = xa.float()
-    
-        # 🔧 修复：使用local_map包装softplus操作
-        x_a_bias = xa_f + dt_bias
-    
-        # 替代方案：手动进行DTensor→本地Tensor→DTensor转换
-        if isinstance(x_a_bias, DTensor):
-            # 转换为本地Tensor
-            x_a_bias_local = x_a_bias.to_local()
-            # 执行softplus
-            softplus_local = F.softplus(x_a_bias_local)
-            # 转换回DTensor
-            softplus_safe = DTensor.from_local(
-                softplus_local, 
-                x_a_bias.device_mesh, 
-                x_a_bias.placements, 
-                run_check=False
-            )
-        else:
-            softplus_safe = F.softplus(x_a_bias)
-
-    
-        A_log_clamped = torch.clamp(A_log, max=10.0)
-        g = -torch.exp(A_log_clamped) * softplus_safe
+        # Per-value-head decay and update gates.
+        g = -torch.exp(self.A_log.float()) * F.softplus(
+            xa.float() + self.dt_bias.float()
+        )
         g = g.to(xa.dtype)
-        
         beta = torch.sigmoid(xb)
-    
-        # in_proj_b already outputs n_value_heads, so beta is [B, L, n_value_heads].
-        beta = beta.reshape(bs, seqlen, -1)
-    
-        # 处理TP下的DTensor输入
-        if isinstance(xq, DTensor):
-            local_xq = xq.to_local().contiguous()
-            local_xk = xk.to_local().contiguous()
-            local_xv = xv.to_local().contiguous()
-            local_g = g.to_local().contiguous() if isinstance(g, DTensor) else g.contiguous()
-            local_beta = beta.to_local().contiguous() if isinstance(beta, DTensor) else beta.contiguous()
 
-            output = self.kernel(local_xq, local_xk, local_xv, local_g, local_beta)
-            output = DTensor.from_local(output, xq.device_mesh, xq.placements, run_check=False)
-        else:
-            xq = xq.contiguous()
-            xk = xk.contiguous()
-            xv = xv.contiguous()
-            g = g.contiguous()
-            beta = beta.contiguous()
-
-            output = self.kernel(xq, xk, xv, g, beta)
-
+        # GatedDeltaKernel's ShardingConfig/local_map converts DTensors to local
+        # tensors for FLA and restores the DTensor output automatically.
+        output = self.kernel(xq, xk, xv, g, beta)
         output = self.norm(output, xz)
 
         output = output.reshape(bs, seqlen, -1)
