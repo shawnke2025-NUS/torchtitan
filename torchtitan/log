@@ -34,134 +34,76 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
-[titan] 2026-07-29 14:21:18,807 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,002 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,016 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,163 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,302 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,573 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,760 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:19,796 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:21:21,078 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,128 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,129 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-142121-VL2NS9.jsonl
-[titan] 2026-07-29 14:21:21,322 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:21,325 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:21,337 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,356 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:21,356 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,357 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:21,363 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:21,388 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,388 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-142121-9A6390.jsonl
-[titan] 2026-07-29 14:21:21,406 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,407 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-142121-WHW1UG.jsonl
-[titan] 2026-07-29 14:21:21,534 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,584 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:21,584 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-142121-HETMQT.jsonl
-[titan] 2026-07-29 14:21:21,587 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:21,652 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:21,652 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank6]: Traceback (most recent call last):
-[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank6]:   File "<frozen runpy>", line 88, in _run_code
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank6]:     main()
-[rank6]:     ~~~~^^
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank6]:     return self._owner(config=replace(self))
-[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank6]:     return f(*args, **kwargs)
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank6]:     model = model_spec.parallelize_fn(
-[rank6]:         model,
-[rank6]:     ...<5 lines>...
-[rank6]:         dump_folder=config.dump_folder,
-[rank6]:     )
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank6]:     raise NotImplementedError(
-[rank6]:     ...<3 lines>...
-[rank6]:     )
-[rank6]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:21,820 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:21,824 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:21,830 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:21,835 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:21,861 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:21,863 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:21,866 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:21,869 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:21,869 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:21,871 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:21,876 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:21,879 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:21,910 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:21,913 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:21,920 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:22,054 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:22,105 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:22,105 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank1]: Traceback (most recent call last):
-[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank1]:   File "<frozen runpy>", line 88, in _run_code
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank1]:     main()
-[rank1]:     ~~~~^^
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank1]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank1]:     return self._owner(config=replace(self))
-[rank1]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank1]:     return f(*args, **kwargs)
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank1]:     model = model_spec.parallelize_fn(
-[rank1]:         model,
-[rank1]:     ...<5 lines>...
-[rank1]:         dump_folder=config.dump_folder,
-[rank1]:     )
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank1]:     raise NotImplementedError(
-[rank1]:     ...<3 lines>...
-[rank1]:     )
-[rank1]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:22,123 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[rank6]:[W729 14:21:22.474699727 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[titan] 2026-07-29 14:21:22,161 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,169 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:22,193 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:22,193 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank7]: Traceback (most recent call last):
-[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank7]:   File "<frozen runpy>", line 88, in _run_code
-[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank7]:     main()
-[rank7]:     ~~~~^^
-[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank7]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank7]:     return self._owner(config=replace(self))
-[rank7]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank7]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank7]:     return f(*args, **kwargs)
-[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank7]:     model = model_spec.parallelize_fn(
-[rank7]:         model,
-[rank7]:     ...<5 lines>...
-[rank7]:         dump_folder=config.dump_folder,
-[rank7]:     )
-[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank7]:     raise NotImplementedError(
-[rank7]:     ...<3 lines>...
-[rank7]:     )
-[rank7]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:22,211 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,212 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-142122-VQPPCC.jsonl
-[titan] 2026-07-29 14:21:22,240 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:22,240 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 14:27:03,130 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:03,732 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:03,782 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:03,958 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:03,965 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:03,993 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:04,217 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:04,225 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 14:27:05,392 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:05,441 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:05,442 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-142705-2CCD9C.jsonl
+[titan] 2026-07-29 14:27:05,646 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 14:27:05,649 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 14:27:05,681 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 14:27:05,682 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 14:27:05,686 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 14:27:05,855 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 14:27:05,924 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 14:27:05,924 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 14:27:05,925 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
+[titan] 2026-07-29 14:27:05,925 - root - INFO - Applied Context Parallel (forward wrapping) to the model
+[titan] 2026-07-29 14:27:05,925 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank0]:     main()
+[rank0]:     ~~~~^^
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank0]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank0]:     return self._owner(config=replace(self))
+[rank0]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank0]:     return f(*args, **kwargs)
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank0]:     model = model_spec.parallelize_fn(
+[rank0]:         model,
+[rank0]:     ...<5 lines>...
+[rank0]:         dump_folder=config.dump_folder,
+[rank0]:     )
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+[rank0]:     raise RuntimeError(
+[rank0]:     ...<2 lines>...
+[rank0]:     )
+[rank0]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
+[titan] 2026-07-29 14:27:05,984 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,035 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,036 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-142706-1IJC13.jsonl
+[titan] 2026-07-29 14:27:06,199 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,215 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 14:27:06,218 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 14:27:06,246 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,249 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 14:27:06,249 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,249 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 14:27:06,250 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-142706-W39O3Q.jsonl
+[titan] 2026-07-29 14:27:06,253 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 14:27:06,260 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,295 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,296 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-142706-7C33MP.jsonl
+[rank0]:[W729 14:27:06.644656167 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[titan] 2026-07-29 14:27:06,310 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,311 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-142706-91ZA3L.jsonl
+[titan] 2026-07-29 14:27:06,424 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 14:27:06,493 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 14:27:06,493 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 14:27:06,493 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
+[titan] 2026-07-29 14:27:06,494 - root - INFO - Applied Context Parallel (forward wrapping) to the model
+[titan] 2026-07-29 14:27:06,494 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
 [rank5]: Traceback (most recent call last):
 [rank5]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank5]:   File "<frozen runpy>", line 88, in _run_code
@@ -181,131 +123,75 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 [rank5]:     ...<5 lines>...
 [rank5]:         dump_folder=config.dump_folder,
 [rank5]:     )
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank5]:     raise NotImplementedError(
-[rank5]:     ...<3 lines>...
+[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+[rank5]:     raise RuntimeError(
+[rank5]:     ...<2 lines>...
 [rank5]:     )
-[rank5]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:22,277 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,328 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,329 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-142122-QVL86W.jsonl
-[titan] 2026-07-29 14:21:22,357 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,408 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,409 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-142122-NIXJJV.jsonl
-[titan] 2026-07-29 14:21:22,568 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:22,570 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[rank1]:[W729 14:21:22.936546189 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[titan] 2026-07-29 14:21:22,601 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:22,601 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:22,605 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:22,668 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,696 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:22,700 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:22,709 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:22,713 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:22,722 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:21:22,723 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-142122-JEN055.jsonl
-[titan] 2026-07-29 14:21:22,725 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:22,728 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:22,731 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:22,734 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:22,736 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:22,742 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:22,780 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:22,844 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:22,844 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank2]: Traceback (most recent call last):
-[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank2]:   File "<frozen runpy>", line 88, in _run_code
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank2]:     main()
-[rank2]:     ~~~~^^
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank2]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank2]:     return self._owner(config=replace(self))
-[rank2]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank2]:     return f(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank2]:     model = model_spec.parallelize_fn(
-[rank2]:         model,
-[rank2]:     ...<5 lines>...
-[rank2]:         dump_folder=config.dump_folder,
-[rank2]:     )
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank2]:     raise NotImplementedError(
-[rank2]:     ...<3 lines>...
-[rank2]:     )
-[rank2]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:22,928 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:21:22,931 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:21:22,939 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:21:22,940 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:21:22,945 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:21:22,991 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:22,996 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:21:23,073 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:23,074 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank3]: Traceback (most recent call last):
-[rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank3]:   File "<frozen runpy>", line 88, in _run_code
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank3]:     main()
-[rank3]:     ~~~~^^
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank3]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank3]:     return self._owner(config=replace(self))
-[rank3]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank3]:     return f(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank3]:     model = model_spec.parallelize_fn(
-[rank3]:         model,
-[rank3]:     ...<5 lines>...
-[rank3]:         dump_folder=config.dump_folder,
-[rank3]:     )
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank3]:     raise NotImplementedError(
-[rank3]:     ...<3 lines>...
-[rank3]:     )
-[rank3]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-[titan] 2026-07-29 14:21:23,082 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:21:23,082 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank4]: Traceback (most recent call last):
-[rank4]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank4]:   File "<frozen runpy>", line 88, in _run_code
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank4]:     main()
-[rank4]:     ~~~~^^
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank4]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank4]:     return self._owner(config=replace(self))
-[rank4]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank4]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank4]:     return f(*args, **kwargs)
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank4]:     model = model_spec.parallelize_fn(
-[rank4]:         model,
-[rank4]:     ...<5 lines>...
-[rank4]:         dump_folder=config.dump_folder,
-[rank4]:     )
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-[rank4]:     raise NotImplementedError(
-[rank4]:     ...<3 lines>...
-[rank4]:     )
-[rank4]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-W0729 14:21:23.120000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195437 closing signal SIGTERM
-W0729 14:21:23.123000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195438 closing signal SIGTERM
-W0729 14:21:23.124000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195440 closing signal SIGTERM
-W0729 14:21:23.124000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195441 closing signal SIGTERM
-W0729 14:21:23.125000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195442 closing signal SIGTERM
-W0729 14:21:23.125000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195443 closing signal SIGTERM
-W0729 14:21:23.125000 194814 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 195445 closing signal SIGTERM
-E0729 14:21:23.983000 194814 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 6 (pid: 195444) of binary: /home/f00913055/conda/bin/python
-E0729 14:21:24.041000 194814 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/6/error.json)
+[rank5]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
+[titan] 2026-07-29 14:27:06,579 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,599 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,628 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,629 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-142706-XRST64.jsonl
+[titan] 2026-07-29 14:27:06,673 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,679 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,680 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-142706-01Z0EI.jsonl
+[titan] 2026-07-29 14:27:06,724 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 14:27:06,725 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-142706-G27WA8.jsonl
+[titan] 2026-07-29 14:27:06,845 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 14:27:06,849 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 14:27:06,882 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 14:27:06,884 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 14:27:06,887 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 14:27:06,889 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 14:27:06,892 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 14:27:06,892 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 14:27:06,896 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 14:27:06,898 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 14:27:06,913 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 14:27:06,916 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 14:27:06,941 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 14:27:06,941 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 14:27:06,946 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 14:27:07,071 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 14:27:07,123 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 14:27:07,136 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 14:27:07,136 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 14:27:07,136 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
+[titan] 2026-07-29 14:27:07,136 - root - INFO - Applied Context Parallel (forward wrapping) to the model
+[titan] 2026-07-29 14:27:07,137 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank6]:   File "<frozen runpy>", line 88, in _run_code
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank6]:     main()
+[rank6]:     ~~~~^^
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank6]:     return self._owner(config=replace(self))
+[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank6]:     return f(*args, **kwargs)
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank6]:     model = model_spec.parallelize_fn(
+[rank6]:         model,
+[rank6]:     ...<5 lines>...
+[rank6]:         dump_folder=config.dump_folder,
+[rank6]:     )
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+[rank6]:     raise RuntimeError(
+[rank6]:     ...<2 lines>...
+[rank6]:     )
+[rank6]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
+W0729 14:27:07.155000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245467 closing signal SIGTERM
+W0729 14:27:07.156000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245468 closing signal SIGTERM
+W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245469 closing signal SIGTERM
+W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245470 closing signal SIGTERM
+W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245471 closing signal SIGTERM
+W0729 14:27:07.158000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245472 closing signal SIGTERM
+W0729 14:27:07.158000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245473 closing signal SIGTERM
+E0729 14:27:07.951000 244851 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 245466) of binary: /home/f00913055/conda/bin/python
+E0729 14:27:07.985000 244851 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/0/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -342,102 +228,39 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-29_14:21:23
-  host      : node-5-15
-  rank      : 0 (local_rank: 0)
-  exitcode  : -15 (pid: 195437)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 195437
-[2]:
-  time      : 2026-07-29_14:21:22
+  time      : 2026-07-29_14:27:07
   host      : node-5-15
   rank      : 1 (local_rank: 1)
-  exitcode  : -15 (pid: 195438)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
-      )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-  
-[3]:
-  time      : 2026-07-29_14:21:22
+  exitcode  : -15 (pid: 245467)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 245467
+[2]:
+  time      : 2026-07-29_14:27:07
   host      : node-5-15
   rank      : 2 (local_rank: 2)
-  exitcode  : -15 (pid: 195440)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/2/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
-      )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-  
-[4]:
-  time      : 2026-07-29_14:21:23
+  exitcode  : -15 (pid: 245468)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 245468
+[3]:
+  time      : 2026-07-29_14:27:07
   host      : node-5-15
   rank      : 3 (local_rank: 3)
-  exitcode  : -15 (pid: 195441)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/3/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
-      )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-  
-[5]:
-  time      : 2026-07-29_14:21:23
+  exitcode  : -15 (pid: 245469)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 245469
+[4]:
+  time      : 2026-07-29_14:27:07
   host      : node-5-15
   rank      : 4 (local_rank: 4)
-  exitcode  : -15 (pid: 195442)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/4/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
-      )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-  
-[6]:
-  time      : 2026-07-29_14:21:22
+  exitcode  : -15 (pid: 245470)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 245470
+[5]:
+  time      : 2026-07-29_14:27:06
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 195443)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/5/error.json
+  exitcode  : -15 (pid: 245471)  (SIGTERM)
+  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/5/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -447,41 +270,48 @@ Failures:
       ...<5 lines>...
           dump_folder=config.dump_folder,
       )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+      raise RuntimeError(
+      ...<2 lines>...
       )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
+  
+[6]:
+  time      : 2026-07-29_14:27:07
+  host      : node-5-15
+  rank      : 6 (local_rank: 6)
+  exitcode  : -15 (pid: 245472)  (SIGTERM)
+  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/6/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+      raise RuntimeError(
+      ...<2 lines>...
+      )
+  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
   
 [7]:
-  time      : 2026-07-29_14:21:22
+  time      : 2026-07-29_14:27:07
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 195445)  (SIGTERM)
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/7/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
-      )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
-  
+  exitcode  : -15 (pid: 245473)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 245473
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_14:21:21
+  time      : 2026-07-29_14:27:05
   host      : node-5-15
-  rank      : 6 (local_rank: 6)
-  exitcode  : 1 (pid: 195444) 
-  error_file: /tmp/torchelastic_uowaeeab/none_ntfeka5e/attempt_0/6/error.json
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 245466) 
+  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/0/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -491,10 +321,11 @@ Root Cause (first observed failure):
       ...<5 lines>...
           dump_folder=config.dump_folder,
       )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
-      raise NotImplementedError(
-      ...<3 lines>...
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
+      raise RuntimeError(
+      ...<2 lines>...
       )
-  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
   
 ============================================================
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ 
