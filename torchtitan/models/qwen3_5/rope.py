@@ -3,137 +3,108 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-#2026.7.29 19:46
-import contextlib
-from collections.abc import Callable
+#2026.7.29 19:47
+from dataclasses import dataclass, field
 
 import torch
-import torch.fx.traceback as fx_traceback
-import torch.nn as nn
-from torch._subclasses.fake_tensor import FakeTensorMode
+from torch.distributed.tensor import DTensor
 
-from torchtitan.config import CompileConfig
-from torchtitan.tools.logging import logger
+from torchtitan.models.common.rope import _maybe_check_max_pos, CosSinRoPE
 
 
-# TODO: Remove this monkeypatch once FakeTensorMode.__init__ is decorated with
-# @torch.compiler.disable(recursive=True) upstream.
-# See https://github.com/pytorch/pytorch/issues/178887
-FakeTensorMode.__init__ = torch.compiler.disable(  # type: ignore[method-assign]
-    FakeTensorMode.__init__, recursive=True
-)
+class MRoPE(CosSinRoPE):
+    """Multi-dimensional RoPE for Qwen3.5 temporal/height/width positions.
 
+    Standard per-layer RoPE: each full-attention layer owns an ``MRoPE`` and
+    applies it through ``RoPE.forward`` -> ``_reshape_cache`` ->
+    ``apply_rotary_emb``.
 
-# Toggled on by ``_maybe_regional_inductor_backend`` when the model is compiled
-# with a non-inductor backend that needs inductor-only regions (e.g.
-# FlexAttention) scooped into an inductor sub-compile. Read by
-# ``maybe_regional_inductor`` at trace time; left False on the default inductor
-# / eager paths so no annotation metadata is emitted.
-_regional_inductor_enabled: bool = False
-
-
-def apply_compile(
-    model: nn.Module,
-    compile_config: CompileConfig,
-    *,
-    layer_filter: Callable[[str, nn.Module], bool] | None = None,
-) -> None:
+    The override handles 3D ``(batch, seq, 3)`` MRoPE positions by building an
+    interleaved cos/sin cache. For 2D ``(batch, seq)`` text positions it falls
+    back to the plain ``CosSinRoPE`` lookup.
     """
-    Apply torch.compile to selected TransformerBlocks.
 
-    By default, every block under ``model.layers`` is compiled. ``layer_filter``
-    can keep unsupported blocks in eager mode. The callback receives the layer
-    ID and the underlying TransformerBlock. If activation checkpointing has
-    already wrapped the block, this function unwraps
-    ``_checkpoint_wrapped_module`` for filtering while compiling the outer
-    checkpoint wrapper itself.
-    """
-    torch._dynamo.config.capture_scalar_outputs = True
-    torch._dynamo.config.skip_fwd_side_effects_in_bwd_under_checkpoint = (
-        True  # pyrefly: ignore [bad-assignment]
-    )
+    @dataclass(kw_only=True, slots=True)
+    class Config(CosSinRoPE.Config):
+        mrope_section: list[int] = field(default_factory=lambda: [24, 20, 20])
 
-    backend = _maybe_regional_inductor_backend(model, compile_config.backend)
+    def __init__(self, config: Config):
+        if len(config.mrope_section) != 3:
+            raise ValueError(
+                f"mrope_section must have 3 entries, got {config.mrope_section}."
+            )
+        super().__init__(config)
 
-    compiled_layers: list[str] = []
-    skipped_layers: list[str] = []
+    def _reshape_cache(
+        self,
+        query: torch.Tensor,
+        positions: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Build a query-broadcastable cos/sin cache."""
+        if positions is not None and positions.ndim == 3:
+            return self._compute_mrope_cache(positions)
+        return super()._reshape_cache(query, positions)
 
-    # pyrefly: ignore [missing-attribute]
-    for layer_id, transformer_block in model.layers.named_children():
-        filter_target = getattr(
-            transformer_block,
-            "_checkpoint_wrapped_module",
-            transformer_block,
+    def _compute_mrope_cache(self, position_ids: torch.Tensor) -> torch.Tensor:
+        """Build the interleaved cos/sin cache for 3D MRoPE positions.
+
+        Under TP, the persistent RoPE cache is a Replicate DTensor. Every TP
+        rank therefore already owns the same local cache and receives the same
+        replicated position IDs. The position-resolved cache can be computed
+        independently on every rank and wrapped with ``DTensor.from_local``.
+
+        Do not call ``distribute_tensor`` here: it performs a process-group
+        broadcast and constructs a C++ ``BroadcastOptions`` object inside the
+        compiled TransformerBlock, which TorchDynamo cannot trace.
+        """
+        cfg = self.config
+        assert isinstance(cfg, MRoPE.Config)
+
+        rope_cache = self.cache
+        cache_dtensor = rope_cache if isinstance(rope_cache, DTensor) else None
+
+        if cache_dtensor is not None:
+            rope_cache = cache_dtensor.to_local()
+
+        pos = (
+            position_ids.to_local()
+            if isinstance(position_ids, DTensor)
+            else position_ids
         )
+        pos = pos.to(device=rope_cache.device)
 
-        if layer_filter is not None and not layer_filter(layer_id, filter_target):
-            skipped_layers.append(layer_id)
-            continue
+        _maybe_check_max_pos(pos, max_valid_pos=rope_cache.shape[0] - 1)
 
-        transformer_block.compile(backend=backend, fullgraph=True)
-        compiled_layers.append(layer_id)
+        head_dim = rope_cache.shape[-1] // 2
+        cos_cache = rope_cache[:, :head_dim]
+        sin_cache = rope_cache[:, head_dim:]
 
-    if not compiled_layers:
-        logger.warning(
-            "torch.compile did not select any TransformerBlock layers; "
-            "skipped layers=%s",
-            skipped_layers,
-        )
-        return
+        # Start from temporal positions for all dimensions, then overwrite the
+        # height/width interleaved sections with their own position IDs.
+        t_pos = pos[..., 0].long()
+        mrope_cos = cos_cache[t_pos]
+        mrope_sin = sin_cache[t_pos]
 
-    logger.info(
-        "Compiled TransformerBlock layers=%s with backend=%s; skipped layers=%s",
-        compiled_layers,
-        compile_config.backend,
-        skipped_layers,
-    )
+        half = head_dim // 2
+        for dim, offset in enumerate((1, 2), start=1):
+            length = cfg.mrope_section[dim] * 3
+            low = torch.arange(offset, length, 3, device=rope_cache.device)
+            col_indices = torch.cat([low, low + half])
+            dim_pos = pos[..., dim].long()
+            mrope_cos[..., col_indices] = cos_cache[:, col_indices][dim_pos]
+            mrope_sin[..., col_indices] = sin_cache[:, col_indices][dim_pos]
 
+        mrope_cache = torch.cat([mrope_cos, mrope_sin], dim=-1).unsqueeze(2)
 
-def _maybe_regional_inductor_backend(model: nn.Module, backend: str) -> str | Callable:
-    """Wrap the ``aot_eager`` backend so inductor-only flex regions are scooped out.
+        if cache_dtensor is not None:
+            # Safe because the source cache and positions are replicated across
+            # TP, so every rank computes an identical local result. Disabling
+            # run_check avoids a collective inside the compiled region.
+            return DTensor.from_local(
+                mrope_cache,
+                cache_dtensor.device_mesh,
+                cache_dtensor.placements,
+                run_check=False,
+            )
 
-    ``regional_inductor`` lowers just the regions annotated with ``compile_with_inductor`` (see
-    ``FlexAttention.forward``) to inductor while the rest stays in aot_eager.
-
-    Only applied for ``aot_eager`` on models that actually use FlexAttention, so
-    dense/non-flex aot_eager paths are left untouched. Other non-inductor backends
-    can't be scooped here and raise rather than silently degrading.
-    """
-    from torchtitan.models.common.attention import FlexAttention
-
-    uses_flex = any(isinstance(m, FlexAttention) for m in model.modules())
-    if not uses_flex or backend == "inductor":
-        return backend
-
-    if backend != "aot_eager":
-        raise ValueError(
-            f"Model uses FlexAttention but compile backend {backend!r} is neither "
-            f"'inductor' nor 'aot_eager'; the flex region would decompose to eager "
-            f"aten ops (no Triton kernel). Use 'inductor' or 'aot_eager'."
-        )
-
-    from torch._dynamo.backends.common import aot_autograd
-    from torch.fx.passes.regional_inductor import regional_inductor
-
-    global _regional_inductor_enabled
-    _regional_inductor_enabled = True
-
-    logger.info("regional_inductor is enabled")
-    return aot_autograd(fw_compiler=regional_inductor, bw_compiler=regional_inductor)
-
-
-def maybe_regional_inductor(
-    inductor_configs: dict,
-) -> contextlib.AbstractContextManager:
-    """Context manager that marks the wrapped region for ``regional_inductor``.
-
-    Returns a null context unless regional inductor is enabled (see
-    ``_maybe_regional_inductor_backend``). When enabled, the region is tagged
-    with ``compile_with_inductor`` so a non-inductor outer compile lowers just
-    this region to inductor with ``inductor_configs``.
-    """
-    if not _regional_inductor_enabled:
-        return contextlib.nullcontext()
-    return fx_traceback.annotate(
-        {"compile_with_inductor": {"inductor_configs": inductor_configs}}
-    )
+        return mrope_cache
