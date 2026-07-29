@@ -1,37 +1,68 @@
-(base) f00913055@node-5-15:~/k50063112/torchtitan$ cd ~/k50063112/torchtitan
-python - <<'PY'
-import sys
-import inspect
-import torch
-from torch.distributed.pipelining import PipelineStage
+TORCH_CUDA_SO="$HOME/.local/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so"
+echo "CONDA_PREFIX=$CONDA_PREFIX"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "LD_PRELOAD=$LD_PRELOAD"
+ldd "$TORCH_CUDA_SO" | grep -E "nccl|not found"
 
-print("Python executable:", sys.executable)
-print("Torch path:", torch.__file__)
-print("Torch version:", torch.__version__)
-print("Torch CUDA:", torch.version.cuda)
+python - <<'PY'
+from importlib.metadata import requires
+from packaging.requirements import Requirement
+
+for text in requires("torch") or []:
+    req = Requirement(text)
+    if req.name.lower() == "nvidia-nccl-cu12":
+        if req.marker is None or req.marker.evaluate():
+            print("Torch requires:", req)
+PY
+
+python -m pip show torch nvidia-nccl-cu12
+
+NCCL_REQ=$(python - <<'PY'
+from importlib.metadata import requires
+from packaging.requirements import Requirement
+
+for text in requires("torch") or []:
+    req = Requirement(text)
+    if req.name.lower() == "nvidia-nccl-cu12":
+        if req.marker is None or req.marker.evaluate():
+            print(f"{req.name}{req.specifier}")
+            break
+PY
+)
+echo "Installing: $NCCL_REQ"
+python -m pip uninstall -y nvidia-nccl-cu12
+python -m pip install \
+    --no-cache-dir \
+    --force-reinstall \
+    "$NCCL_REQ" \
+    --index-url https://download.pytorch.org/whl/cu126
+
+NCCL_LIB=$(python - <<'PY'
+from importlib.metadata import distribution
+path = distribution("nvidia-nccl-cu12").locate_file("nvidia/nccl/lib")
+print(path)
+PY
+)
+echo "pip NCCL directory: $NCCL_LIB"
+ls -lh "$NCCL_LIB"
+
+nm -D "$NCCL_LIB/libnccl.so.2" \
+    | grep ncclGetLsaMultimemDevicePointer
+
+unset LD_PRELOAD
+export LD_LIBRARY_PATH="$NCCL_LIB:${LD_LIBRARY_PATH:-}"
+
+ldd "$TORCH_CUDA_SO" | grep nccl
+
+python - <<'PY'
+import torch
+
+print("Torch:", torch.__version__)
+print("CUDA:", torch.version.cuda)
 print("CUDA available:", torch.cuda.is_available())
 print("GPU count:", torch.cuda.device_count())
-print("PipelineStage signature:")
-print(inspect.signature(PipelineStage.__init__))
-print(
-    "get_mesh supported:",
-    "get_mesh" in inspect.signature(PipelineStage.__init__).parameters,
-)
+print("NCCL:", torch.cuda.nccl.version())
 PY
-Traceback (most recent call last):
-  File "<stdin>", line 3, in <module>
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 445, in <module>
-    from torch._C import *  # noqa: F403
-    ^^^^^^^^^^^^^^^^^^^^^^
-ImportError: /home/f00913055/.local/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so: undefined symbol: ncclGetLsaMultimemDevicePointer
-
-
-
-
-
-
-
-
 
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
