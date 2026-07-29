@@ -12,7 +12,7 @@ from torch.distributed._composable.fsdp import FSDPModule
 from torch.distributed.device_mesh import DeviceMesh
 from torch.distributed.fsdp import (
     CPUOffloadPolicy,
-    DataParallelMeshDims,
+    #DataParallelMeshDims,
     fully_shard,
     MixedPrecisionPolicy,
 )
