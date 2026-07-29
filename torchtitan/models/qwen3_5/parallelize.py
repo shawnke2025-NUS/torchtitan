@@ -13,6 +13,9 @@ This module applies PT-D parallelisms and various training techniques
 
 import torch
 import torch.nn as nn
+from torch.distributed.device_mesh import DeviceMesh
+from torch.distributed.nn.functional import all_gather as autograd_all_gather
+from torch.distributed.tensor import DTensor
 from torch.distributed._composable.fsdp import fully_shard
 from torch.distributed.fsdp import MixedPrecisionPolicy
 
@@ -26,12 +29,56 @@ from torchtitan.config import (
 from torchtitan.distributed import ParallelDims
 from torchtitan.distributed.activation_checkpoint import ActivationCheckpointingConfig
 from torchtitan.distributed.compile import apply_compile
+from torchtitan.distributed.context_parallel import apply_cp_to_forward
 from torchtitan.distributed.fsdp import (
     apply_fsdp_to_decoder,
     get_fsdp_reshard_after_forward_policy,
 )
 from torchtitan.distributed.tensor_parallel import maybe_enable_async_tp
+from torchtitan.tools.logging import logger
 
+
+
+def _apply_cp_to_deltanet(
+    deltanet_modules: list[nn.Module],
+    cp_mesh: DeviceMesh,
+) -> None:
+    """Apply a correctness-first CP wrapper to recurrent DeltaNet blocks.
+
+    Each rank receives a contiguous sequence shard. The wrapper performs an
+    autograd-aware all-gather, evaluates the recurrent block on the original
+    full sequence, and returns only the caller rank's interval. This is
+    mathematically correct but duplicates DeltaNet compute and therefore is an
+    experimental compatibility path, not an optimized ring/recurrent CP kernel.
+    """
+    cp_group = cp_mesh.get_group()
+    cp_rank = cp_mesh.get_local_rank()
+
+    for module in deltanet_modules:
+        original_forward = module.forward
+
+        def _make_cp_forward(orig_fn, group, rank):
+            def cp_forward(x: torch.Tensor, *args, **kwargs) -> torch.Tensor:
+                if isinstance(x, DTensor):
+                    raise RuntimeError(
+                        "Experimental Qwen3.5 DeltaNet CP expects local tensors. "
+                        "Use --parallelism.spmd_backend default and TP=1."
+                    )
+                local_seq_len = x.size(1)
+                parts = autograd_all_gather(x.contiguous(), group=group)
+                full_x = torch.cat(tuple(parts), dim=1)
+                full_out = orig_fn(full_x, *args, **kwargs)
+                start = rank * local_seq_len
+                return full_out.narrow(1, start, local_seq_len).contiguous()
+
+            return cp_forward
+
+        module.forward = _make_cp_forward(original_forward, cp_group, cp_rank)
+
+    logger.warning(
+        "Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block "
+        "all-gathers the full sequence and duplicates its compute."
+    )
 
 def _apply_fsdp_to_vision_encoder(
     vision_encoder: nn.Module,
@@ -84,11 +131,58 @@ def parallelize_qwen3_5(
     )
 
     if parallel_dims.cp_enabled:
-        raise NotImplementedError(
-            "Context Parallel is not yet supported for Qwen3.5. "
-            "GatedDeltaNet (75% of layers) requires full-sequence allgather, "
-            "and multimodal CP needs vision scatter before CP sharding."
-        )
+        if parallel_dims.pp_enabled:
+            raise NotImplementedError(
+                "The experimental Qwen3.5 CP path supports FSDP+CP only; "
+                "PP+CP is not enabled. Set pipeline_parallel_degree=1."
+            )
+        if model_compile_enabled:
+            raise NotImplementedError(
+                "The experimental Qwen3.5 CP path currently requires "
+                "compile.enable=false."
+            )
+        if parallel_dims.tp_enabled or parallel_dims.ep_enabled:
+            raise NotImplementedError(
+                "The experimental Qwen3.5 CP path currently requires TP=1 and EP=1."
+            )
+        if parallelism.spmd_backend != "default":
+            raise NotImplementedError(
+                "The experimental Qwen3.5 CP path requires "
+                "--parallelism.spmd_backend default."
+            )
+
+        # DeltaNet is causal/recurrent and requires the original token order.
+        # Head-tail or PTRR reordering cannot be reconstructed by a simple rank-
+        # ordered all-gather, so force contiguous CP shards. This mutates the same
+        # config object later consumed by Trainer.post_dataloading_process().
+        if parallelism.context_parallel_load_balancer is not None:
+            logger.warning(
+                "Qwen3.5 DeltaNet CP requires contiguous sequence shards; "
+                "disabling context_parallel_load_balancer=%r.",
+                parallelism.context_parallel_load_balancer,
+            )
+            parallelism.context_parallel_load_balancer = None
+
+        cp_mesh = parallel_dims.get_mesh("cp")
+        full_attention_modules: list[nn.Module] = []
+        deltanet_modules: list[nn.Module] = []
+        for block in model.layers.values():
+            if getattr(block, "full_attn", False):
+                full_attention_modules.append(block.attn.inner_attention)
+            else:
+                deltanet_modules.append(block.attn)
+
+        if full_attention_modules:
+            # Flex/SDPA CP for the 25% full-attention blocks.
+            apply_cp_to_forward(full_attention_modules, cp_mesh)
+        _apply_cp_to_deltanet(deltanet_modules, cp_mesh)
+
+        if not hasattr(model, "enable_context_parallel"):
+            raise RuntimeError(
+                "Qwen35Model.enable_context_parallel() is missing. Replace "
+                "model.py and parallelize.py as a matched pair."
+            )
+        model.enable_context_parallel(cp_mesh)
 
     # Qwen3.5 declares DTensor placements for norms, DeltaNet kernels and
     # projections through the spmd_types sharding configuration. These
