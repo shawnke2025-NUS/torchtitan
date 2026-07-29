@@ -1,10 +1,13 @@
-TORCH_CUDA_SO="$HOME/.local/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so"
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ TORCH_CUDA_SO="$HOME/.local/lib/python3.13/site-packages/torch/lib/libtorch_cuda.so"
 echo "CONDA_PREFIX=$CONDA_PREFIX"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "LD_PRELOAD=$LD_PRELOAD"
 ldd "$TORCH_CUDA_SO" | grep -E "nccl|not found"
-
-python - <<'PY'
+CONDA_PREFIX=/home/f00913055/conda
+LD_LIBRARY_PATH=
+LD_PRELOAD=
+        libnccl.so.2 => /usr/local/lib/libnccl.so.2 (0x00007f33f5cb9000)
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ python - <<'PY'
 from importlib.metadata import requires
 from packaging.requirements import Requirement
 
@@ -14,6 +17,11 @@ for text in requires("torch") or []:
         if req.marker is None or req.marker.evaluate():
             print("Torch requires:", req)
 PY
+Torch requires: nvidia-nccl-cu12==2.29.3; platform_system == "Linux"
+
+
+
+
 
 python -m pip show torch nvidia-nccl-cu12
 
