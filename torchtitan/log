@@ -32,7 +32,7 @@ Location: /home/f00913055/.local/lib/python3.13/site-packages
 Requires: cuda-bindings, cuda-toolkit, filelock, fsspec, jinja2, networkx, nvidia-cudnn-cu12, nvidia-cusparselt-cu12, nvidia-nccl-cu12, nvidia-nvshmem-cu12, setuptools, sympy, triton, typing-extensions
 Required-by: spmd_types, torchdata, torchvision
 
-
+https://pypi.org/project/nvidia-nccl-cu12/2.29.3/#files
 
 
 NCCL_REQ=$(python - <<'PY'
