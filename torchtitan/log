@@ -1,391 +1,214 @@
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-[rank1]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
-[rank1]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-[rank1]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-[rank0]: Traceback (most recent call last):
-[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank0]:   File "<frozen runpy>", line 88, in _run_code
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank0]:     main()
-[rank0]:     ~~~~^^
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
-[rank0]:     trainer.train()
-[rank0]:     ~~~~~~~~~~~~~^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank0]:     return f(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-[rank0]:     self.train_step(data_iterator)
-[rank0]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-[rank0]:     loss = self.forward_backward_step(
-[rank0]:         input_dict=input_dict,
-[rank0]:         labels=labels,
-[rank0]:         global_valid_tokens=global_valid_tokens,
-[rank0]:     )
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-[rank0]:     return func(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-[rank0]:     self.pp_schedule.step(
-[rank0]:     ~~~~~~~~~~~~~~~~~~~~~^
-[rank0]:         inputs,
-[rank0]:         ^^^^^^^
-[rank0]:     ...<4 lines>...
-[rank0]:         return_outputs=False,
-[rank0]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank0]:     )
-[rank0]:     ^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-[rank0]:     self._step_microbatches(
-[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~^
-[rank0]:         args_split,
-[rank0]:         ^^^^^^^^^^^
-[rank0]:     ...<4 lines>...
-[rank0]:         loss_kwargs=loss_kwargs,
-[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:     )
-[rank0]:     ^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-[rank0]:     self._initialize_stage(
-[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~^
-[rank0]:         arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:     )
-[rank0]:     ^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-[rank0]:     ) = self._initialize_pp_stages(
-[rank0]:         ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank0]:         [self._stage],
-[rank0]:         ^^^^^^^^^^^^^^
-[rank0]:     ...<5 lines>...
-[rank0]:         loss_kwargs=loss_kwargs,
-[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:     )
-[rank0]:     ^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-[rank0]:     next_stage_args = stage._prepare_forward_infra(
-[rank0]:         self._n_microbatches,
-[rank0]:     ...<2 lines>...
-[rank0]:         has_backward=self._has_backward,
-[rank0]:     )
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-[rank0]:     fwd_meta_output = self._forward_metadata_inference(
-[rank0]:         args, kwargs, has_backward
-[rank0]:     )
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-[rank0]:     outputs = self._compute_outputs(
-[rank0]:         *inference_args, module=self.submod, **inference_kwargs
-[rank0]:     )
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-[rank0]:     return module(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank0]:     return inner()
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank0]:     result = forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-[rank0]:     x = layer(x, attention_masks, rope_positions)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank0]:     return inner()
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank0]:     result = forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-[rank0]:     return self.checkpoint_fn(  # type: ignore[misc]
-[rank0]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:         self._checkpoint_wrapped_module, *args, **kwargs
-[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:     )
-[rank0]:     ^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-[rank0]:     return disable_fn(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-[rank0]:     return fn(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-[rank0]:     gen.throw(e)
-[rank0]:     ~~~~~~~~~^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-[rank0]:     yield
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-[rank0]:     ret = function(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-[rank0]:     h = self.attention_norm(x)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-[rank0]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
-[rank0]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-[rank0]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-[rank2]: Traceback (most recent call last):
-[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank2]:   File "<frozen runpy>", line 88, in _run_code
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank2]:     main()
-[rank2]:     ~~~~^^
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
-[rank2]:     trainer.train()
-[rank2]:     ~~~~~~~~~~~~~^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank2]:     return f(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-[rank2]:     self.train_step(data_iterator)
-[rank2]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-[rank2]:     loss = self.forward_backward_step(
-[rank2]:         input_dict=input_dict,
-[rank2]:         labels=labels,
-[rank2]:         global_valid_tokens=global_valid_tokens,
-[rank2]:     )
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-[rank2]:     return func(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-[rank2]:     self.pp_schedule.step(
-[rank2]:     ~~~~~~~~~~~~~~~~~~~~~^
-[rank2]:         inputs,
-[rank2]:         ^^^^^^^
-[rank2]:     ...<4 lines>...
-[rank2]:         return_outputs=False,
-[rank2]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank2]:     )
-[rank2]:     ^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-[rank2]:     self._step_microbatches(
-[rank2]:     ~~~~~~~~~~~~~~~~~~~~~~~^
-[rank2]:         args_split,
-[rank2]:         ^^^^^^^^^^^
-[rank2]:     ...<4 lines>...
-[rank2]:         loss_kwargs=loss_kwargs,
-[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:     )
-[rank2]:     ^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-[rank2]:     self._initialize_stage(
-[rank2]:     ~~~~~~~~~~~~~~~~~~~~~~^
-[rank2]:         arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:     )
-[rank2]:     ^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-[rank2]:     ) = self._initialize_pp_stages(
-[rank2]:         ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank2]:         [self._stage],
-[rank2]:         ^^^^^^^^^^^^^^
-[rank2]:     ...<5 lines>...
-[rank2]:         loss_kwargs=loss_kwargs,
-[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:     )
-[rank2]:     ^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-[rank2]:     next_stage_args = stage._prepare_forward_infra(
-[rank2]:         self._n_microbatches,
-[rank2]:     ...<2 lines>...
-[rank2]:         has_backward=self._has_backward,
-[rank2]:     )
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-[rank2]:     fwd_meta_output = self._forward_metadata_inference(
-[rank2]:         args, kwargs, has_backward
-[rank2]:     )
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-[rank2]:     outputs = self._compute_outputs(
-[rank2]:         *inference_args, module=self.submod, **inference_kwargs
-[rank2]:     )
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-[rank2]:     return module(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank2]:     return self._call_impl(*args, **kwargs)
-[rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank2]:     return inner()
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank2]:     result = forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-[rank2]:     x = layer(x, attention_masks, rope_positions)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank2]:     return self._call_impl(*args, **kwargs)
-[rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank2]:     return inner()
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank2]:     result = forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-[rank2]:     return self.checkpoint_fn(  # type: ignore[misc]
-[rank2]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:         self._checkpoint_wrapped_module, *args, **kwargs
-[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:     )
-[rank2]:     ^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-[rank2]:     return disable_fn(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-[rank2]:     return fn(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-[rank2]:     gen.throw(e)
-[rank2]:     ~~~~~~~~~^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-[rank2]:     yield
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-[rank2]:     ret = function(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank2]:     return self._call_impl(*args, **kwargs)
-[rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank2]:     return forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-[rank2]:     h = self.attention_norm(x)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank2]:     return self._call_impl(*args, **kwargs)
-[rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank2]:     return forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-[rank2]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
-[rank2]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-[rank2]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+cd ~/k50063112/torchtitan
+
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --training.local-batch-size 4 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 1 \
+    --parallelism.data_parallel_shard_degree 4 \
+    --parallelism.context_parallel_degree 2 \
+    --parallelism.tensor_parallel_degree 1 \
+    --parallelism.pipeline_parallel_degree 1 \
+    --parallelism.fsdp_reshard_after_forward always \
+    --dataloader.dataset cc12m-test
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+[titan] 2026-07-29 13:30:37,480 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,042 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,162 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,250 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,335 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,559 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,671 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,734 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:39,909 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:39,960 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:39,961 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-133039-5YQM2G.jsonl
+[titan] 2026-07-29 13:30:40,149 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,154 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,189 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,190 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:40,196 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:40,268 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,318 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,319 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-133040-B3UNHN.jsonl
+[titan] 2026-07-29 13:30:40,449 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:40,509 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,512 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,518 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:40,518 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
 [rank3]: Traceback (most recent call last):
 [rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank3]:   File "<frozen runpy>", line 88, in _run_code
 [rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
 [rank3]:     main()
 [rank3]:     ~~~~^^
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
-[rank3]:     trainer.train()
-[rank3]:     ~~~~~~~~~~~~~^^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank3]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank3]:     return self._owner(config=replace(self))
+[rank3]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
 [rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
 [rank3]:     return f(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-[rank3]:     self.train_step(data_iterator)
-[rank3]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-[rank3]:     loss = self.forward_backward_step(
-[rank3]:         input_dict=input_dict,
-[rank3]:         labels=labels,
-[rank3]:         global_valid_tokens=global_valid_tokens,
-[rank3]:     )
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-[rank3]:     return func(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-[rank3]:     self.pp_schedule.step(
-[rank3]:     ~~~~~~~~~~~~~~~~~~~~~^
-[rank3]:         inputs,
-[rank3]:         ^^^^^^^
-[rank3]:     ...<4 lines>...
-[rank3]:         return_outputs=False,
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-[rank3]:     self._step_microbatches(
-[rank3]:     ~~~~~~~~~~~~~~~~~~~~~~~^
-[rank3]:         args_split,
-[rank3]:         ^^^^^^^^^^^
-[rank3]:     ...<4 lines>...
-[rank3]:         loss_kwargs=loss_kwargs,
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-[rank3]:     self._initialize_stage(
-[rank3]:     ~~~~~~~~~~~~~~~~~~~~~~^
-[rank3]:         arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-[rank3]:     ) = self._initialize_pp_stages(
-[rank3]:         ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank3]:         [self._stage],
-[rank3]:         ^^^^^^^^^^^^^^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank3]:     model = model_spec.parallelize_fn(
+[rank3]:         model,
 [rank3]:     ...<5 lines>...
-[rank3]:         loss_kwargs=loss_kwargs,
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:         dump_folder=config.dump_folder,
 [rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-[rank3]:     next_stage_args = stage._prepare_forward_infra(
-[rank3]:         self._n_microbatches,
-[rank3]:     ...<2 lines>...
-[rank3]:         has_backward=self._has_backward,
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank3]:     raise NotImplementedError(
+[rank3]:     ...<3 lines>...
 [rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-[rank3]:     fwd_meta_output = self._forward_metadata_inference(
-[rank3]:         args, kwargs, has_backward
-[rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-[rank3]:     outputs = self._compute_outputs(
-[rank3]:         *inference_args, module=self.submod, **inference_kwargs
-[rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-[rank3]:     return module(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank3]:     return inner()
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank3]:     result = forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-[rank3]:     x = layer(x, attention_masks, rope_positions)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank3]:     return inner()
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank3]:     result = forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-[rank3]:     return self.checkpoint_fn(  # type: ignore[misc]
-[rank3]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:         self._checkpoint_wrapped_module, *args, **kwargs
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-[rank3]:     return disable_fn(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-[rank3]:     return fn(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-[rank3]:     gen.throw(e)
-[rank3]:     ~~~~~~~~~^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-[rank3]:     yield
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-[rank3]:     ret = function(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank3]:     return forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-[rank3]:     h = self.attention_norm(x)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank3]:     return forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-[rank3]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
-[rank3]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-[rank3]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-W0729 13:07:11.497000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920649 closing signal SIGTERM
-W0729 13:07:11.498000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920650 closing signal SIGTERM
-W0729 13:07:11.498000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920651 closing signal SIGTERM
-W0729 13:07:11.499000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920653 closing signal SIGTERM
-W0729 13:07:11.501000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920654 closing signal SIGTERM
-W0729 13:07:11.504000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920655 closing signal SIGTERM
-W0729 13:07:11.520000 3920559 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3920656 closing signal SIGTERM
-E0729 13:07:12.759000 3920559 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 3 (pid: 3920652) of binary: /home/f00913055/conda/bin/python
-E0729 13:07:12.837000 3920559 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_fwvqdgim/none_h_knqhf9/attempt_0/3/error.json)
+[rank3]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:40,543 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,544 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:40,550 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:40,579 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,630 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,631 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-133040-R7B3MK.jsonl
+[titan] 2026-07-29 13:30:40,659 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,711 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,712 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-133040-RHFQQ8.jsonl
+[titan] 2026-07-29 13:30:40,806 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:40,879 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:40,879 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank7]:   File "<frozen runpy>", line 88, in _run_code
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank7]:     main()
+[rank7]:     ~~~~^^
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank7]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank7]:     return self._owner(config=replace(self))
+[rank7]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank7]:     return f(*args, **kwargs)
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank7]:     model = model_spec.parallelize_fn(
+[rank7]:         model,
+[rank7]:     ...<5 lines>...
+[rank7]:         dump_folder=config.dump_folder,
+[rank7]:     )
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank7]:     raise NotImplementedError(
+[rank7]:     ...<3 lines>...
+[rank7]:     )
+[rank7]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:40,893 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,944 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,945 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-133040-PNDLW1.jsonl
+[titan] 2026-07-29 13:30:40,952 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,955 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,965 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,991 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,994 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,003 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,014 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,015 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-133041-MRZOIE.jsonl
+[titan] 2026-07-29 13:30:41,088 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,091 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:41,094 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,121 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:41,122 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,128 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,143 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,144 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-133041-4F7TJN.jsonl
+[titan] 2026-07-29 13:30:41,168 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,224 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:41,242 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,244 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-133041-B1NX9S.jsonl
+[titan] 2026-07-29 13:30:41,280 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:41,280 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank6]:   File "<frozen runpy>", line 88, in _run_code
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank6]:     main()
+[rank6]:     ~~~~^^
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank6]:     return self._owner(config=replace(self))
+[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank6]:     return f(*args, **kwargs)
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank6]:     model = model_spec.parallelize_fn(
+[rank6]:         model,
+[rank6]:     ...<5 lines>...
+[rank6]:         dump_folder=config.dump_folder,
+[rank6]:     )
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank6]:     raise NotImplementedError(
+[rank6]:     ...<3 lines>...
+[rank6]:     )
+[rank6]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:41,346 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:41,407 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:41,407 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank2]:     main()
+[rank2]:     ~~~~^^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank2]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank2]:     return self._owner(config=replace(self))
+[rank2]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank2]:     return f(*args, **kwargs)
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank2]:     model = model_spec.parallelize_fn(
+[rank2]:         model,
+[rank2]:     ...<5 lines>...
+[rank2]:         dump_folder=config.dump_folder,
+[rank2]:     )
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank2]:     raise NotImplementedError(
+[rank2]:     ...<3 lines>...
+[rank2]:     )
+[rank2]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:41,499 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,502 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:41,540 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:41,541 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,548 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,683 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,686 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+W0729 13:30:41.689000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159305 closing signal SIGTERM
+W0729 13:30:41.691000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159306 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159307 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159309 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159310 closing signal SIGTERM
+W0729 13:30:41.693000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159311 closing signal SIGTERM
+W0729 13:30:41.693000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159312 closing signal SIGTERM
+E0729 13:30:42.524000 4158694 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 3 (pid: 4159308) of binary: /home/f00913055/conda/bin/python
+E0729 13:30:42.581000 4158694 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/3/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -422,529 +245,117 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-29_13:07:08
+  time      : 2026-07-29_13:30:42
   host      : node-5-15
   rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 3920649) 
-  error_file: /tmp/torchelastic_fwvqdgim/none_h_knqhf9/attempt_0/0/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-      self.pp_schedule.step(
-      ~~~~~~~~~~~~~~~~~~~~~^
-          inputs,
-          ^^^^^^^
-      ...<4 lines>...
-          return_outputs=False,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-      self._step_microbatches(
-      ~~~~~~~~~~~~~~~~~~~~~~~^
-          args_split,
-          ^^^^^^^^^^^
-      ...<4 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-      self._initialize_stage(
-      ~~~~~~~~~~~~~~~~~~~~~~^
-          arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-      ) = self._initialize_pp_stages(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          [self._stage],
-          ^^^^^^^^^^^^^^
-      ...<5 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-      next_stage_args = stage._prepare_forward_infra(
-          self._n_microbatches,
-      ...<2 lines>...
-          has_backward=self._has_backward,
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-      fwd_meta_output = self._forward_metadata_inference(
-          args, kwargs, has_backward
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-      outputs = self._compute_outputs(
-          *inference_args, module=self.submod, **inference_kwargs
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-      return module(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-          self._checkpoint_wrapped_module, *args, **kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-      gen.throw(e)
-      ~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-      yield
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-      ret = function(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-      h = self.attention_norm(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-      return ((1.0 + self.weight.float()) * x).to(input_dtype)
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-  
+  exitcode  : -15 (pid: 4159305)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159305
 [2]:
-  time      : 2026-07-29_13:07:08
+  time      : 2026-07-29_13:30:42
   host      : node-5-15
   rank      : 1 (local_rank: 1)
-  exitcode  : 1 (pid: 3920650) 
-  error_file: /tmp/torchelastic_fwvqdgim/none_h_knqhf9/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-      self.pp_schedule.step(
-      ~~~~~~~~~~~~~~~~~~~~~^
-          inputs,
-          ^^^^^^^
-      ...<4 lines>...
-          return_outputs=False,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-      self._step_microbatches(
-      ~~~~~~~~~~~~~~~~~~~~~~~^
-          args_split,
-          ^^^^^^^^^^^
-      ...<4 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-      self._initialize_stage(
-      ~~~~~~~~~~~~~~~~~~~~~~^
-          arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-      ) = self._initialize_pp_stages(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          [self._stage],
-          ^^^^^^^^^^^^^^
-      ...<5 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-      next_stage_args = stage._prepare_forward_infra(
-          self._n_microbatches,
-      ...<2 lines>...
-          has_backward=self._has_backward,
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-      fwd_meta_output = self._forward_metadata_inference(
-          args, kwargs, has_backward
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-      outputs = self._compute_outputs(
-          *inference_args, module=self.submod, **inference_kwargs
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-      return module(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-          self._checkpoint_wrapped_module, *args, **kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-      gen.throw(e)
-      ~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-      yield
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-      ret = function(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-      h = self.attention_norm(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-      return ((1.0 + self.weight.float()) * x).to(input_dtype)
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-  
+  exitcode  : -15 (pid: 4159306)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159306
 [3]:
-  time      : 2026-07-29_13:07:08
+  time      : 2026-07-29_13:30:41
   host      : node-5-15
   rank      : 2 (local_rank: 2)
-  exitcode  : 1 (pid: 3920651) 
-  error_file: /tmp/torchelastic_fwvqdgim/none_h_knqhf9/attempt_0/2/error.json
+  exitcode  : -15 (pid: 4159307)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/2/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-      self.pp_schedule.step(
-      ~~~~~~~~~~~~~~~~~~~~~^
-          inputs,
-          ^^^^^^^
-      ...<4 lines>...
-          return_outputs=False,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-      self._step_microbatches(
-      ~~~~~~~~~~~~~~~~~~~~~~~^
-          args_split,
-          ^^^^^^^^^^^
-      ...<4 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-      self._initialize_stage(
-      ~~~~~~~~~~~~~~~~~~~~~~^
-          arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-      ) = self._initialize_pp_stages(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          [self._stage],
-          ^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
       ...<5 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
+          dump_folder=config.dump_folder,
       )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-      next_stage_args = stage._prepare_forward_infra(
-          self._n_microbatches,
-      ...<2 lines>...
-          has_backward=self._has_backward,
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-      fwd_meta_output = self._forward_metadata_inference(
-          args, kwargs, has_backward
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-      outputs = self._compute_outputs(
-          *inference_args, module=self.submod, **inference_kwargs
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-      return module(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-          self._checkpoint_wrapped_module, *args, **kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-      gen.throw(e)
-      ~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-      yield
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-      ret = function(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-      h = self.attention_norm(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-      return ((1.0 + self.weight.float()) * x).to(input_dtype)
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
   
 [4]:
-  time      : 2026-07-29_13:07:12
+  time      : 2026-07-29_13:30:42
   host      : node-5-15
   rank      : 4 (local_rank: 4)
-  exitcode  : -15 (pid: 3920653)  (SIGTERM)
+  exitcode  : -15 (pid: 4159309)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3920653
+  traceback : Signal 15 (SIGTERM) received by PID 4159309
 [5]:
-  time      : 2026-07-29_13:07:12
+  time      : 2026-07-29_13:30:42
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 3920654)  (SIGTERM)
+  exitcode  : -15 (pid: 4159310)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3920654
+  traceback : Signal 15 (SIGTERM) received by PID 4159310
 [6]:
-  time      : 2026-07-29_13:07:12
+  time      : 2026-07-29_13:30:41
   host      : node-5-15
   rank      : 6 (local_rank: 6)
-  exitcode  : -15 (pid: 3920655)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3920655
+  exitcode  : -15 (pid: 4159311)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/6/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
 [7]:
-  time      : 2026-07-29_13:07:12
+  time      : 2026-07-29_13:30:40
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 3920656)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3920656
+  exitcode  : -15 (pid: 4159312)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/7/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_13:07:08
+  time      : 2026-07-29_13:30:40
   host      : node-5-15
   rank      : 3 (local_rank: 3)
-  exitcode  : 1 (pid: 3920652) 
-  error_file: /tmp/torchelastic_fwvqdgim/none_h_knqhf9/attempt_0/3/error.json
+  exitcode  : 1 (pid: 4159308) 
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/3/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
-      self.pp_schedule.step(
-      ~~~~~~~~~~~~~~~~~~~~~^
-          inputs,
-          ^^^^^^^
-      ...<4 lines>...
-          return_outputs=False,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
-      self._step_microbatches(
-      ~~~~~~~~~~~~~~~~~~~~~~~^
-          args_split,
-          ^^^^^^^^^^^
-      ...<4 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
-      self._initialize_stage(
-      ~~~~~~~~~~~~~~~~~~~~~~^
-          arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-      ) = self._initialize_pp_stages(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          [self._stage],
-          ^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
       ...<5 lines>...
-          loss_kwargs=loss_kwargs,
-          ^^^^^^^^^^^^^^^^^^^^^^^^
+          dump_folder=config.dump_folder,
       )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-      next_stage_args = stage._prepare_forward_infra(
-          self._n_microbatches,
-      ...<2 lines>...
-          has_backward=self._has_backward,
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-      fwd_meta_output = self._forward_metadata_inference(
-          args, kwargs, has_backward
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-      outputs = self._compute_outputs(
-          *inference_args, module=self.submod, **inference_kwargs
-      )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-      return module(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-          self._checkpoint_wrapped_module, *args, **kwargs
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-      gen.throw(e)
-      ~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-      yield
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-      ret = function(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
-      h = self.attention_norm(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
-      return ((1.0 + self.weight.float()) * x).to(input_dtype)
-              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
   
 ============================================================
