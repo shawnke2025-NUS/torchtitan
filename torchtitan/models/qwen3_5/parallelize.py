@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-
+#2026.7.29 19:32
 """
 Parallelization utilities for Qwen3.5.
 
@@ -36,7 +36,6 @@ from torchtitan.distributed.fsdp import (
 )
 from torchtitan.distributed.tensor_parallel import maybe_enable_async_tp
 from torchtitan.tools.logging import logger
-
 
 
 def _apply_cp_to_deltanet(
@@ -79,6 +78,7 @@ def _apply_cp_to_deltanet(
         "Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block "
         "all-gathers the full sequence and duplicates its compute."
     )
+
 
 def _apply_fsdp_to_vision_encoder(
     vision_encoder: nn.Module,
@@ -210,8 +210,21 @@ def parallelize_qwen3_5(
             ac_policy.apply(model.vision_encoder)
 
     if model_compile_enabled:
-        apply_compile(model, compile_config)
+        # FLA's chunk_gated_delta_rule is wrapped with torch.compiler.disable in
+        # the installed FLA package. A fullgraph compile of a checkpointed
+        # DeltaNet block therefore fails. Compile only Qwen3.5 Full Attention
+        # blocks and keep DeltaNet/FLA blocks in eager mode.
+        apply_compile(
+            model,
+            compile_config,
+            layer_filter=lambda _layer_id, block: bool(
+                getattr(block, "full_attn", False)
+            ),
+        )
+
         if model.vision_encoder is not None:
+            # Vision blocks do not use the disabled FLA DeltaNet kernel, so they
+            # can still be compiled normally.
             # pyrefly: ignore [bad-argument-type]
             apply_compile(model.vision_encoder, compile_config)
 
