@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-#2026.7.29 19：48 
+#2026.7.29 20:02
 import contextlib
 from collections.abc import Callable
 
@@ -45,8 +45,9 @@ def apply_compile(
     can keep unsupported blocks in eager mode. The callback receives the layer
     ID and the underlying TransformerBlock. If activation checkpointing has
     already wrapped the block, this function unwraps
-    ``_checkpoint_wrapped_module`` for filtering while compiling the outer
-    checkpoint wrapper itself.
+    ``_checkpoint_wrapped_module`` and compiles that inner TransformerBlock.
+    The checkpoint wrapper remains eager, preventing the checkpoint Higher
+    Order Operator from entering the compiled graph.
     """
     torch._dynamo.config.capture_scalar_outputs = True
     torch._dynamo.config.skip_fwd_side_effects_in_bwd_under_checkpoint = (
@@ -70,7 +71,11 @@ def apply_compile(
             skipped_layers.append(layer_id)
             continue
 
-        transformer_block.compile(backend=backend, fullgraph=True)
+        # Keep the activation-checkpoint wrapper in eager mode. Compile only
+        # the wrapped TransformerBlock itself so torch.utils.checkpoint.checkpoint
+        # is not captured as a Higher Order Operator by Dynamo/AOTAutograd.
+        compile_target = filter_target
+        compile_target.compile(backend=backend, fullgraph=True)
         compiled_layers.append(layer_id)
 
     if not compiled_layers:
