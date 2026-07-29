@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-#version1：2026.7.29 9：57
+#version1：2026.7.29 10:29
 
 from dataclasses import dataclass
 from typing import Literal
@@ -256,6 +256,20 @@ class GatedDeltaKernel(Module):
         g: torch.Tensor,
         beta: torch.Tensor,
     ) -> torch.Tensor:
+        expected_ndims = {"q": q.ndim, "k": k.ndim, "v": v.ndim}
+        if any(ndim != 4 for ndim in expected_ndims.values()):
+            raise ValueError(
+                "GatedDeltaKernel expects q/k/v to be 4-D tensors "
+                "[B, L, H, D], but got "
+                f"q={tuple(q.shape)}, k={tuple(k.shape)}, v={tuple(v.shape)}."
+            )
+        if g.ndim != 3 or beta.ndim != 3:
+            raise ValueError(
+                "GatedDeltaKernel expects g/beta to be 3-D tensors "
+                "[B, L, H], but got "
+                f"g={tuple(g.shape)}, beta={tuple(beta.shape)}."
+            )
+
         # Expand Q/K heads to match V when n_value_heads > n_key_heads
         if q.shape[2] != v.shape[2]:
             assert v.shape[2] % q.shape[2] == 0
@@ -434,6 +448,15 @@ class GatedDeltaNet(Module):
         xa = _linear_dt(x, self.in_proj_a)
         xb = _linear_dt(x, self.in_proj_b)
 
+        # FLA gated-delta kernel requires explicit head dimensions:
+        # q/k: [B, L, n_key_heads, key_head_dim]
+        # v/z: [B, L, n_value_heads, value_head_dim]
+        # The projections above return flattened [B, L, heads * head_dim].
+        xq = xq.reshape(bs, seqlen, -1, self.key_head_dim)
+        xk = xk.reshape(bs, seqlen, -1, self.key_head_dim)
+        xv = xv.reshape(bs, seqlen, -1, self.value_head_dim)
+        xz = xz.reshape(bs, seqlen, -1, self.value_head_dim)
+
         # 🔧 确保参数是DTensor（兼容激活检查点）
         def ensure_dtensor(param):
             if not isinstance(param, DTensor) and isinstance(x, DTensor):
@@ -476,11 +499,8 @@ class GatedDeltaNet(Module):
         
         beta = torch.sigmoid(xb)
     
-        # 🔧 关键修复：正确reshape beta张量
-        # beta形状: (bs, seqlen, dim) -> (bs, seqlen, n_heads)
-        # 假设in_proj_b输出维度 = n_value_heads * value_head_dim
-        # 但我们需要 (bs, seqlen, n_heads) 形状
-        beta = beta.view(bs, seqlen, -1)  # (bs, seqlen, n_heads)
+        # in_proj_b already outputs n_value_heads, so beta is [B, L, n_value_heads].
+        beta = beta.reshape(bs, seqlen, -1)
     
         # 处理TP下的DTensor输入
         if isinstance(xq, DTensor):
@@ -501,7 +521,6 @@ class GatedDeltaNet(Module):
 
             output = self.kernel(xq, xk, xv, g, beta)
 
-        xz = xz.reshape(bs, xz.size(1), -1, self.value_head_dim)
         output = self.norm(output, xz)
 
         output = output.reshape(bs, seqlen, -1)
@@ -1001,6 +1020,5 @@ class Qwen35Model(Decoder):
             return out
             
         return x
-
 
 
