@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-#version1：2026.7.29 12:34
+#version1：2026.7.29 9：57
 
 from dataclasses import dataclass
 from typing import Literal
@@ -17,6 +17,8 @@ from fla.ops.gated_delta_rule import (
     fused_recurrent_gated_delta_rule as _fla_fused_recurrent_gated_delta_rule,
 )
 from torch import nn
+from torch.distributed.device_mesh import DeviceMesh
+from torch.distributed.nn.functional import all_gather as autograd_all_gather
 from torch.distributed.tensor import DTensor
 from torch.distributed.tensor.experimental import local_map
 from torch.distributed.tensor.placement_types import Replicate
@@ -31,6 +33,50 @@ from .rope import MRoPE
 from .sharding import set_qwen35_sharding_config
 from .vision_encoder import Qwen35VisionEncoder
 
+
+
+def _cp_all_gather_sequence(
+    x: torch.Tensor,
+    cp_mesh: DeviceMesh | None,
+) -> torch.Tensor:
+    """Autograd-aware all-gather of a contiguous sequence shard.
+
+    Qwen3.5's GatedDeltaNet is recurrent along the sequence dimension, so each
+    CP rank must reconstruct the original full sequence before evaluating a
+    DeltaNet block.  This helper assumes CP input sharding uses contiguous
+    chunks (i.e. no head-tail/PTRR load balancer).
+    """
+    if cp_mesh is None or cp_mesh.size() == 1:
+        return x
+    parts = autograd_all_gather(x.contiguous(), group=cp_mesh.get_group())
+    return torch.cat(tuple(parts), dim=1)
+
+
+def _cp_local_sequence_slice(
+    x: torch.Tensor,
+    cp_mesh: DeviceMesh | None,
+    local_seq_len: int | None = None,
+) -> torch.Tensor:
+    """Return this CP rank's contiguous sequence interval."""
+    if cp_mesh is None or cp_mesh.size() == 1:
+        return x
+
+    cp_size = cp_mesh.size()
+    if local_seq_len is None:
+        if x.size(1) % cp_size != 0:
+            raise ValueError(
+                f"Global sequence length {x.size(1)} is not divisible by "
+                f"context_parallel_degree={cp_size}."
+            )
+        local_seq_len = x.size(1) // cp_size
+
+    start = cp_mesh.get_local_rank() * local_seq_len
+    if start + local_seq_len > x.size(1):
+        raise ValueError(
+            f"Cannot extract CP sequence shard: global length={x.size(1)}, "
+            f"start={start}, local length={local_seq_len}."
+        )
+    return x.narrow(1, start, local_seq_len).contiguous()
 
 def _l2norm(x: torch.Tensor, dim: int = -1, eps: float = 1e-6) -> torch.Tensor:
     """L2 norm using rsqrt(sum(x²) + eps), not x/max(norm, eps) like F.normalize, to match FLA kernel."""
@@ -111,6 +157,7 @@ class SharedExperts(FeedForward):
 # -----------------------------------
 class OffsetRMSNorm(Module):
     """RMSNorm with offset: ``(1 + weight) * norm(x)``."""
+
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
         dim: int
@@ -120,22 +167,46 @@ class OffsetRMSNorm(Module):
         super().__init__()
         self.eps = config.eps
         self.weight = nn.Parameter(torch.zeros(config.dim))
-        
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Keep DTensor semantics intact. Module.parallelize() handles input/state
-        # redistribution according to sharding.py; do not call to_local() here.
+
+    @staticmethod
+    def _forward_local(
+        x: torch.Tensor,
+        weight: torch.Tensor,
+        eps: float,
+    ) -> torch.Tensor:
         input_dtype = x.dtype
-        x = x.float()
-        variance = x.pow(2).mean(-1, keepdim=True)
-        x = x * torch.rsqrt(variance + self.eps)
-        return ((1.0 + self.weight.float()) * x).to(input_dtype)
+        x_fp32 = x.float()
+        variance = x_fp32.pow(2).mean(-1, keepdim=True)
+        x_fp32 = x_fp32 * torch.rsqrt(variance + eps)
+        return ((1.0 + weight.float()) * x_fp32).to(input_dtype)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        weight = self.weight
+
+        # PP metadata inference may pass a DTensor activation while FSDP has
+        # materialized the norm parameter as a regular Tensor. Compute on the
+        # local activation shard, then restore the exact original placement.
+        if isinstance(x, DTensor):
+            mesh = x.device_mesh
+            placements = x.placements
+            x_local = x.to_local()
+            weight_local = weight.to_local() if isinstance(weight, DTensor) else weight
+            out_local = self._forward_local(x_local, weight_local, self.eps)
+            return DTensor.from_local(
+                out_local,
+                mesh,
+                placements,
+                run_check=False,
+            )
+
+        # Symmetric fallback for a DTensor parameter with a plain activation.
+        weight_local = weight.to_local() if isinstance(weight, DTensor) else weight
+        return self._forward_local(x, weight_local, self.eps)
 
 
-# -----------------------------------
-# 2. RMSNormGated - 全面兼容版本
-# -----------------------------------
 class RMSNormGated(Module):
     """Gated RMSNorm: ``silu(gate) * weight * norm(x)``."""
+
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
         dim: int
@@ -146,17 +217,48 @@ class RMSNormGated(Module):
         self.eps = config.eps
         self.weight = nn.Parameter(torch.ones(config.dim))
 
-    def forward(self, x: torch.Tensor, gate: torch.Tensor) -> torch.Tensor:
-        # Preserve DTensor placement metadata. The norm's ShardingConfig aligns
-        # x/gate and the replicated weight before this function runs.
+    @staticmethod
+    def _forward_local(
+        x: torch.Tensor,
+        gate: torch.Tensor,
+        weight: torch.Tensor,
+        eps: float,
+    ) -> torch.Tensor:
         input_dtype = x.dtype
-        x = x.float()
-        variance = x.pow(2).mean(-1, keepdim=True)
-        x = x * torch.rsqrt(variance + self.eps)
-        x = (self.weight.float() * x).to(input_dtype)
-        x = x * F.silu(gate.float())
-        return x.to(input_dtype)
+        x_fp32 = x.float()
+        variance = x_fp32.pow(2).mean(-1, keepdim=True)
+        x_fp32 = x_fp32 * torch.rsqrt(variance + eps)
+        x_fp32 = (weight.float() * x_fp32).to(input_dtype)
+        x_fp32 = x_fp32 * F.silu(gate.float()).to(input_dtype)
+        return x_fp32.to(input_dtype)
 
+    def forward(self, x: torch.Tensor, gate: torch.Tensor) -> torch.Tensor:
+        weight = self.weight
+
+        # Keep x/gate local during the custom norm, then reconstruct a DTensor
+        # with exactly the same mesh and placements as x.
+        if isinstance(x, DTensor):
+            mesh = x.device_mesh
+            placements = x.placements
+            x_local = x.to_local()
+            gate_local = gate.to_local() if isinstance(gate, DTensor) else gate
+            weight_local = weight.to_local() if isinstance(weight, DTensor) else weight
+            out_local = self._forward_local(
+                x_local,
+                gate_local,
+                weight_local,
+                self.eps,
+            )
+            return DTensor.from_local(
+                out_local,
+                mesh,
+                placements,
+                run_check=False,
+            )
+
+        gate_local = gate.to_local() if isinstance(gate, DTensor) else gate
+        weight_local = weight.to_local() if isinstance(weight, DTensor) else weight
+        return self._forward_local(x, gate_local, weight_local, self.eps)
 
 
 class GatedDeltaKernel(Module):
@@ -616,6 +718,11 @@ class Qwen35Model(Decoder):
 
         self.vision_encoder = config.vision_encoder.build()
         self.spatial_merge_size = config.vision_encoder.spatial_merge_size
+        self._cp_mesh: DeviceMesh | None = None
+
+    def enable_context_parallel(self, cp_mesh: DeviceMesh) -> None:
+        """Enable the experimental contiguous-sequence CP execution path."""
+        self._cp_mesh = cp_mesh
     '''
     def _get_vision_positions(
         self,
@@ -707,7 +814,9 @@ class Qwen35Model(Decoder):
             num_tokens_per_item: (num_items,) actual token count per item
         """
         pixel_values = pixel_values.to(self.vision_encoder.patch_embed.weight.dtype)
-        merged_embeds = self.vision_encoder(pixel_values, grid_thw=grid_thw)
+        merged_embeds = self.vision_encoder(
+            pixel_values, grid_thw=grid_thw
+        ).clone()
 
         merge_unit = self.vision_encoder.spatial_merge_unit
         num_tokens_per_item = grid_thw.prod(-1) // merge_unit
@@ -814,52 +923,82 @@ class Qwen35Model(Decoder):
         special_tokens: dict[str, int] | None = None,
         loss_kwargs: dict | None = None,
     ) -> torch.Tensor:
+        del loss_kwargs  # consumed by the pipeline loss function, not the model
+
+        cp_mesh = self._cp_mesh
+        local_seq_len = tokens.size(1)
+
         if self.tok_embeddings is not None:
+            # The trainer CP-shards raw tokens before model.forward(). Vision
+            # placeholders, image/video embeddings and MRoPE metadata are global,
+            # so rebuild the full token sequence before multimodal scatter, then
+            # retain only this rank's contiguous sequence interval.
+            embedding_tokens = _cp_all_gather_sequence(tokens, cp_mesh)
             x = self._prepare_multimodal_embeds(
-                tokens,
+                embedding_tokens,
                 pixel_values=pixel_values,
                 pixel_values_videos=pixel_values_videos,
                 grid_thw=grid_thw,
                 grid_thw_videos=grid_thw_videos,
                 special_tokens=special_tokens,
             )
+            x = _cp_local_sequence_slice(x, cp_mesh, local_seq_len)
         else:
+            # Non-first PP stages receive hidden states in the `tokens` slot.
             x = tokens
 
-        # 在 Qwen35Model.forward 中
-        # 🛠️ 统一在模型入口处包装DTensor
-        if not isinstance(x, DTensor):
+        # Keep the compatibility bridge that made FSDP+PP metadata inference
+        # work in the user's environment. Do not apply it to CP: CP sequence
+        # communication operates on ordinary local tensors.
+        mesh_param = None
+        if cp_mesh is None and not isinstance(x, DTensor):
             try:
                 mesh_param = next(self.parameters())
-                if isinstance(mesh_param, DTensor):
-                    mesh = mesh_param.device_mesh
-                    placements = [Replicate()] * mesh.ndim  # 🛠️ 使用 mesh.ndim
-                    x = DTensor.from_local(x, mesh, placements, run_check=False)
             except StopIteration:
-                pass
+                mesh_param = None
+            if isinstance(mesh_param, DTensor):
+                mesh = mesh_param.device_mesh
+                placements = [Replicate()] * mesh.ndim
+                x = DTensor.from_local(x, mesh, placements, run_check=False)
 
         rope_positions = mrope_positions if mrope_positions is not None else positions
         assert rope_positions is not None
-        
+
+        # prepare_context_parallel_input() shards `positions`, but Qwen3.5's
+        # three-axis `mrope_positions` may still arrive at global length.
+        if cp_mesh is not None and rope_positions.size(1) != x.size(1):
+            expected_global = x.size(1) * cp_mesh.size()
+            if rope_positions.size(1) != expected_global:
+                raise ValueError(
+                    f"RoPE sequence length {rope_positions.size(1)} does not match "
+                    f"local CP length {x.size(1)} or global length {expected_global}."
+                )
+            rope_positions = _cp_local_sequence_slice(
+                rope_positions, cp_mesh, x.size(1)
+            )
+
         for layer in self.layers.values():
             x = layer(x, attention_masks, rope_positions)
-            # 🛠️ 如果层输出是普通Tensor，重新包装为DTensor
-            if not isinstance(x, DTensor) and isinstance(mesh_param, DTensor):
+            if (
+                cp_mesh is None
+                and not isinstance(x, DTensor)
+                and isinstance(mesh_param, DTensor)
+            ):
                 mesh = mesh_param.device_mesh
-                placements = [Replicate()] * mesh.ndim  # 🛠️ 使用 mesh.ndim
+                placements = [Replicate()] * mesh.ndim
                 x = DTensor.from_local(x, mesh, placements, run_check=False)
 
         x = self.norm(x) if self.norm is not None else x
-        
+
         if self._skip_lm_head:
-            if isinstance(x, DTensor):
+            if cp_mesh is None and isinstance(x, DTensor):
                 x = x.to_local() if x.placements[0].is_replicate() else x.full_tensor()
             return x
-            
+
         if self.lm_head is not None:
             out = self.lm_head(x)
-            if isinstance(out, DTensor):
+            if cp_mesh is None and isinstance(out, DTensor):
                 out = out.full_tensor()
             return out
-            
+
         return x
