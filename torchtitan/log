@@ -1,89 +1,132 @@
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
-[rank3]:     ) = self._initialize_pp_stages(
-[rank3]:         ~~~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank3]:         [self._stage],
-[rank3]:         ^^^^^^^^^^^^^^
-[rank3]:     ...<5 lines>...
-[rank3]:         loss_kwargs=loss_kwargs,
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
-[rank3]:     next_stage_args = stage._prepare_forward_infra(
-[rank3]:         self._n_microbatches,
-[rank3]:     ...<2 lines>...
-[rank3]:         has_backward=self._has_backward,
-[rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
-[rank3]:     fwd_meta_output = self._forward_metadata_inference(
-[rank3]:         args, kwargs, has_backward
-[rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
-[rank3]:     outputs = self._compute_outputs(
-[rank3]:         *inference_args, module=self.submod, **inference_kwargs
-[rank3]:     )
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
-[rank3]:     return module(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank3]:     return inner()
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank3]:     result = forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
-[rank3]:     x = layer(x, attention_masks, rope_positions)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[rank3]:     return inner()
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[rank3]:     result = forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-[rank3]:     return self.checkpoint_fn(  # type: ignore[misc]
-[rank3]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:         self._checkpoint_wrapped_module, *args, **kwargs
-[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:     )
-[rank3]:     ^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-[rank3]:     return disable_fn(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-[rank3]:     return fn(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
-[rank3]:     gen.throw(e)
-[rank3]:     ~~~~~~~~~^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
-[rank3]:     yield
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
-[rank3]:     ret = function(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank3]:     return forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-[rank3]:     h = self.attn(h)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-[rank3]:     return nn.Module._call_impl(self, *args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank3]:     return forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-[rank3]:     return self.out_proj(output)
-[rank3]:            ~~~~~~~~~~~~~^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[rank3]:     return self._call_impl(*args, **kwargs)
-[rank3]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank3]:     return forward_call(*args, **kwargs)
-[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-[rank3]:     return F.linear(input, self.weight, self.bias)
-[rank3]:            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank3]: RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+[rank3]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
+[rank3]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+[rank3]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank1]:   File "<frozen runpy>", line 88, in _run_code
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank1]:     main()
+[rank1]:     ~~~~^^
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
+[rank1]:     trainer.train()
+[rank1]:     ~~~~~~~~~~~~~^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank1]:     return f(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+[rank1]:     self.train_step(data_iterator)
+[rank1]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+[rank1]:     loss = self.forward_backward_step(
+[rank1]:         input_dict=input_dict,
+[rank1]:         labels=labels,
+[rank1]:         global_valid_tokens=global_valid_tokens,
+[rank1]:     )
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+[rank1]:     return func(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 797, in forward_backward_step
+[rank1]:     self.pp_schedule.step(
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         inputs,
+[rank1]:         ^^^^^^^
+[rank1]:     ...<4 lines>...
+[rank1]:         return_outputs=False,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 785, in step
+[rank1]:     self._step_microbatches(
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         args_split,
+[rank1]:         ^^^^^^^^^^^
+[rank1]:     ...<4 lines>...
+[rank1]:         loss_kwargs=loss_kwargs,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 1046, in _step_microbatches
+[rank1]:     self._initialize_stage(
+[rank1]:     ~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         arg_mbs[0], kwarg_mbs[0], maybe_first_target, loss_kwargs
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 730, in _initialize_stage
+[rank1]:     ) = self._initialize_pp_stages(
+[rank1]:         ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         [self._stage],
+[rank1]:         ^^^^^^^^^^^^^^
+[rank1]:     ...<5 lines>...
+[rank1]:         loss_kwargs=loss_kwargs,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/schedules.py", line 456, in _initialize_pp_stages
+[rank1]:     next_stage_args = stage._prepare_forward_infra(
+[rank1]:         self._n_microbatches,
+[rank1]:     ...<2 lines>...
+[rank1]:         has_backward=self._has_backward,
+[rank1]:     )
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 2227, in _prepare_forward_infra
+[rank1]:     fwd_meta_output = self._forward_metadata_inference(
+[rank1]:         args, kwargs, has_backward
+[rank1]:     )
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1944, in _forward_metadata_inference
+[rank1]:     outputs = self._compute_outputs(
+[rank1]:         *inference_args, module=self.submod, **inference_kwargs
+[rank1]:     )
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/pipelining/stage.py", line 1828, in _compute_outputs
+[rank1]:     return module(*args, **kwargs)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+[rank1]:     return inner()
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+[rank1]:     result = forward_call(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
+[rank1]:     x = layer(x, attention_masks, rope_positions)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+[rank1]:     return inner()
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+[rank1]:     result = forward_call(*args, **kwargs)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+[rank1]:     return self.checkpoint_fn(  # type: ignore[misc]
+[rank1]:            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:         self._checkpoint_wrapped_module, *args, **kwargs
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+[rank1]:     return disable_fn(*args, **kwargs)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+[rank1]:     return fn(*args, **kwargs)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
+[rank1]:     gen.throw(e)
+[rank1]:     ~~~~~~~~~^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
+[rank1]:     yield
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
+[rank1]:     ret = function(*args, **kwargs)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+[rank1]:     h = self.attention_norm(x)
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+[rank1]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
+[rank1]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+[rank1]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
 [rank0]: Traceback (most recent call last):
 [rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank0]:   File "<frozen runpy>", line 88, in _run_code
@@ -166,7 +209,7 @@
 [rank0]:     return inner()
 [rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
 [rank0]:     result = forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
 [rank0]:     x = layer(x, attention_masks, rope_positions)
 [rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
 [rank0]:     return self._call_impl(*args, **kwargs)
@@ -198,25 +241,17 @@
 [rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
 [rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
 [rank0]:     return forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-[rank0]:     h = self.attn(h)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-[rank0]:     return nn.Module._call_impl(self, *args, **kwargs)
-[rank0]:            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-[rank0]:     return self.out_proj(output)
-[rank0]:            ~~~~~~~~~~~~~^^^^^^^^
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+[rank0]:     h = self.attention_norm(x)
 [rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
 [rank0]:     return self._call_impl(*args, **kwargs)
 [rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
 [rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
 [rank0]:     return forward_call(*args, **kwargs)
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-[rank0]:     return F.linear(input, self.weight, self.bias)
-[rank0]:            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]: RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+[rank0]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
+[rank0]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+[rank0]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
 [rank2]: Traceback (most recent call last):
 [rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank2]:   File "<frozen runpy>", line 88, in _run_code
@@ -299,7 +334,7 @@
 [rank2]:     return inner()
 [rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
 [rank2]:     result = forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
 [rank2]:     x = layer(x, attention_masks, rope_positions)
 [rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
 [rank2]:     return self._call_impl(*args, **kwargs)
@@ -331,34 +366,26 @@
 [rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
 [rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
 [rank2]:     return forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-[rank2]:     h = self.attn(h)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-[rank2]:     return nn.Module._call_impl(self, *args, **kwargs)
-[rank2]:            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[rank2]:     return forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-[rank2]:     return self.out_proj(output)
-[rank2]:            ~~~~~~~~~~~~~^^^^^^^^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+[rank2]:     h = self.attention_norm(x)
 [rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
 [rank2]:     return self._call_impl(*args, **kwargs)
 [rank2]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
 [rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
 [rank2]:     return forward_call(*args, **kwargs)
-[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-[rank2]:     return F.linear(input, self.weight, self.bias)
-[rank2]:            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank2]: RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-W0729 11:54:53.366000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499229 closing signal SIGTERM
-W0729 11:54:53.368000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499231 closing signal SIGTERM
-W0729 11:54:53.369000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499232 closing signal SIGTERM
-W0729 11:54:53.370000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499233 closing signal SIGTERM
-W0729 11:54:53.374000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499234 closing signal SIGTERM
-W0729 11:54:53.377000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499235 closing signal SIGTERM
-W0729 11:54:53.379000 3499137 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3499236 closing signal SIGTERM
-E0729 11:54:54.913000 3499137 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 1 (pid: 3499230) of binary: /home/f00913055/conda/bin/python
-E0729 11:54:54.971000 3499137 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_ntkpirib/none_q9jewbjp/attempt_0/1/error.json)
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+[rank2]:     return ((1.0 + self.weight.float()) * x).to(input_dtype)
+[rank2]:             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+[rank2]: RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+W0729 12:42:06.358000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742832 closing signal SIGTERM
+W0729 12:42:06.361000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742834 closing signal SIGTERM
+W0729 12:42:06.362000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742835 closing signal SIGTERM
+W0729 12:42:06.362000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742836 closing signal SIGTERM
+W0729 12:42:06.366000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742837 closing signal SIGTERM
+W0729 12:42:06.368000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742838 closing signal SIGTERM
+W0729 12:42:06.370000 3742749 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3742839 closing signal SIGTERM
+E0729 12:42:07.705000 3742749 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 1 (pid: 3742833) of binary: /home/f00913055/conda/bin/python
+E0729 12:42:07.779000 3742749 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_ta646coa/none_gwuvxsk1/attempt_0/1/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -395,11 +422,11 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-29_11:54:51
+  time      : 2026-07-29_12:42:03
   host      : node-5-15
   rank      : 0 (local_rank: 0)
-  exitcode  : -15 (pid: 3499229)  (SIGTERM)
-  error_file: /tmp/torchelastic_ntkpirib/none_q9jewbjp/attempt_0/0/error.json
+  exitcode  : 1 (pid: 3742832) 
+  error_file: /tmp/torchelastic_ta646coa/none_gwuvxsk1/attempt_0/0/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -474,7 +501,7 @@ Failures:
       return inner()
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
       result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
       x = layer(x, attention_masks, rope_positions)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
@@ -506,32 +533,24 @@ Failures:
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-      h = self.attn(h)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-      return nn.Module._call_impl(self, *args, **kwargs)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-      return self.out_proj(output)
-             ~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+      h = self.attention_norm(x)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+      return ((1.0 + self.weight.float()) * x).to(input_dtype)
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
   
 [2]:
-  time      : 2026-07-29_11:54:51
+  time      : 2026-07-29_12:42:03
   host      : node-5-15
   rank      : 2 (local_rank: 2)
-  exitcode  : -15 (pid: 3499231)  (SIGTERM)
-  error_file: /tmp/torchelastic_ntkpirib/none_q9jewbjp/attempt_0/2/error.json
+  exitcode  : -15 (pid: 3742834)  (SIGTERM)
+  error_file: /tmp/torchelastic_ta646coa/none_gwuvxsk1/attempt_0/2/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -606,7 +625,7 @@ Failures:
       return inner()
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
       result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
       x = layer(x, attention_masks, rope_positions)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
@@ -638,32 +657,24 @@ Failures:
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-      h = self.attn(h)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-      return nn.Module._call_impl(self, *args, **kwargs)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-      return self.out_proj(output)
-             ~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+      h = self.attention_norm(x)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+      return ((1.0 + self.weight.float()) * x).to(input_dtype)
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
   
 [3]:
-  time      : 2026-07-29_11:54:51
+  time      : 2026-07-29_12:42:03
   host      : node-5-15
   rank      : 3 (local_rank: 3)
-  exitcode  : -15 (pid: 3499232)  (SIGTERM)
-  error_file: /tmp/torchelastic_ntkpirib/none_q9jewbjp/attempt_0/3/error.json
+  exitcode  : 1 (pid: 3742835) 
+  error_file: /tmp/torchelastic_ta646coa/none_gwuvxsk1/attempt_0/3/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -738,7 +749,7 @@ Failures:
       return inner()
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
       result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
       x = layer(x, attention_masks, rope_positions)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
@@ -770,62 +781,54 @@ Failures:
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-      h = self.attn(h)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-      return nn.Module._call_impl(self, *args, **kwargs)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-      return self.out_proj(output)
-             ~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+      h = self.attention_norm(x)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+      return ((1.0 + self.weight.float()) * x).to(input_dtype)
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
   
 [4]:
-  time      : 2026-07-29_11:54:54
+  time      : 2026-07-29_12:42:07
   host      : node-5-15
   rank      : 4 (local_rank: 4)
-  exitcode  : -15 (pid: 3499233)  (SIGTERM)
+  exitcode  : -15 (pid: 3742836)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3499233
+  traceback : Signal 15 (SIGTERM) received by PID 3742836
 [5]:
-  time      : 2026-07-29_11:54:54
+  time      : 2026-07-29_12:42:07
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 3499234)  (SIGTERM)
+  exitcode  : -15 (pid: 3742837)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3499234
+  traceback : Signal 15 (SIGTERM) received by PID 3742837
 [6]:
-  time      : 2026-07-29_11:54:54
+  time      : 2026-07-29_12:42:07
   host      : node-5-15
   rank      : 6 (local_rank: 6)
-  exitcode  : -15 (pid: 3499235)  (SIGTERM)
+  exitcode  : -15 (pid: 3742838)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3499235
+  traceback : Signal 15 (SIGTERM) received by PID 3742838
 [7]:
-  time      : 2026-07-29_11:54:54
+  time      : 2026-07-29_12:42:07
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 3499236)  (SIGTERM)
+  exitcode  : -15 (pid: 3742839)  (SIGTERM)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3499236
+  traceback : Signal 15 (SIGTERM) received by PID 3742839
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_11:54:50
+  time      : 2026-07-29_12:42:03
   host      : node-5-15
   rank      : 1 (local_rank: 1)
-  exitcode  : 1 (pid: 3499230) 
-  error_file: /tmp/torchelastic_ntkpirib/none_q9jewbjp/attempt_0/1/error.json
+  exitcode  : 1 (pid: 3742833) 
+  error_file: /tmp/torchelastic_ta646coa/none_gwuvxsk1/attempt_0/1/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -900,7 +903,7 @@ Root Cause (first observed failure):
       return inner()
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
       result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 1002, in forward
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 845, in forward
       x = layer(x, attention_masks, rope_positions)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
@@ -932,24 +935,16 @@ Root Cause (first observed failure):
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 667, in forward
-      h = self.attn(h)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 369, in __call__
-      return nn.Module._call_impl(self, *args, **kwargs)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 527, in forward
-      return self.out_proj(output)
-             ~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 506, in forward
+      h = self.attention_norm(x)
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
       return self._call_impl(*args, **kwargs)
              ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
       return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 131, in forward
+      return ((1.0 + self.weight.float()) * x).to(input_dtype)
+              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+  RuntimeError: aten.mul.Tensor got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
   
 ============================================================
