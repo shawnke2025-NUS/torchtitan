@@ -1,19 +1,24 @@
-   export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-   cd ~/k50063112/torchtitan && PYTHONPATH=. python -m torch.distributed.run \
-       --nproc_per_node=8 --rdzv_backend c10d --rdzv_endpoint=localhost:0 \
-       -m torchtitan.train --module qwen3_5 --config qwen35_9b \
-       --debug.seed 32 \
-       --training.local-batch-size 4 \
-       --training.mixed-precision-param float32 \
-       --training.mixed-precision-reduce float32 \
-       --training.steps 200 \
-       --parallelism.data_parallel_shard_degree 4 \
-       --parallelism.tensor_parallel_degree 1 \
-       --parallelism.pipeline_parallel_degree 2 \
-       --parallelism.pipeline_parallel_schedule 1F1B \
-       --parallelism.pipeline_parallel_microbatch_size 1 \
-       --parallelism.fsdp_reshard_after_forward always \
-       --dataloader.dataset cc12m-test
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+cd ~/k50063112/torchtitan
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --training.local-batch-size 4 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 200 \
+    --parallelism.data_parallel_shard_degree 4 \
+    --parallelism.tensor_parallel_degree 1 \
+    --parallelism.pipeline_parallel_degree 2 \
+    --parallelism.pipeline_parallel_schedule 1F1B \
+    --parallelism.pipeline_parallel_microbatch_size 1 \
+    --parallelism.fsdp_reshard_after_forward always \
+    --dataloader.dataset cc12m-test
 
 
 [titan] 2026-07-29 09:59:20,527 - root - INFO - Applied FullAC activation checkpointing to the model
