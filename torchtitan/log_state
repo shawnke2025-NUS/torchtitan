@@ -25,3 +25,911 @@ PYTHONPATH=. python -m torch.distributed.run \
     --compile.components model \
     --compile.backend aot_eager \
     --dataloader.dataset cc12m-test
+
+
+
+
+
+[default0]:    "spmd_backend": "default",
+[default0]:    "pipeline_parallel_degree": 1,
+[default0]:    "module_fqns_per_model_part": null,
+[default0]:    "pipeline_parallel_first_stage_less_layers": 1,
+[default0]:    "pipeline_parallel_last_stage_less_layers": 1,
+[default0]:    "pipeline_parallel_layers_per_stage": null,
+[default0]:    "pipeline_parallel_schedule": "1F1B",
+[default0]:    "pipeline_parallel_schedule_csv": "",
+[default0]:    "pipeline_parallel_microbatch_size": 1,
+[default0]:    "context_parallel_degree": 1,
+[default0]:    "context_parallel_load_balancer": "headtail",
+[default0]:    "expert_parallel_degree": 1
+[default0]:  },
+[default0]:  "checkpoint": {
+[default0]:    "enable": false,
+[default0]:    "folder": "checkpoint",
+[default0]:    "interval": 500,
+[default0]:    "initial_load_path": null,
+[default0]:    "initial_load_model_only": true,
+[default0]:    "initial_load_in_hf": false,
+[default0]:    "initial_load_in_hf_quantized": false,
+[default0]:    "last_save_model_only": false,
+[default0]:    "last_save_in_hf": false,
+[default0]:    "export_dtype": "float32",
+[default0]:    "async_mode": "disabled",
+[default0]:    "keep_latest_k": 10,
+[default0]:    "load_step": -1,
+[default0]:    "exclude_from_loading": [],
+[default0]:    "enable_first_step_checkpoint": false,
+[default0]:    "create_seed_checkpoint": false,
+[default0]:    "load_only": false
+[default0]:  },
+[default0]:  "activation_checkpoint": {
+[default0]:    "preserve_rng_state": true,
+[default0]:    "determinism_check": "default",
+[default0]:    "debug": false
+[default0]:  },
+[default0]:  "compile": {
+[default0]:    "enable": true,
+[default0]:    "components": [
+[default0]:      "model"
+[default0]:    ],
+[default0]:    "backend": "aot_eager"
+[default0]:  },
+[default0]:  "comm": {
+[default0]:    "init_timeout_seconds": 300,
+[default0]:    "train_timeout_seconds": 100,
+[default0]:    "trace_buf_size": 20000,
+[default0]:    "save_traces_folder": "comm_traces",
+[default0]:    "save_traces_file_prefix": "rank_",
+[default0]:    "mode": "default"
+[default0]:  },
+[default0]:  "validator": {
+[default0]:    "freq": 10,
+[default0]:    "enable": false,
+[default0]:    "steps": -1,
+[default0]:    "dataloader": {
+[default0]:      "dataset": "c4_validation",
+[default0]:      "dataset_path": null,
+[default0]:      "num_workers": 0,
+[default0]:      "persistent_workers": false,
+[default0]:      "pin_memory": false,
+[default0]:      "prefetch_factor": null,
+[default0]:      "infinite": false
+[default0]:    }
+[default0]:  },
+[default0]:  "debug": {
+[default0]:    "seed": 32,
+[default0]:    "spmd_typechecking": false,
+[default0]:    "deterministic": false,
+[default0]:    "deterministic_warn_only": false,
+[default0]:    "moe_force_load_balance": false,
+[default0]:    "detect_anomaly": false,
+[default0]:    "batch_invariant": false,
+[default0]:    "print_config": true,
+[default0]:    "save_config_file": null,
+[default0]:    "enable_structured_logging": true
+[default0]:  },
+[default0]:  "override": {
+[default0]:    "imports": []
+[default0]:  },
+[default0]:  "loss": {
+[default0]:    "num_chunks": 8,
+[default0]:    "loss_fn": {
+[default0]:      "global_vocab_size": 248320
+[default0]:    }
+[default0]:  }
+[default0]:}
+[default0]:[titan] 2026-07-29 17:43:18,086 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=1, tp=2, ep=1
+[default0]:[titan] 2026-07-29 17:43:18,101 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'tp', 'efsdp', 'fsdp']
+[default0]:[titan] 2026-07-29 17:43:18,105 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[default0]:[titan] 2026-07-29 17:43:18,114 - root - INFO - Building qwen3_5 9B
+[default0]:[titan] 2026-07-29 17:43:18,377 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[default0]:[titan] 2026-07-29 17:43:18,450 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[default0]:[titan] 2026-07-29 17:43:18,450 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[default0]:[titan] 2026-07-29 17:43:18,723 - root - INFO - Applied FullAC activation checkpointing to the model
+[default0]:[titan] 2026-07-29 17:43:18,724 - root - INFO - Applied FullAC activation checkpointing to the model
+[default0]:[titan] 2026-07-29 17:43:18,724 - root - INFO - regional_inductor is enabled
+[default0]:[titan] 2026-07-29 17:43:18,752 - root - INFO - Compiling each TransformerBlock with torch.compile
+[default0]:[titan] 2026-07-29 17:43:18,757 - root - INFO - Compiling each TransformerBlock with torch.compile
+[default0]:[titan] 2026-07-29 17:43:19,208 - root - INFO - Applied FSDP to the model
+[default0]:[titan] 2026-07-29 17:43:21,735 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[default0]:[titan] 2026-07-29 17:43:21,736 - root - INFO - CUDA memory usage for model: 6.66GiB(8.41%)
+[default0]:[titan] 2026-07-29 17:43:21,743 - root - INFO - Optimizer AdamW (model_part=0): 964 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[default0]:[titan] 2026-07-29 17:43:21,747 - root - WARNING - Warmup steps (20) exceed total steps (3). Adjusting warmup steps to 3.
+[default0]:[titan] 2026-07-29 17:43:21,747 - root - INFO - Loading tokenizer from tokenizer.json
+[default0]:[titan] 2026-07-29 17:43:22,225 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[default0]:/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+[default0]:  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[default0]:[titan] 2026-07-29 17:43:22,270 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[default0]:[titan] 2026-07-29 17:43:22,271 - root - INFO - Trainer is initialized with local batch size 1, global batch size 4, gradient accumulation steps 1, sequence length 4096, total steps 3 (warmup 20)
+[default0]:[titan] 2026-07-29 17:43:22,271 - root - INFO - Training starts at step 1
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles] Recompiling function create_block_mask in /home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py:1838
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     triggered by the following guard failure(s):
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     - 0/0: Q_LEN == 4096                                            # m = torch.arange(0, Q_LEN, device=device)  # nn/attention/flex_attention.py:1728 in create_mask
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     - User stack trace:
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py", line 1934, in create_block_mask
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -     mask_tensor = create_mask(mask_mod, B, H, Q_LEN, KV_LEN, device)
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py", line 1728, in create_mask
+[default0]:[rank0]:V0729 17:43:29.902000 1982551 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -     m = torch.arange(0, Q_LEN, device=device)
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles] Recompiling function forward in /home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py:143
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles]     triggered by the following guard failure(s):
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles]     - 1/0: len(args) == 1                                           # return self.checkpoint_fn(  # type: ignore[misc]  # distributed/algorithms/_checkpoint/checkpoint_wrapper.py:169 in forward
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles]     - User stack trace:
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles]     -   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+[default0]:[rank0]:V0729 17:43:36.570000 1982551 torch/_dynamo/guards.py:5396] [1/1] [__recompiles]     -     return self.checkpoint_fn(  # type: ignore[misc]
+[default0]:[rank0]: Traceback (most recent call last):
+[default0]:[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[default0]:[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[default0]:[rank0]:     main()
+[default0]:[rank0]:     ~~~~^^
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
+[default0]:[rank0]:     trainer.train()
+[default0]:[rank0]:     ~~~~~~~~~~~~~^^
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[default0]:[rank0]:     return f(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+[default0]:[rank0]:     self.train_step(data_iterator)
+[default0]:[rank0]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+[default0]:[rank0]:     loss = self.forward_backward_step(
+[default0]:[rank0]:         input_dict=input_dict,
+[default0]:[rank0]:         labels=labels,
+[default0]:[rank0]:         global_valid_tokens=global_valid_tokens,
+[default0]:[rank0]:     )
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+[default0]:[rank0]:     return func(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+[default0]:[rank0]:     pred = model_parts[0](inputs, **extra_kwargs)
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
+[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+[default0]:[rank0]:     return inner()
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+[default0]:[rank0]:     result = forward_call(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+[default0]:[rank0]:     x = layer(x, attention_masks, rope_positions)
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+[default0]:[rank0]:     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+[default0]:[rank0]:            ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+[default0]:[rank0]:     raise e.with_traceback(
+[default0]:[rank0]:     ^^^^^^^^^^^^^^^^^^^^^^^
+[default0]:[rank0]:         None
+[default0]:[rank0]:         ^^^^
+[default0]:[rank0]:     ) from e.__cause__  # User compiler error
+[default0]:[rank0]:     ^^^^^^^^^^^^^^^^^^
+[default0]:[rank0]: torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+[default0]:[rank0]:   Higher Order Operator: torch.utils.checkpoint.checkpoint
+[default0]:[rank0]:   Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f550e067380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+[default0]:[rank0]:   Hint: Remove the `torch.compiler.disable` call
+[default0]:
+[default0]:[rank0]:   Developer debug context: <function chunk_gated_delta_rule at 0x7f550e067380>
+[default0]:
+[default0]:[rank0]:  For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+[default0]:
+[default0]:[rank0]: from user code:
+[default0]:[rank0]:    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+[default0]:[rank0]:     return self.checkpoint_fn(  # type: ignore[misc]
+[default0]:[rank0]:     
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+[default0]:[rank0]:     h = self.attn(h)
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
+[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[default0]:[rank0]:     return forward_call(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+[default0]:[rank0]:     outputs = fn(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+[default0]:[rank0]:     output = self.kernel(xq, xk, xv, g, beta)
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
+[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[default0]:[rank0]:     return forward_call(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+[default0]:[rank0]:     outputs = fn(*args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+[default0]:[rank0]:     out = func(*local_args, **kwargs)
+[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+[default0]:[rank0]:     result = _fla_chunk_gated_delta_rule(
+[default0]:[rank0]:     
+[default0]:
+[default0]:[rank0]: Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+[default0]:
+W0729 17:43:39.898000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982551 closing signal SIGTERM
+W0729 17:43:39.900000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982552 closing signal SIGTERM
+W0729 17:43:39.901000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982553 closing signal SIGTERM
+W0729 17:43:39.902000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982555 closing signal SIGTERM
+W0729 17:43:39.902000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982556 closing signal SIGTERM
+W0729 17:43:39.903000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982557 closing signal SIGTERM
+W0729 17:43:39.903000 1982465 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1982558 closing signal SIGTERM
+E0729 17:43:41.281000 1982465 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 3 (pid: 1982554) of binary: /home/f00913055/conda/bin/python
+E0729 17:43:41.339000 1982465 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/3/error.json)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+    ~~~~^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+    ~~~^^^^^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+        self._config,
+    ...<2 lines>...
+        health_check_server=self._health_check_server,
+    )
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+torchtitan.train FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 1982551)  (SIGTERM)
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/0/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f550e067380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7f550e067380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[2]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 1982552)  (SIGTERM)
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/1/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7fa8731ff380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7fa8731ff380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[3]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 1982553)  (SIGTERM)
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/2/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f1d51de3380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7f1d51de3380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[4]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 1982555)  (SIGTERM)
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/4/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7fed86a5b380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7fed86a5b380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[5]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 5 (local_rank: 5)
+  exitcode  : -15 (pid: 1982556)  (SIGTERM)
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/5/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f51a2e27380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7f51a2e27380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[6]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 6 (local_rank: 6)
+  exitcode  : 1 (pid: 1982557) 
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/6/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f22f537b380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7f22f537b380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+[7]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 7 (local_rank: 7)
+  exitcode  : 1 (pid: 1982558) 
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/7/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7fa54093b380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7fa54093b380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-07-29_17:43:37
+  host      : node-5-15
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 1982554) 
+  error_file: /tmp/torchelastic_ak8xqwzn/none_6essm_ve/attempt_0/3/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
+      self.train_step(data_iterator)
+      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
+      loss = self.forward_backward_step(
+          input_dict=input_dict,
+          labels=labels,
+          global_valid_tokens=global_valid_tokens,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
+      return func(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
+      pred = model_parts[0](inputs, **extra_kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+      return inner()
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
+      result = forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
+      x = layer(x, attention_masks, rope_positions)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
+      raise e.with_traceback(
+      ^^^^^^^^^^^^^^^^^^^^^^^
+          None
+          ^^^^
+      ) from e.__cause__  # User compiler error
+      ^^^^^^^^^^^^^^^^^^
+  torch._dynamo.exc.Unsupported: Skip calling `torch.compiler.disable()`d function
+    Higher Order Operator: torch.utils.checkpoint.checkpoint
+    Explanation: Skip calling function `<function chunk_gated_delta_rule at 0x7f65af397380>` since it was wrapped with `torch.compiler.disable` (reason: None)
+    Hint: Remove the `torch.compiler.disable` call
+  
+    Developer debug context: <function chunk_gated_delta_rule at 0x7f65af397380>
+  
+   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0098.html
+  
+  from user code:
+     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
+      return self.checkpoint_fn(  # type: ignore[misc]
+      
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
+      h = self.attn(h)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 468, in forward
+      output = self.kernel(xq, xk, xv, g, beta)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+      return self._call_impl(*args, **kwargs)
+             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+      return forward_call(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
+      outputs = fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/experimental/_func_map.py", line 247, in _local_map_wrapped
+      out = func(*local_args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 319, in forward
+      result = _fla_chunk_gated_delta_rule(
+      
+  
+  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+  
+  
+============================================================
