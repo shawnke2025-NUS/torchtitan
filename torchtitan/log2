@@ -1,0 +1,102 @@
+1. 固定 NCCL 环境
+
+训练前先执行，避免重新登录后又加载 /usr/local/lib/libnccl.so.2：
+
+NCCL_LIB=$(python - <<'PY'
+from importlib.metadata import distribution
+print(distribution("nvidia-nccl-cu12").locate_file("nvidia/nccl/lib"))
+PY
+)
+
+export LD_LIBRARY_PATH="$NCCL_LIB${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_PRELOAD="$NCCL_LIB/libnccl.so.2"
+
+echo "NCCL_LIB=$NCCL_LIB"
+
+验证：
+
+python - <<'PY'
+import torch
+print("Torch:", torch.__version__)
+print("CUDA:", torch.version.cuda)
+print("NCCL:", torch.cuda.nccl.version())
+print("GPU count:", torch.cuda.device_count())
+PY
+
+NCCL 应显示：
+
+(2, 29, 3)
+2. 检查 Python 依赖
+python -m pip check
+
+若只有 torchaudio 或 torchvision 版本冲突，而当前训练不使用它们，可以先卸载：
+
+python -m pip uninstall -y torchvision torchaudio
+3. 清理旧版本缓存
+cd ~/k50063112/torchtitan
+
+find torchtitan -type d -name "__pycache__" \
+    -prune -exec rm -rf {} +
+
+rm -rf ~/.triton/cache
+rm -rf ~/.cache/torch_inductor
+rm -rf /tmp/torchinductor_${USER}
+4. 检查关键源码没有放错位置
+grep -nE \
+'from \.(rope|sharding)|Qwen35VisionEncoder|GatedDeltaNet' \
+torchtitan/distributed/pipeline_parallel.py
+
+这里应该没有输出。
+
+再检查之前的 FLA 维度修复：
+
+grep -nE \
+'xq = xq.reshape|xk = xk.reshape|xv = xv.reshape|xz = xz.reshape|beta = beta.reshape' \
+torchtitan/models/qwen3_5/model.py
+
+应该能看到类似：
+
+xq = xq.reshape(bs, seqlen, -1, self.key_head_dim)
+xk = xk.reshape(bs, seqlen, -1, self.key_head_dim)
+xv = xv.reshape(bs, seqlen, -1, self.value_head_dim)
+xz = xz.reshape(bs, seqlen, -1, self.value_head_dim)
+beta = beta.reshape(bs, seqlen, -1)
+5. 做语法和导入测试
+python -m py_compile \
+    torchtitan/models/qwen3_5/model.py \
+    torchtitan/models/qwen3_5/parallelize.py \
+    torchtitan/distributed/pipeline_parallel.py
+
+然后：
+
+PYTHONPATH=. python - <<'PY'
+from torchtitan.models.qwen3_5.model import GatedDeltaNet
+from torchtitan.distributed.pipeline_parallel import pipeline_llm
+
+print("GatedDeltaNet import OK")
+print("pipeline_llm import OK")
+PY
+6. 先跑 1 step
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+cd ~/k50063112/torchtitan
+
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --training.local-batch-size 4 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 1 \
+    --parallelism.data_parallel_shard_degree 4 \
+    --parallelism.tensor_parallel_degree 1 \
+    --parallelism.pipeline_parallel_degree 2 \
+    --parallelism.pipeline_parallel_schedule 1F1B \
+    --parallelism.pipeline_parallel_microbatch_size 1 \
+    --parallelism.fsdp_reshard_after_forward always \
+    --dataloader.dataset cc12m-test
