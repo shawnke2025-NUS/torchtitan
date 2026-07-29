@@ -82,6 +82,20 @@ print("GPU count:", torch.cuda.device_count())
 print("NCCL:", torch.cuda.nccl.version())
 PY
 
+
+python - <<'PY'
+import inspect
+import torch
+from torch.distributed.pipelining import PipelineStage
+
+sig = inspect.signature(PipelineStage.__init__)
+
+print("Torch:", torch.__version__)
+print("NCCL:", torch.cuda.nccl.version())
+print("PipelineStage:", sig)
+print("get_mesh supported:", "get_mesh" in sig.parameters)
+PY
+
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
 PYTHONPATH=. python -m torch.distributed.run \
