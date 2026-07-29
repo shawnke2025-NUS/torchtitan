@@ -21,27 +21,6 @@ PYTHONPATH=. python -m torch.distributed.run \
     --dataloader.dataset cc12m-test
 
 
-cd ~/k50063112/torchtitan
-# 先检查错误行
-grep -n "MRoPE\|from \.rope" \
-    torchtitan/distributed/pipeline_parallel.py
-# 备份
-cp torchtitan/distributed/pipeline_parallel.py \
-   torchtitan/distributed/pipeline_parallel.py.bak
-# 删除错误导入
-sed -i '/from \.rope import MRoPE/d' \
-    torchtitan/distributed/pipeline_parallel.py
-# 清理缓存
-find torchtitan/distributed -type d -name "__pycache__" \
-    -prune -exec rm -rf {} +
-# 检查语法
-python -m py_compile \
-    torchtitan/distributed/pipeline_parallel.py
-# 检查模块能否正常导入
-PYTHONPATH=. python -c \
-'import torchtitan.distributed.pipeline_parallel as p; print("Import OK:", p.__file__)'
-
-
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
 PYTHONPATH=. python -m torch.distributed.run \
@@ -76,178 +55,181 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
-[titan] 2026-07-29 10:38:24,571 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:24,969 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:25,399 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:25,551 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:25,561 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:25,731 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:26,141 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:26,202 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:38:26,910 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:26,985 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:26,986 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-103826-M0K3NT.jsonl
-[titan] 2026-07-29 10:38:27,189 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:27,192 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:27,221 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:27,221 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:27,228 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:27,438 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:38:27,509 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:38:27,510 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank6]: Traceback (most recent call last):
-[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank6]:   File "<frozen runpy>", line 88, in _run_code
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank6]:     main()
-[rank6]:     ~~~~^^
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank6]:     return self._owner(config=replace(self))
-[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-[rank6]:     return f(*args, **kwargs)
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-[rank6]:     ) = model_spec.pipelining_fn(
-[rank6]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank6]:         model,
-[rank6]:         ^^^^^^
-[rank6]:     ...<9 lines>...
-[rank6]:         loss_fn=self.loss_fn,
-[rank6]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank6]:     )
-[rank6]:     ^
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank6]:     from torchtitan.distributed.pipeline_parallel import (
-[rank6]:     ...<3 lines>...
-[rank6]:     )
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank6]:     from .rope import MRoPE
-[rank6]: ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
-[titan] 2026-07-29 10:38:27,602 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,661 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,662 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-103827-68EWYA.jsonl
-[titan] 2026-07-29 10:38:27,697 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,747 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,748 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-103827-8B0VIT.jsonl
-[titan] 2026-07-29 10:38:27,926 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,958 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:27,962 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:27,962 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,977 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:27,978 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-103827-JC5N7L.jsonl
-[titan] 2026-07-29 10:38:27,992 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:27,993 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:27,994 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:27,995 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:28,005 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:28,006 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:28,011 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,015 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,016 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-103828-82F2XZ.jsonl
-[titan] 2026-07-29 10:38:28,036 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:28,037 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:28,061 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,062 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-103828-2GPU4A.jsonl
-[titan] 2026-07-29 10:38:28,224 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:38:28,286 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:38:28,286 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[titan] 2026-07-29 10:38:28,294 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[rank5]: Traceback (most recent call last):
-[rank5]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank5]:   File "<frozen runpy>", line 88, in _run_code
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank5]:     main()
-[rank5]:     ~~~~^^
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank5]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank5]:     return self._owner(config=replace(self))
-[rank5]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank5]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-[rank5]:     return f(*args, **kwargs)
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-[rank5]:     ) = model_spec.pipelining_fn(
-[rank5]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank5]:         model,
-[rank5]:         ^^^^^^
-[rank5]:     ...<9 lines>...
-[rank5]:         loss_fn=self.loss_fn,
-[rank5]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank5]:     )
-[rank5]:     ^
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank5]:     from torchtitan.distributed.pipeline_parallel import (
-[rank5]:     ...<3 lines>...
-[rank5]:     )
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank5]:     from .rope import MRoPE
-[rank5]: ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
-[titan] 2026-07-29 10:38:28,361 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:38:28,361 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank1]: Traceback (most recent call last):
-[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank1]:   File "<frozen runpy>", line 88, in _run_code
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank1]:     main()
-[rank1]:     ~~~~^^
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank1]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank1]:     return self._owner(config=replace(self))
-[rank1]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-[rank1]:     return f(*args, **kwargs)
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-[rank1]:     ) = model_spec.pipelining_fn(
-[rank1]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank1]:         model,
-[rank1]:         ^^^^^^
-[rank1]:     ...<9 lines>...
-[rank1]:         loss_fn=self.loss_fn,
-[rank1]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank1]:     )
-[rank1]:     ^
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank1]:     from torchtitan.distributed.pipeline_parallel import (
-[rank1]:     ...<3 lines>...
-[rank1]:     )
-[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank1]:     from .rope import MRoPE
-[rank1]: ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
-[titan] 2026-07-29 10:38:28,451 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:28,454 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:28,459 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:28,462 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:28,463 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:28,464 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:38:28,464 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:28,467 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:38:28,470 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:28,474 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,477 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:28,478 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:28,486 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:28,495 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:38:28,497 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:38:28,509 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:38:28,524 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,525 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-103828-YANAUC.jsonl
-[titan] 2026-07-29 10:38:28,579 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,630 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:38:28,631 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-103828-T134B7.jsonl
-[titan] 2026-07-29 10:38:28,702 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[rank1]:[W729 10:38:28.047207164 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-W0729 10:38:28.729000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168120 closing signal SIGTERM
-W0729 10:38:28.731000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168121 closing signal SIGTERM
-W0729 10:38:28.732000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168122 closing signal SIGTERM
-W0729 10:38:28.733000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168123 closing signal SIGTERM
-W0729 10:38:28.734000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168124 closing signal SIGTERM
-W0729 10:38:28.735000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168125 closing signal SIGTERM
-W0729 10:38:28.736000 3168027 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3168127 closing signal SIGTERM
-E0729 10:38:29.517000 3168027 torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 6 (pid: 3168126) of binary: /home/f00913055/conda/bin/python
-E0729 10:38:29.571000 3168027 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_bclk1yr7/none_bx4lsf_3/attempt_0/6/error.json)
+[titan] 2026-07-29 10:44:25,100 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,484 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,826 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,876 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,879 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,941 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:25,962 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:26,272 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:44:27,585 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:27,635 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:27,635 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-104427-YO0E3H.jsonl
+[titan] 2026-07-29 10:44:27,821 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:27,824 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:27,851 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:27,853 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:27,853 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:27,860 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:44:27,906 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:27,907 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-104427-6ABMQD.jsonl
+[titan] 2026-07-29 10:44:28,035 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:44:28,100 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:44:28,100 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank4]:   File "<frozen runpy>", line 88, in _run_code
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank4]:     main()
+[rank4]:     ~~~~^^
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank4]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank4]:     return self._owner(config=replace(self))
+[rank4]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank4]:     return f(*args, **kwargs)
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank4]:     ) = model_spec.pipelining_fn(
+[rank4]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank4]:         model,
+[rank4]:         ^^^^^^
+[rank4]:     ...<9 lines>...
+[rank4]:         loss_fn=self.loss_fn,
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank4]:     )
+[rank4]:     ^
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
+[rank4]:     from torchtitan.distributed.pipeline_parallel import (
+[rank4]:     ...<3 lines>...
+[rank4]:     )
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
+[rank4]:     from .sharding import set_qwen35_sharding_config
+[rank4]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+[titan] 2026-07-29 10:44:28,111 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:28,115 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:28,146 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:28,147 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:28,153 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:44:28,203 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,252 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,253 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-104428-ZRVKVO.jsonl
+[titan] 2026-07-29 10:44:28,306 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,335 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:44:28,360 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,361 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-104428-HUP4QJ.jsonl
+[titan] 2026-07-29 10:44:28,403 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:44:28,403 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,404 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank0]:     main()
+[rank0]:     ~~~~^^
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank0]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank0]:     return self._owner(config=replace(self))
+[rank0]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank0]:     return f(*args, **kwargs)
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank0]:     ) = model_spec.pipelining_fn(
+[rank0]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         model,
+[rank0]:         ^^^^^^
+[rank0]:     ...<9 lines>...
+[rank0]:         loss_fn=self.loss_fn,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
+[rank0]:     from torchtitan.distributed.pipeline_parallel import (
+[rank0]:     ...<3 lines>...
+[rank0]:     )
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
+[rank0]:     from .sharding import set_qwen35_sharding_config
+[rank0]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+[titan] 2026-07-29 10:44:28,430 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[rank4]:[W729 10:44:28.784356011 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[titan] 2026-07-29 10:44:28,448 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,454 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,455 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-104428-2EACUZ.jsonl
+[titan] 2026-07-29 10:44:28,483 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,483 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-104428-DFJM6B.jsonl
+[titan] 2026-07-29 10:44:28,499 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:44:28,500 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-104428-UJXLT1.jsonl
+[titan] 2026-07-29 10:44:28,662 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:28,665 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:28,675 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:28,676 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:28,750 - root - INFO - Building qwen3_5 9B
+[rank0]:[W729 10:44:28.141431478 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[titan] 2026-07-29 10:44:28,911 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:28,915 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:28,951 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:28,953 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:28,962 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:44:28,982 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:44:29,029 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:44:29,029 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank3]:   File "<frozen runpy>", line 88, in _run_code
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank3]:     main()
+[rank3]:     ~~~~^^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank3]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank3]:     return self._owner(config=replace(self))
+[rank3]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank3]:     return f(*args, **kwargs)
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank3]:     ) = model_spec.pipelining_fn(
+[rank3]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank3]:         model,
+[rank3]:         ^^^^^^
+[rank3]:     ...<9 lines>...
+[rank3]:         loss_fn=self.loss_fn,
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank3]:     )
+[rank3]:     ^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
+[rank3]:     from torchtitan.distributed.pipeline_parallel import (
+[rank3]:     ...<3 lines>...
+[rank3]:     )
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
+[rank3]:     from .sharding import set_qwen35_sharding_config
+[rank3]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+[titan] 2026-07-29 10:44:29,106 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:29,110 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:29,115 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:29,118 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:29,120 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:29,122 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:29,126 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:29,127 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:29,131 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:44:29,134 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:44:29,137 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:44:29,142 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:44:29,155 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:44:29,156 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:44:29,167 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:44:29,167 - root - INFO - Building qwen3_5 9B
+W0729 10:44:29.172000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173546 closing signal SIGTERM
+W0729 10:44:29.174000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173547 closing signal SIGTERM
+W0729 10:44:29.175000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173548 closing signal SIGTERM
+W0729 10:44:29.175000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173549 closing signal SIGTERM
+W0729 10:44:29.176000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173551 closing signal SIGTERM
+W0729 10:44:29.177000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173552 closing signal SIGTERM
+W0729 10:44:29.178000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173553 closing signal SIGTERM
+E0729 10:44:29.957000 3173451 torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 4 (pid: 3173550) of binary: /home/f00913055/conda/bin/python
+E0729 10:44:29.991000 3173451 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/4/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -280,66 +262,52 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-29_10:38:29
+  time      : 2026-07-29_10:44:28
   host      : node-5-15
   rank      : 0 (local_rank: 0)
-  exitcode  : -15 (pid: 3168120)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3168120
+  exitcode  : -15 (pid: 3173546)
+  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/0/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+      ) = model_spec.pipelining_fn(
+          ~~~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<9 lines>...
+          loss_fn=self.loss_fn,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
+      from torchtitan.distributed.pipeline_parallel import (
+      ...<3 lines>...
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
+      from .sharding import set_qwen35_sharding_config
+  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+  
 [2]:
-  time      : 2026-07-29_10:38:28
+  time      : 2026-07-29_10:44:29
   host      : node-5-15
   rank      : 1 (local_rank: 1)
-  exitcode  : -15 (pid: 3168121)
-  error_file: /tmp/torchelastic_bclk1yr7/none_bx4lsf_3/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-      ) = model_spec.pipelining_fn(
-          ~~~~~~~~~~~~~~~~~~~~~~~~^
-          model,
-          ^^^^^^
-      ...<9 lines>...
-          loss_fn=self.loss_fn,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-      from torchtitan.distributed.pipeline_parallel import (
-      ...<3 lines>...
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .rope import MRoPE
-  ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
-  
+  exitcode  : -15 (pid: 3173547)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 3173547
 [3]:
-  time      : 2026-07-29_10:38:29
+  time      : 2026-07-29_10:44:29
   host      : node-5-15
   rank      : 2 (local_rank: 2)
-  exitcode  : -15 (pid: 3168122)
+  exitcode  : -15 (pid: 3173548)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3168122
+  traceback : Signal 15 (SIGTERM) received by PID 3173548
 [4]:
-  time      : 2026-07-29_10:38:29
+  time      : 2026-07-29_10:44:29
   host      : node-5-15
   rank      : 3 (local_rank: 3)
-  exitcode  : -15 (pid: 3168123)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3168123
-[5]:
-  time      : 2026-07-29_10:38:29
-  host      : node-5-15
-  rank      : 4 (local_rank: 4)
-  exitcode  : -15 (pid: 3168124)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3168124
-[6]:
-  time      : 2026-07-29_10:38:28
-  host      : node-5-15
-  rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 3168125)
-  error_file: /tmp/torchelastic_bclk1yr7/none_bx4lsf_3/attempt_0/5/error.json
+  exitcode  : -15 (pid: 3173549)
+  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/3/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
       return f(*args, **kwargs)
@@ -358,24 +326,38 @@ Failures:
       ...<3 lines>...
       )
     File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .rope import MRoPE
-  ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
+      from .sharding import set_qwen35_sharding_config
+  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
   
+[5]:
+  time      : 2026-07-29_10:44:29
+  host      : node-5-15
+  rank      : 5 (local_rank: 5)
+  exitcode  : -15 (pid: 3173551)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 3173551
+[6]:
+  time      : 2026-07-29_10:44:29
+  host      : node-5-15
+  rank      : 6 (local_rank: 6)
+  exitcode  : -15 (pid: 3173552)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 3173552
 [7]:
-  time      : 2026-07-29_10:38:29
+  time      : 2026-07-29_10:44:29
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 3168127)
+  exitcode  : -15 (pid: 3173553)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3168127
+  traceback : Signal 15 (SIGTERM) received by PID 3173553
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_10:38:27
+  time      : 2026-07-29_10:44:28
   host      : node-5-15
-  rank      : 6 (local_rank: 6)
-  exitcode  : 1 (pid: 3168126)
-  error_file: /tmp/torchelastic_bclk1yr7/none_bx4lsf_3/attempt_0/6/error.json
+  rank      : 4 (local_rank: 4)
+  exitcode  : 1 (pid: 3173550)
+  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/4/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
       return f(*args, **kwargs)
@@ -394,7 +376,7 @@ Root Cause (first observed failure):
       ...<3 lines>...
       )
     File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .rope import MRoPE
-  ModuleNotFoundError: No module named 'torchtitan.distributed.rope'
+      from .sharding import set_qwen35_sharding_config
+  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
   
 ============================================================
