@@ -1,26 +1,3 @@
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-cd ~/k50063112/torchtitan
-PYTHONPATH=. python -m torch.distributed.run \
-    --nproc_per_node=8 \
-    --rdzv_backend=c10d \
-    --rdzv_endpoint=localhost:0 \
-    -m torchtitan.train \
-    --module qwen3_5 \
-    --config qwen35_9b \
-    --debug.seed 32 \
-    --training.local-batch-size 4 \
-    --training.mixed-precision-param bfloat16 \
-    --training.mixed-precision-reduce float32 \
-    --training.steps 200 \
-    --parallelism.data_parallel_shard_degree 4 \
-    --parallelism.tensor_parallel_degree 1 \
-    --parallelism.pipeline_parallel_degree 2 \
-    --parallelism.pipeline_parallel_schedule 1F1B \
-    --parallelism.pipeline_parallel_microbatch_size 1 \
-    --parallelism.fsdp_reshard_after_forward always \
-    --dataloader.dataset cc12m-test
-
-
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
 PYTHONPATH=. python -m torch.distributed.run \
@@ -55,73 +32,32 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
 >>> Successfully patched flex_attention to use bfloat16 internally. <<<
-[titan] 2026-07-29 10:44:25,100 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,484 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,826 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,876 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,879 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,941 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:25,962 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:26,272 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 10:44:27,585 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:27,635 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:27,635 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-104427-YO0E3H.jsonl
-[titan] 2026-07-29 10:44:27,821 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:27,824 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:27,851 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:27,853 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:27,853 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:27,860 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:44:27,906 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:27,907 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-104427-6ABMQD.jsonl
-[titan] 2026-07-29 10:44:28,035 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:44:28,100 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:44:28,100 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[rank4]: Traceback (most recent call last):
-[rank4]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank4]:   File "<frozen runpy>", line 88, in _run_code
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank4]:     main()
-[rank4]:     ~~~~^^
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank4]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank4]:     return self._owner(config=replace(self))
-[rank4]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank4]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-[rank4]:     return f(*args, **kwargs)
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-[rank4]:     ) = model_spec.pipelining_fn(
-[rank4]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
-[rank4]:         model,
-[rank4]:         ^^^^^^
-[rank4]:     ...<9 lines>...
-[rank4]:         loss_fn=self.loss_fn,
-[rank4]:         ^^^^^^^^^^^^^^^^^^^^^
-[rank4]:     )
-[rank4]:     ^
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank4]:     from torchtitan.distributed.pipeline_parallel import (
-[rank4]:     ...<3 lines>...
-[rank4]:     )
-[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank4]:     from .sharding import set_qwen35_sharding_config
-[rank4]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
-[titan] 2026-07-29 10:44:28,111 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:28,115 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:28,146 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:28,147 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:28,153 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:44:28,203 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,252 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,253 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-104428-ZRVKVO.jsonl
-[titan] 2026-07-29 10:44:28,306 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,335 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:44:28,360 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,361 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-104428-HUP4QJ.jsonl
-[titan] 2026-07-29 10:44:28,403 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:44:28,403 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,404 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:15,274 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:15,964 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,098 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,318 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,471 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,568 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,633 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:16,979 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 10:51:17,901 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:17,976 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:17,977 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-105117-Q9YMSB.jsonl
+[titan] 2026-07-29 10:51:18,186 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:18,193 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:18,218 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:18,219 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:18,225 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:51:18,389 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,406 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:51:18,438 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,439 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-105118-M75CWP.jsonl
+[titan] 2026-07-29 10:51:18,480 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:18,480 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:18,480 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,532 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,532 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-105118-C872BH.jsonl
+[titan] 2026-07-29 10:51:18,609 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
 [rank0]: Traceback (most recent call last):
 [rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank0]:   File "<frozen runpy>", line 88, in _run_code
@@ -145,36 +81,270 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 [rank0]:         ^^^^^^^^^^^^^^^^^^^^^
 [rank0]:     )
 [rank0]:     ^
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank0]:     from torchtitan.distributed.pipeline_parallel import (
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank0]:     return pipeline_llm(
+[rank0]:         model,
 [rank0]:     ...<3 lines>...
+[rank0]:         **kwargs,
 [rank0]:     )
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank0]:     from .sharding import set_qwen35_sharding_config
-[rank0]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
-[titan] 2026-07-29 10:44:28,430 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[rank4]:[W729 10:44:28.784356011 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[titan] 2026-07-29 10:44:28,448 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,454 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,455 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-104428-2EACUZ.jsonl
-[titan] 2026-07-29 10:44:28,483 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,483 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-104428-DFJM6B.jsonl
-[titan] 2026-07-29 10:44:28,499 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 10:44:28,500 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-104428-UJXLT1.jsonl
-[titan] 2026-07-29 10:44:28,662 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:28,665 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:28,675 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:28,676 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:28,750 - root - INFO - Building qwen3_5 9B
-[rank0]:[W729 10:44:28.141431478 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[titan] 2026-07-29 10:44:28,911 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:28,915 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:28,951 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:28,953 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:28,962 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:44:28,982 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:44:29,029 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 10:44:29,029 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank0]:     stages, model_parts = _pipeline_module_split(
+[rank0]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         model,
+[rank0]:         ^^^^^^
+[rank0]:     ...<4 lines>...
+[rank0]:         get_mesh=get_mesh_cb,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank0]:     stage = PipelineStage(
+[rank0]:         model_chunk,
+[rank0]:     ...<4 lines>...
+[rank0]:         get_mesh=get_mesh,
+[rank0]:     )
+[rank0]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+[titan] 2026-07-29 10:51:18,659 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,660 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-105118-B8EKDY.jsonl
+[titan] 2026-07-29 10:51:18,787 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:18,791 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:18,824 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:18,824 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:18,840 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:51:18,891 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:18,895 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:18,902 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:18,903 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:18,910 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:51:18,918 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:18,919 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,921 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:18,931 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:18,932 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:18,940 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:51:18,970 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:18,971 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-105118-3Q7ADB.jsonl
+[titan] 2026-07-29 10:51:19,030 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:19,082 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:19,083 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-105119-N3L9NH.jsonl
+[titan] 2026-07-29 10:51:19,098 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:51:19,099 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[rank0]:[W729 10:51:19.450106984 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[titan] 2026-07-29 10:51:19,188 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,188 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:19,193 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,193 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:19,204 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:51:19,259 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:19,261 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:19,273 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,273 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:19,289 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:19,289 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:19,298 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 10:51:19,311 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:19,312 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:19,315 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:19,327 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:19,328 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank7]:   File "<frozen runpy>", line 88, in _run_code
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank7]:     main()
+[rank7]:     ~~~~^^
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank7]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank7]:     return self._owner(config=replace(self))
+[rank7]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank7]:     return f(*args, **kwargs)
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank7]:     ) = model_spec.pipelining_fn(
+[rank7]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank7]:         model,
+[rank7]:         ^^^^^^
+[rank7]:     ...<9 lines>...
+[rank7]:         loss_fn=self.loss_fn,
+[rank7]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank7]:     )
+[rank7]:     ^
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank7]:     return pipeline_llm(
+[rank7]:         model,
+[rank7]:     ...<3 lines>...
+[rank7]:         **kwargs,
+[rank7]:     )
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank7]:     stages, model_parts = _pipeline_module_split(
+[rank7]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank7]:         model,
+[rank7]:         ^^^^^^
+[rank7]:     ...<4 lines>...
+[rank7]:         get_mesh=get_mesh_cb,
+[rank7]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank7]:     )
+[rank7]:     ^
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank7]:     stage = PipelineStage(
+[rank7]:         model_chunk,
+[rank7]:     ...<4 lines>...
+[rank7]:         get_mesh=get_mesh,
+[rank7]:     )
+[rank7]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+[titan] 2026-07-29 10:51:19,337 - root - INFO - Building qwen3_5 9B
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank1]:   File "<frozen runpy>", line 88, in _run_code
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank1]:     main()
+[rank1]:     ~~~~^^
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank1]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank1]:     return self._owner(config=replace(self))
+[rank1]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank1]:     return f(*args, **kwargs)
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank1]:     ) = model_spec.pipelining_fn(
+[rank1]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         model,
+[rank1]:         ^^^^^^
+[rank1]:     ...<9 lines>...
+[rank1]:         loss_fn=self.loss_fn,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank1]:     return pipeline_llm(
+[rank1]:         model,
+[rank1]:     ...<3 lines>...
+[rank1]:         **kwargs,
+[rank1]:     )
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank1]:     stages, model_parts = _pipeline_module_split(
+[rank1]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank1]:         model,
+[rank1]:         ^^^^^^
+[rank1]:     ...<4 lines>...
+[rank1]:         get_mesh=get_mesh_cb,
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:     )
+[rank1]:     ^
+[rank1]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank1]:     stage = PipelineStage(
+[rank1]:         model_chunk,
+[rank1]:     ...<4 lines>...
+[rank1]:         get_mesh=get_mesh,
+[rank1]:     )
+[rank1]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+[titan] 2026-07-29 10:51:19,363 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:19,363 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-105119-ZQ7UOV.jsonl
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank2]:     main()
+[rank2]:     ~~~~^^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank2]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank2]:     return self._owner(config=replace(self))
+[rank2]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank2]:     return f(*args, **kwargs)
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank2]:     ) = model_spec.pipelining_fn(
+[rank2]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank2]:         model,
+[rank2]:         ^^^^^^
+[rank2]:     ...<9 lines>...
+[rank2]:         loss_fn=self.loss_fn,
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank2]:     )
+[rank2]:     ^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank2]:     return pipeline_llm(
+[rank2]:         model,
+[rank2]:     ...<3 lines>...
+[rank2]:         **kwargs,
+[rank2]:     )
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank2]:     stages, model_parts = _pipeline_module_split(
+[rank2]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank2]:         model,
+[rank2]:         ^^^^^^
+[rank2]:     ...<4 lines>...
+[rank2]:         get_mesh=get_mesh_cb,
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank2]:     )
+[rank2]:     ^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank2]:     stage = PipelineStage(
+[rank2]:         model_chunk,
+[rank2]:     ...<4 lines>...
+[rank2]:         get_mesh=get_mesh,
+[rank2]:     )
+[rank2]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+[titan] 2026-07-29 10:51:19,481 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:51:19,516 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 10:51:19,546 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 10:51:19,549 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 10:51:19,557 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,558 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:19,580 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,581 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 10:51:19,581 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 10:51:19,582 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 10:51:19,589 - root - INFO - Building qwen3_5 9B
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank4]:   File "<frozen runpy>", line 88, in _run_code
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank4]:     main()
+[rank4]:     ~~~~^^
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank4]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank4]:     return self._owner(config=replace(self))
+[rank4]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+[rank4]:     return f(*args, **kwargs)
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+[rank4]:     ) = model_spec.pipelining_fn(
+[rank4]:         ~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank4]:         model,
+[rank4]:         ^^^^^^
+[rank4]:     ...<9 lines>...
+[rank4]:         loss_fn=self.loss_fn,
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank4]:     )
+[rank4]:     ^
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank4]:     return pipeline_llm(
+[rank4]:         model,
+[rank4]:     ...<3 lines>...
+[rank4]:         **kwargs,
+[rank4]:     )
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank4]:     stages, model_parts = _pipeline_module_split(
+[rank4]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank4]:         model,
+[rank4]:         ^^^^^^
+[rank4]:     ...<4 lines>...
+[rank4]:         get_mesh=get_mesh_cb,
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank4]:     )
+[rank4]:     ^
+[rank4]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank4]:     stage = PipelineStage(
+[rank4]:         model_chunk,
+[rank4]:     ...<4 lines>...
+[rank4]:         get_mesh=get_mesh,
+[rank4]:     )
+[rank4]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
 [rank3]: Traceback (most recent call last):
 [rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
 [rank3]:   File "<frozen runpy>", line 88, in _run_code
@@ -198,38 +368,44 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 [rank3]:         ^^^^^^^^^^^^^^^^^^^^^
 [rank3]:     )
 [rank3]:     ^
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-[rank3]:     from torchtitan.distributed.pipeline_parallel import (
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+[rank3]:     return pipeline_llm(
+[rank3]:         model,
 [rank3]:     ...<3 lines>...
+[rank3]:         **kwargs,
 [rank3]:     )
-[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-[rank3]:     from .sharding import set_qwen35_sharding_config
-[rank3]: ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
-[titan] 2026-07-29 10:44:29,106 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:29,110 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:29,115 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:29,118 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:29,120 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:29,122 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:29,126 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:29,127 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:29,131 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:44:29,134 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 10:44:29,137 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 10:44:29,142 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
-[titan] 2026-07-29 10:44:29,155 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
-[titan] 2026-07-29 10:44:29,156 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 10:44:29,167 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 10:44:29,167 - root - INFO - Building qwen3_5 9B
-W0729 10:44:29.172000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173546 closing signal SIGTERM
-W0729 10:44:29.174000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173547 closing signal SIGTERM
-W0729 10:44:29.175000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173548 closing signal SIGTERM
-W0729 10:44:29.175000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173549 closing signal SIGTERM
-W0729 10:44:29.176000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173551 closing signal SIGTERM
-W0729 10:44:29.177000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173552 closing signal SIGTERM
-W0729 10:44:29.178000 3173451 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3173553 closing signal SIGTERM
-E0729 10:44:29.957000 3173451 torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 4 (pid: 3173550) of binary: /home/f00913055/conda/bin/python
-E0729 10:44:29.991000 3173451 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/4/error.json)
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+[rank3]:     stages, model_parts = _pipeline_module_split(
+[rank3]:                           ~~~~~~~~~~~~~~~~~~~~~~^
+[rank3]:         model,
+[rank3]:         ^^^^^^
+[rank3]:     ...<4 lines>...
+[rank3]:         get_mesh=get_mesh_cb,
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^
+[rank3]:     )
+[rank3]:     ^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+[rank3]:     stage = PipelineStage(
+[rank3]:         model_chunk,
+[rank3]:     ...<4 lines>...
+[rank3]:         get_mesh=get_mesh,
+[rank3]:     )
+[rank3]: TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+[titan] 2026-07-29 10:51:19,767 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[rank1]:[W729 10:51:19.132816026 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank2]:[W729 10:51:19.134012015 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[titan] 2026-07-29 10:51:19,823 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 10:51:19,834 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 10:51:19,834 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+W0729 10:51:19.856000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177422 closing signal SIGTERM
+W0729 10:51:19.858000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177423 closing signal SIGTERM
+W0729 10:51:19.859000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177424 closing signal SIGTERM
+W0729 10:51:19.860000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177425 closing signal SIGTERM
+W0729 10:51:19.861000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177426 closing signal SIGTERM
+W0729 10:51:19.862000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177427 closing signal SIGTERM
+W0729 10:51:19.863000 3177327 torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 3177428 closing signal SIGTERM
+E0729 10:51:20.657000 3177327 torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 0 (pid: 3177421) of binary: /home/f00913055/conda/bin/python
+E0729 10:51:20.679000 3177327 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/0/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -262,52 +438,11 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-29_10:44:28
-  host      : node-5-15
-  rank      : 0 (local_rank: 0)
-  exitcode  : -15 (pid: 3173546)
-  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/0/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
-      ) = model_spec.pipelining_fn(
-          ~~~~~~~~~~~~~~~~~~~~~~~~^
-          model,
-          ^^^^^^
-      ...<9 lines>...
-          loss_fn=self.loss_fn,
-          ^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-      from torchtitan.distributed.pipeline_parallel import (
-      ...<3 lines>...
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .sharding import set_qwen35_sharding_config
-  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
-  
-[2]:
-  time      : 2026-07-29_10:44:29
+  time      : 2026-07-29_10:51:19
   host      : node-5-15
   rank      : 1 (local_rank: 1)
-  exitcode  : -15 (pid: 3173547)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3173547
-[3]:
-  time      : 2026-07-29_10:44:29
-  host      : node-5-15
-  rank      : 2 (local_rank: 2)
-  exitcode  : -15 (pid: 3173548)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3173548
-[4]:
-  time      : 2026-07-29_10:44:29
-  host      : node-5-15
-  rank      : 3 (local_rank: 3)
-  exitcode  : -15 (pid: 3173549)
-  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/3/error.json
+  exitcode  : -15 (pid: 3177422)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/1/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
       return f(*args, **kwargs)
@@ -321,43 +456,224 @@ Failures:
           ^^^^^^^^^^^^^^^^^^^^^
       )
       ^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-      from torchtitan.distributed.pipeline_parallel import (
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
       ...<3 lines>...
+          **kwargs,
       )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .sharding import set_qwen35_sharding_config
-  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+  
+[2]:
+  time      : 2026-07-29_10:51:19
+  host      : node-5-15
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 3177423)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/2/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+      ) = model_spec.pipelining_fn(
+          ~~~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<9 lines>...
+          loss_fn=self.loss_fn,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
+      ...<3 lines>...
+          **kwargs,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+  
+[3]:
+  time      : 2026-07-29_10:51:19
+  host      : node-5-15
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 3177424)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/3/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+      ) = model_spec.pipelining_fn(
+          ~~~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<9 lines>...
+          loss_fn=self.loss_fn,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
+      ...<3 lines>...
+          **kwargs,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+  
+[4]:
+  time      : 2026-07-29_10:51:19
+  host      : node-5-15
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 3177425)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/4/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+      ) = model_spec.pipelining_fn(
+          ~~~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<9 lines>...
+          loss_fn=self.loss_fn,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
+      ...<3 lines>...
+          **kwargs,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
   
 [5]:
-  time      : 2026-07-29_10:44:29
+  time      : 2026-07-29_10:51:20
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 3173551)
+  exitcode  : -15 (pid: 3177426)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3173551
+  traceback : Signal 15 (SIGTERM) received by PID 3177426
 [6]:
-  time      : 2026-07-29_10:44:29
+  time      : 2026-07-29_10:51:20
   host      : node-5-15
   rank      : 6 (local_rank: 6)
-  exitcode  : -15 (pid: 3173552)
+  exitcode  : -15 (pid: 3177427)
   error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3173552
+  traceback : Signal 15 (SIGTERM) received by PID 3177427
 [7]:
-  time      : 2026-07-29_10:44:29
+  time      : 2026-07-29_10:51:19
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 3173553)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 3173553
+  exitcode  : -15 (pid: 3177428)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/7/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 466, in __init__
+      ) = model_spec.pipelining_fn(
+          ~~~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<9 lines>...
+          loss_fn=self.loss_fn,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
+      ...<3 lines>...
+          **kwargs,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
+  
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_10:44:28
+  time      : 2026-07-29_10:51:18
   host      : node-5-15
-  rank      : 4 (local_rank: 4)
-  exitcode  : 1 (pid: 3173550)
-  error_file: /tmp/torchelastic_mn6r6ecu/none_lb4vg43k/attempt_0/4/error.json
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3177421)
+  error_file: /tmp/torchelastic_bll0ap6f/none_v2ry6xbr/attempt_0/0/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
       return f(*args, **kwargs)
@@ -371,12 +687,28 @@ Root Cause (first observed failure):
           ^^^^^^^^^^^^^^^^^^^^^
       )
       ^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 170, in pipeline_qwen3_5
-      from torchtitan.distributed.pipeline_parallel import (
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 196, in pipeline_qwen3_5
+      return pipeline_llm(
+          model,
       ...<3 lines>...
+          **kwargs,
       )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 30, in <module>
-      from .sharding import set_qwen35_sharding_config
-  ModuleNotFoundError: No module named 'torchtitan.distributed.sharding'
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 96, in pipeline_llm
+      stages, model_parts = _pipeline_module_split(
+                            ~~~~~~~~~~~~~~~~~~~~~~^
+          model,
+          ^^^^^^
+      ...<4 lines>...
+          get_mesh=get_mesh_cb,
+          ^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/distributed/pipeline_parallel.py", line 583, in _pipeline_module_split
+      stage = PipelineStage(
+          model_chunk,
+      ...<4 lines>...
+          get_mesh=get_mesh,
+      )
+  TypeError: PipelineStage.__init__() got an unexpected keyword argument 'get_mesh'
   
 ============================================================
