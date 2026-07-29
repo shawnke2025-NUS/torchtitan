@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+#version1：2026.7.29 9：57
 
 from dataclasses import dataclass
 from typing import Literal
@@ -18,6 +19,7 @@ from fla.ops.gated_delta_rule import (
 from torch import nn
 from torch.distributed.tensor import DTensor
 from torch.distributed.tensor.experimental import local_map
+from torch.distributed.tensor.placement_types import Replicate
 
 from torchtitan.models.common import Conv1d, FeedForward, Linear
 from torchtitan.models.common.attention import AttentionMasksType, BaseAttention
@@ -104,12 +106,11 @@ class SharedExperts(FeedForward):
         return torch.sigmoid(self.gate(x)) * out
 
 
+# -----------------------------------
+# 1. OffsetRMSNorm - 全面兼容版本
+# -----------------------------------
 class OffsetRMSNorm(Module):
-    """RMSNorm with offset: ``(1 + weight) * norm(x)``.
-
-    Weight is zero-initialized so the norm starts as identity-scaled.
-    """
-
+    """RMSNorm with offset: ``(1 + weight) * norm(x)``."""
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
         dim: int
@@ -118,23 +119,58 @@ class OffsetRMSNorm(Module):
     def __init__(self, config: Config):
         super().__init__()
         self.eps = config.eps
-        self.weight = nn.Parameter(torch.empty(config.dim))
-
+        self.weight = nn.Parameter(torch.zeros(config.dim))
+        
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Upcast to float32 for numerical stability in pow/rsqrt
-        input_dtype = x.dtype
-        x = x.float()
-        variance = x.pow(2).mean(-1, keepdim=True)
-        x = x * torch.rsqrt(variance + self.eps)
-        return ((1.0 + self.weight.float()) * x).to(input_dtype)
+        # 🛠️ 终极修复：处理所有场景的类型转换
+        # 场景1: 形状推理时输入是普通Tensor，参数是DTensor
+        # 场景2: 激活检查点重算时输入变普通Tensor
+        # 场景3: 正常训练时都是DTensor
+        
+        # 获取权重和设备网格
+        weight = self.weight
+        if isinstance(weight, DTensor):
+            weight_local = weight.to_local()
+            mesh = weight.device_mesh
+            placements = [Replicate()] * mesh.ndim
+        else:
+            weight_local = weight
+            mesh = None
+            placements = None
+            
+        # 处理输入
+        if isinstance(x, DTensor):
+            x_local = x.to_local()
+            is_dtensor = True
+            if mesh is None:  # 如果权重不是DTensor但输入是
+                mesh = x.device_mesh
+                placements = x.placements
+        else:
+            x_local = x
+            is_dtensor = False
+            # 如果权重是DTensor但输入不是，需要转换
+            if mesh is not None:
+                x_local = DTensor.from_local(x, mesh, placements, run_check=False).to_local()
+            
+        # 执行计算
+        input_dtype = x_local.dtype
+        x_local = x_local.float()
+        variance = x_local.pow(2).mean(-1, keepdim=True)
+        x_local = x_local * torch.rsqrt(variance + self.eps)
+        out = ((1.0 + weight_local.float()) * x_local).to(input_dtype)
+        
+        # 转换回DTensor
+        if is_dtensor and mesh is not None:
+            out = DTensor.from_local(out, mesh, placements, run_check=False)
+            
+        return out
 
 
+# -----------------------------------
+# 2. RMSNormGated - 全面兼容版本
+# -----------------------------------
 class RMSNormGated(Module):
-    """Gated RMSNorm: ``silu(gate) * weight * norm(x)``.
-
-    Takes ``(x, gate)`` separately. Weight is ones-initialized.
-    """
-
+    """Gated RMSNorm: ``silu(gate) * weight * norm(x)``."""
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
         dim: int
@@ -143,17 +179,51 @@ class RMSNormGated(Module):
     def __init__(self, config: Config):
         super().__init__()
         self.eps = config.eps
-        self.weight = nn.Parameter(torch.empty(config.dim))
+        self.weight = nn.Parameter(torch.ones(config.dim))
 
     def forward(self, x: torch.Tensor, gate: torch.Tensor) -> torch.Tensor:
-        # Upcast to float32 for numerical stability in pow/rsqrt
-        input_dtype = x.dtype
-        x = x.float()
-        variance = x.pow(2).mean(-1, keepdim=True)
-        x = x * torch.rsqrt(variance + self.eps)
-        x = (self.weight.float() * x).to(input_dtype)
-        x = x * F.silu(gate.float())
-        return x.to(input_dtype)
+        # 🛠️ 终极修复：处理所有场景的类型转换
+        weight = self.weight
+        if isinstance(weight, DTensor):
+            weight_local = weight.to_local()
+            mesh = weight.device_mesh
+            placements = [Replicate()] * mesh.ndim
+        else:
+            weight_local = weight
+            mesh = None
+            placements = None
+            
+        # 处理输入
+        if isinstance(x, DTensor):
+            x_local = x.to_local()
+            gate_local = gate.to_local() if isinstance(gate, DTensor) else gate
+            is_dtensor = True
+            if mesh is None:
+                mesh = x.device_mesh
+                placements = x.placements
+        else:
+            x_local = x
+            gate_local = gate
+            is_dtensor = False
+            if mesh is not None:
+                x_local = DTensor.from_local(x, mesh, placements, run_check=False).to_local()
+                if isinstance(gate, torch.Tensor):
+                    gate_local = DTensor.from_local(gate, mesh, placements, run_check=False).to_local()
+            
+        # 执行计算
+        input_dtype = x_local.dtype
+        x_local = x_local.float()
+        variance = x_local.pow(2).mean(-1, keepdim=True)
+        x_local = x_local * torch.rsqrt(variance + self.eps)
+        x_local = (weight_local.float() * x_local).to(input_dtype)
+        x_local = x_local * F.silu(gate_local.float()).to(input_dtype)
+        
+        # 转换回DTensor
+        if is_dtensor and mesh is not None:
+            x_local = DTensor.from_local(x_local, mesh, placements, run_check=False)
+            
+        return x_local
+
 
 
 class GatedDeltaKernel(Module):
@@ -190,28 +260,29 @@ class GatedDeltaKernel(Module):
         if q.shape[2] != v.shape[2]:
             assert v.shape[2] % q.shape[2] == 0
             repeat = v.shape[2] // q.shape[2]
-            q = q.repeat_interleave(repeat, dim=2)
-            k = k.repeat_interleave(repeat, dim=2)
+            q = q.repeat_interleave(repeat, dim=2).contiguous()
+            k = k.repeat_interleave(repeat, dim=2).contiguous()
 
         if self.backend == "torch_native":
             return _torch_native_gated_delta(q, k, v, g, beta)
 
         if self.backend == "fla_chunked":
             result = _fla_chunk_gated_delta_rule(
-                q,
-                k,
-                v,
-                g,
-                beta,
+                q.contiguous(),
+                k.contiguous(),
+                v.contiguous(),
+                g.contiguous(),
+                beta.contiguous(),
                 use_qk_l2norm_in_kernel=True,
             )
+
         elif self.backend == "fla_fused_recurrent":
             result = _fla_fused_recurrent_gated_delta_rule(
-                q,
-                k,
-                v,
-                g,
-                beta=beta,
+                q.contiguous(),
+                k.contiguous(),
+                v.contiguous(),
+                g.contiguous(),
+                beta=beta.contiguous(),
                 use_qk_l2norm_in_kernel=True,
             )
         else:
@@ -221,24 +292,25 @@ class GatedDeltaKernel(Module):
             )
 
         # FLA kernels return (output, final_state); we only need output
-        return result[0]
-
+        out = result[0]
+        
+        # 🔧 关键修改：FLA 内核内部会使用 float32 进行累加计算以保证数值稳定，
+        # 返回的输出通常是 float32 类型。这会导致后续网络层（如 norm 和 out_proj）
+        # 的计算和梯度都变成 float32，进而触发 FSDP 的 reduce-scatter 梯度类型不一致错误。
+        # 必须强制转换回输入时的数据类型（如 bfloat16）。
+        if out.dtype != q.dtype:
+            out = out.to(q.dtype)
+            
+        return out
 
 class GatedDeltaNet(Module):
-    """Gated DeltaNet linear attention.
-
-    Uses recurrent state + gated delta rule instead of softmax attention.
-    No RoPE, no attention masks, different head structure from standard
-    attention.
-    """
+    """Gated DeltaNet linear attention."""
 
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
         key_head_dim: int
         value_head_dim: int
         conv_kernel_size: int = 4
-
-        # Sub-module configs
         in_proj_q: Linear.Config
         in_proj_k: Linear.Config
         in_proj_v: Linear.Config
@@ -272,28 +344,26 @@ class GatedDeltaNet(Module):
         self.conv_v = config.conv_v.build()
 
         n_value_heads = value_dim // config.value_head_dim
-        self.A_log = nn.Parameter(torch.empty(n_value_heads))
-        self.dt_bias = nn.Parameter(torch.empty(n_value_heads))
+        self.A_log = nn.Parameter(torch.zeros(n_value_heads))
+        self.dt_bias = nn.Parameter(torch.zeros(n_value_heads))
 
         self.kernel = config.kernel.build()
         self.norm = config.norm.build()
         self.out_proj = config.out_proj.build()
 
+    def __call__(self, *args, **kwargs):
+        return nn.Module._call_impl(self, *args, **kwargs)
+
     def _causal_conv(self, x: torch.Tensor, conv: nn.Module) -> torch.Tensor:
-        x = F.pad(x.transpose(1, 2), [self.conv_kernel_size - 1, 0])
         if isinstance(x, DTensor):
-            # TODO: Remove once the DTensor Conv1d dispatch fix for sharded
-            # groups lands in a released torch. local_map runs the conv on
-            # local shards (channel-sharded input + Shard(0) weight) and
-            # restores DTensor-ness, with explicit gradient placements.
             x_plc = x.placements
             w = conv.weight
-            w_plc = w.placements  # pyrefly: ignore [missing-attribute]
-
+            w_plc = w.placements if isinstance(w, DTensor) else [Replicate()] * w.ndim
+        
             def _conv(x_local: torch.Tensor, w_local: torch.Tensor) -> torch.Tensor:
-                # groups == local out-channels (depthwise, channel-sharded)
-                # pyrefly: ignore [no-matching-overload]
-                return F.conv1d(
+                x_local = x_local.transpose(1, 2)
+                x_local = F.pad(x_local, [self.conv_kernel_size - 1, 0])
+                out = F.conv1d(
                     x_local,
                     w_local,
                     None,
@@ -302,7 +372,8 @@ class GatedDeltaNet(Module):
                     conv.dilation,
                     w_local.size(0),
                 )
-
+                return out.transpose(1, 2)
+        
             conv_dt = local_map(
                 _conv,
                 out_placements=(x_plc,),
@@ -310,42 +381,133 @@ class GatedDeltaNet(Module):
                 in_grad_placements=(x_plc, w_plc),
                 device_mesh=x.device_mesh,
             )
-            x = conv_dt(x, w)  # pyrefly: ignore
+            if not isinstance(w, DTensor):
+                w = DTensor.from_local(w, x.device_mesh, w_plc, run_check=False)
+            x = conv_dt(x, w)
+            return F.silu(x)
         else:
+            x = F.pad(x.transpose(1, 2), [self.conv_kernel_size - 1, 0])
             x = conv(x)
-        return F.silu(x).transpose(1, 2)
+            return F.silu(x).transpose(1, 2)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         bs, seqlen, _ = x.shape
 
-        # Shapes:
-        #   xq, xk: (bs, seqlen, n_key_heads * key_head_dim)
-        #   xv, xz: (bs, seqlen, n_value_heads * value_head_dim)
-        #   xa, xb: (bs, seqlen, n_value_heads)
-        xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-        xk = self._causal_conv(self.in_proj_k(x), self.conv_k)
-        xv = self._causal_conv(self.in_proj_v(x), self.conv_v)
-        xz = self.in_proj_z(x)
-        xa = self.in_proj_a(x)
-        xb = self.in_proj_b(x)
+        # 🔧 使用local_map包装线性层，避免DTensor分片问题
+        def _linear_dt(input, linear):
+            if isinstance(input, DTensor):
+                input_plc = input.placements
+                weight = linear.weight
+                weight_plc = weight.placements if isinstance(weight, DTensor) else [Replicate()] * weight.ndim
+            
+                def _linear_local(input_local, weight_local, bias_local):
+                    return F.linear(input_local, weight_local, bias_local)
+            
+                linear_dt = local_map(
+                    _linear_local,
+                    out_placements=(input_plc,),
+                    in_placements=(input_plc, weight_plc, [Replicate()] if linear.bias is not None else None),
+                    in_grad_placements=(input_plc, weight_plc, [Replicate()] if linear.bias is not None else None),
+                    device_mesh=input.device_mesh,
+                )
+                # 转换weight和bias为DTensor
+                if not isinstance(weight, DTensor):
+                    weight = DTensor.from_local(weight, input.device_mesh, weight_plc, run_check=False)
+                bias = linear.bias
+                if bias is not None and not isinstance(bias, DTensor):
+                    bias = DTensor.from_local(bias, input.device_mesh, [Replicate()] * bias.ndim, run_check=False)
+                return linear_dt(input, weight, bias)
+            else:
+                # 如果输入是普通Tensor但权重是DTensor，先转换
+                if isinstance(linear.weight, DTensor):
+                    mesh = linear.weight.device_mesh
+                    placements = [Replicate()] * mesh.ndim
+                    input = DTensor.from_local(input, mesh, placements, run_check=False)
+                    return _linear_dt(input, linear)
+                return linear(input)
 
-        xq = xq.view(bs, seqlen, -1, self.key_head_dim)
-        xk = xk.view(bs, seqlen, -1, self.key_head_dim)
-        xv = xv.view(bs, seqlen, -1, self.value_head_dim)
+        # 使用包装后的线性层
+        xq = self._causal_conv(_linear_dt(x, self.in_proj_q), self.conv_q)
+        xk = self._causal_conv(_linear_dt(x, self.in_proj_k), self.conv_k)
+        xv = self._causal_conv(_linear_dt(x, self.in_proj_v), self.conv_v)
+        xz = _linear_dt(x, self.in_proj_z)
+        xa = _linear_dt(x, self.in_proj_a)
+        xb = _linear_dt(x, self.in_proj_b)
 
-        # Gating signals, shape (bs, seqlen, n_value_heads):
-        #   g:    decay rate per head, always negative
-        #   beta: update gate ∈ (0, 1)
-        g = -torch.exp(self.A_log.float()) * F.softplus(xa.float() + self.dt_bias)
+        # 🔧 确保参数是DTensor（兼容激活检查点）
+        def ensure_dtensor(param):
+            if not isinstance(param, DTensor) and isinstance(x, DTensor):
+                mesh = x.device_mesh
+                placements = [Replicate()] * mesh.ndim
+                return DTensor.from_local(param, mesh, placements, run_check=False)
+            return param
+
+        A_log = ensure_dtensor(self.A_log)
+        dt_bias = ensure_dtensor(self.dt_bias)
+
+        # 强制在float32下计算，并clamp防止exp溢出
+        A_log = A_log.float()
+        dt_bias = dt_bias.float()
+        xa_f = xa.float()
+    
+        # 🔧 修复：使用local_map包装softplus操作
+        x_a_bias = xa_f + dt_bias
+    
+        # 替代方案：手动进行DTensor→本地Tensor→DTensor转换
+        if isinstance(x_a_bias, DTensor):
+            # 转换为本地Tensor
+            x_a_bias_local = x_a_bias.to_local()
+            # 执行softplus
+            softplus_local = F.softplus(x_a_bias_local)
+            # 转换回DTensor
+            softplus_safe = DTensor.from_local(
+                softplus_local, 
+                x_a_bias.device_mesh, 
+                x_a_bias.placements, 
+                run_check=False
+            )
+        else:
+            softplus_safe = F.softplus(x_a_bias)
+
+    
+        A_log_clamped = torch.clamp(A_log, max=10.0)
+        g = -torch.exp(A_log_clamped) * softplus_safe
+        g = g.to(xa.dtype)
+        
         beta = torch.sigmoid(xb)
+    
+        # 🔧 关键修复：正确reshape beta张量
+        # beta形状: (bs, seqlen, dim) -> (bs, seqlen, n_heads)
+        # 假设in_proj_b输出维度 = n_value_heads * value_head_dim
+        # 但我们需要 (bs, seqlen, n_heads) 形状
+        beta = beta.view(bs, seqlen, -1)  # (bs, seqlen, n_heads)
+    
+        # 处理TP下的DTensor输入
+        if isinstance(xq, DTensor):
+            local_xq = xq.to_local().contiguous()
+            local_xk = xk.to_local().contiguous()
+            local_xv = xv.to_local().contiguous()
+            local_g = g.to_local().contiguous() if isinstance(g, DTensor) else g.contiguous()
+            local_beta = beta.to_local().contiguous() if isinstance(beta, DTensor) else beta.contiguous()
 
-        output = self.kernel(xq, xk, xv, g, beta)
+            output = self.kernel(local_xq, local_xk, local_xv, local_g, local_beta)
+            output = DTensor.from_local(output, xq.device_mesh, xq.placements, run_check=False)
+        else:
+            xq = xq.contiguous()
+            xk = xk.contiguous()
+            xv = xv.contiguous()
+            g = g.contiguous()
+            beta = beta.contiguous()
 
-        xz = xz.view(bs, seqlen, -1, self.value_head_dim)
+            output = self.kernel(xq, xk, xv, g, beta)
+
+        xz = xz.reshape(bs, xz.size(1), -1, self.value_head_dim)
         output = self.norm(output, xz)
 
         output = output.reshape(bs, seqlen, -1)
         return self.out_proj(output)
+
+
 
 
 class Qwen35Attention(BaseAttention):
@@ -441,12 +603,7 @@ class Qwen35Attention(BaseAttention):
 
 
 class Qwen35TransformerBlock(Module):
-    """Hybrid transformer block for Qwen3.5.
-
-    Each layer uses either full attention (Qwen35Attention) or linear
-    attention (GatedDeltaNet), determined by which config is provided.
-    Both types share the same FFN/MoE structure.
-    """
+    """Hybrid transformer block for Qwen3.5."""
 
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
@@ -477,7 +634,7 @@ class Qwen35TransformerBlock(Module):
 
         self.attention_norm = config.attention_norm.build()
         self.ffn_norm = config.ffn_norm.build()
-
+    
     def forward(
         self,
         x: torch.Tensor,
@@ -497,6 +654,7 @@ class Qwen35TransformerBlock(Module):
         else:
             x = x + self.feed_forward(h)
         return x
+
 
 
 class Qwen35Model(Decoder):
@@ -596,7 +754,7 @@ class Qwen35Model(Decoder):
 
         self.vision_encoder = config.vision_encoder.build()
         self.spatial_merge_size = config.vision_encoder.spatial_merge_size
-
+    '''
     def _get_vision_positions(
         self,
         tokens: torch.Tensor,
@@ -629,6 +787,45 @@ class Qwen35Model(Decoder):
             start = int(region_starts[i].item())
             n_tokens = int(num_tokens_per_item[i].item())
             positions.append((i, start // seq_len, start % seq_len, n_tokens))
+        return positions
+    '''
+    def _get_vision_positions(
+        self,
+        tokens: torch.Tensor,
+        num_tokens_per_item: torch.Tensor,
+        vision_token_id: int,
+    ) -> list[tuple[int, int, int, int]]:
+        """Compute (item_idx, sample_idx, vision_start, n_tokens) for each vision item.
+
+        Finds where each contiguous run of vision placeholder tokens starts
+        in the text sequence.
+
+        Args:
+            tokens: Token IDs (batch, seq_len)
+            num_tokens_per_item: (num_items,) actual tokens per vision item
+            vision_token_id: Placeholder token ID
+
+        Returns:
+            List of (item_idx, sample_idx, vision_start, n_tokens) tuples
+        """
+        vision_mask = tokens == vision_token_id
+        flat_mask = vision_mask.view(-1)
+        prev_mask = torch.cat(
+            [torch.zeros(1, dtype=torch.bool, device=flat_mask.device), flat_mask[:-1]]
+        )
+        region_starts = torch.where(flat_mask & ~prev_mask)[0]
+    
+        # 🔧 修改：检查region_starts是否为空
+        if len(region_starts) == 0:
+            return []  # 无视觉占位符，返回空列表
+    
+        seq_len = tokens.shape[1]
+        positions = []
+        for i in range(num_tokens_per_item.shape[0]):
+            if i < len(region_starts):  # 🔧 修改：防止索引越界
+                start = int(region_starts[i].item())
+                n_tokens = int(num_tokens_per_item[i].item())
+                positions.append((i, start // seq_len, start % seq_len, n_tokens))
         return positions
 
     def _get_vision_embeds(
@@ -753,7 +950,8 @@ class Qwen35Model(Decoder):
         positions: torch.Tensor | None = None,
         mrope_positions: torch.Tensor | None = None,
         special_tokens: dict[str, int] | None = None,
-    ):
+        loss_kwargs: dict | None = None,
+    ) -> torch.Tensor:
         if self.tok_embeddings is not None:
             x = self._prepare_multimodal_embeds(
                 tokens,
@@ -761,18 +959,48 @@ class Qwen35Model(Decoder):
                 pixel_values_videos=pixel_values_videos,
                 grid_thw=grid_thw,
                 grid_thw_videos=grid_thw_videos,
-                special_tokens=special_tokens,  # pyrefly: ignore [bad-argument-type]
+                special_tokens=special_tokens,
             )
         else:
             x = tokens
 
-        # 3D MRoPE positions for multimodal batches, else 2D text positions.
+        # 在 Qwen35Model.forward 中
+        # 🛠️ 统一在模型入口处包装DTensor
+        if not isinstance(x, DTensor):
+            try:
+                mesh_param = next(self.parameters())
+                if isinstance(mesh_param, DTensor):
+                    mesh = mesh_param.device_mesh
+                    placements = [Replicate()] * mesh.ndim  # 🛠️ 使用 mesh.ndim
+                    x = DTensor.from_local(x, mesh, placements, run_check=False)
+            except StopIteration:
+                pass
+
         rope_positions = mrope_positions if mrope_positions is not None else positions
         assert rope_positions is not None
+        
         for layer in self.layers.values():
             x = layer(x, attention_masks, rope_positions)
+            # 🛠️ 如果层输出是普通Tensor，重新包装为DTensor
+            if not isinstance(x, DTensor) and isinstance(mesh_param, DTensor):
+                mesh = mesh_param.device_mesh
+                placements = [Replicate()] * mesh.ndim  # 🛠️ 使用 mesh.ndim
+                x = DTensor.from_local(x, mesh, placements, run_check=False)
 
         x = self.norm(x) if self.norm is not None else x
+        
         if self._skip_lm_head:
+            if isinstance(x, DTensor):
+                x = x.to_local() if x.placements[0].is_replicate() else x.full_tensor()
             return x
-        return self.lm_head(x) if self.lm_head is not None else x
+            
+        if self.lm_head is not None:
+            out = self.lm_head(x)
+            if isinstance(out, DTensor):
+                out = out.full_tensor()
+            return out
+            
+        return x
+
+
+
