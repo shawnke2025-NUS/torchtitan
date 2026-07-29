@@ -1,331 +1,793 @@
-(base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+二、model.py 的修改
+1. 修复 FLA 输入维度
+第一版问题
 
-cd ~/k50063112/torchtitan
+第一版中投影后的张量是三维：
 
-PYTHONPATH=. python -m torch.distributed.run \
-    --nproc_per_node=8 \
-    --rdzv_backend=c10d \
-    --rdzv_endpoint=localhost:0 \
-    -m torchtitan.train \
-    --module qwen3_5 \
-    --config qwen35_9b \
-    --debug.seed 32 \
-    --training.local-batch-size 4 \
-    --training.mixed-precision-param bfloat16 \
-    --training.mixed-precision-reduce float32 \
-    --training.steps 100 \
-    --parallelism.spmd_backend default \
-    --parallelism.data_parallel_shard_degree 4 \
-    --parallelism.context_parallel_degree 2 \
-    --parallelism.tensor_parallel_degree 1 \
-    --parallelism.pipeline_parallel_degree 1 \
-    --parallelism.fsdp_reshard_after_forward always \
-    --dataloader.dataset cc12m-test
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
+xq.shape == [B, L, n_key_heads * key_head_dim]
+xk.shape == [B, L, n_key_heads * key_head_dim]
+xv.shape == [B, L, n_value_heads * value_head_dim]
 
-*****************************************
-Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-*****************************************
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
->>> Successfully patched flex_attention to use bfloat16 internally. <<<
-[titan] 2026-07-29 14:27:03,130 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:03,732 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:03,782 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:03,958 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:03,965 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:03,993 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:04,217 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:04,225 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[titan] 2026-07-29 14:27:05,392 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:05,441 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:05,442 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-142705-2CCD9C.jsonl
-[titan] 2026-07-29 14:27:05,646 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:27:05,649 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:27:05,681 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:27:05,682 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:27:05,686 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:27:05,855 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:27:05,924 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:27:05,924 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[titan] 2026-07-29 14:27:05,925 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
-[titan] 2026-07-29 14:27:05,925 - root - INFO - Applied Context Parallel (forward wrapping) to the model
-[titan] 2026-07-29 14:27:05,925 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
-[rank0]: Traceback (most recent call last):
-[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank0]:   File "<frozen runpy>", line 88, in _run_code
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank0]:     main()
-[rank0]:     ~~~~^^
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank0]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank0]:     return self._owner(config=replace(self))
-[rank0]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank0]:     return f(*args, **kwargs)
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank0]:     model = model_spec.parallelize_fn(
-[rank0]:         model,
-[rank0]:     ...<5 lines>...
-[rank0]:         dump_folder=config.dump_folder,
-[rank0]:     )
-[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-[rank0]:     raise RuntimeError(
-[rank0]:     ...<2 lines>...
-[rank0]:     )
-[rank0]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-[titan] 2026-07-29 14:27:05,984 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,035 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,036 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-142706-1IJC13.jsonl
-[titan] 2026-07-29 14:27:06,199 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,215 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:27:06,218 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:27:06,246 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,249 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:27:06,249 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,249 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:27:06,250 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-142706-W39O3Q.jsonl
-[titan] 2026-07-29 14:27:06,253 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:27:06,260 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,295 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,296 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-142706-7C33MP.jsonl
-[rank0]:[W729 14:27:06.644656167 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[titan] 2026-07-29 14:27:06,310 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,311 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-142706-91ZA3L.jsonl
-[titan] 2026-07-29 14:27:06,424 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:27:06,493 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:27:06,493 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[titan] 2026-07-29 14:27:06,493 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
-[titan] 2026-07-29 14:27:06,494 - root - INFO - Applied Context Parallel (forward wrapping) to the model
-[titan] 2026-07-29 14:27:06,494 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
-[rank5]: Traceback (most recent call last):
-[rank5]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank5]:   File "<frozen runpy>", line 88, in _run_code
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank5]:     main()
-[rank5]:     ~~~~^^
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank5]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank5]:     return self._owner(config=replace(self))
-[rank5]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank5]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank5]:     return f(*args, **kwargs)
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank5]:     model = model_spec.parallelize_fn(
-[rank5]:         model,
-[rank5]:     ...<5 lines>...
-[rank5]:         dump_folder=config.dump_folder,
-[rank5]:     )
-[rank5]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-[rank5]:     raise RuntimeError(
-[rank5]:     ...<2 lines>...
-[rank5]:     )
-[rank5]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-[titan] 2026-07-29 14:27:06,579 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,599 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,628 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,629 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-142706-XRST64.jsonl
-[titan] 2026-07-29 14:27:06,673 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,679 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,680 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-142706-01Z0EI.jsonl
-[titan] 2026-07-29 14:27:06,724 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[titan] 2026-07-29 14:27:06,725 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-142706-G27WA8.jsonl
-[titan] 2026-07-29 14:27:06,845 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:27:06,849 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:27:06,882 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:27:06,884 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:27:06,887 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:27:06,889 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:27:06,892 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:27:06,892 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:27:06,896 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:27:06,898 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:27:06,913 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[titan] 2026-07-29 14:27:06,916 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
-[titan] 2026-07-29 14:27:06,941 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
-[titan] 2026-07-29 14:27:06,941 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[titan] 2026-07-29 14:27:06,946 - root - INFO - Building qwen3_5 9B
-[titan] 2026-07-29 14:27:07,071 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:27:07,123 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[titan] 2026-07-29 14:27:07,136 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[titan] 2026-07-29 14:27:07,136 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[titan] 2026-07-29 14:27:07,136 - root - WARNING - Qwen3.5 DeltaNet CP requires contiguous sequence shards; disabling context_parallel_load_balancer='headtail'.
-[titan] 2026-07-29 14:27:07,136 - root - INFO - Applied Context Parallel (forward wrapping) to the model
-[titan] 2026-07-29 14:27:07,137 - root - WARNING - Enabled experimental Qwen3.5 DeltaNet CP: every DeltaNet block all-gathers the full sequence and duplicates its compute.
-[rank6]: Traceback (most recent call last):
-[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[rank6]:   File "<frozen runpy>", line 88, in _run_code
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[rank6]:     main()
-[rank6]:     ~~~~^^
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
-[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
-[rank6]:     return self._owner(config=replace(self))
-[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[rank6]:     return f(*args, **kwargs)
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-[rank6]:     model = model_spec.parallelize_fn(
-[rank6]:         model,
-[rank6]:     ...<5 lines>...
-[rank6]:         dump_folder=config.dump_folder,
-[rank6]:     )
-[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-[rank6]:     raise RuntimeError(
-[rank6]:     ...<2 lines>...
-[rank6]:     )
-[rank6]: RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-W0729 14:27:07.155000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245467 closing signal SIGTERM
-W0729 14:27:07.156000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245468 closing signal SIGTERM
-W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245469 closing signal SIGTERM
-W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245470 closing signal SIGTERM
-W0729 14:27:07.157000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245471 closing signal SIGTERM
-W0729 14:27:07.158000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245472 closing signal SIGTERM
-W0729 14:27:07.158000 244851 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 245473 closing signal SIGTERM
-E0729 14:27:07.951000 244851 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 245466) of binary: /home/f00913055/conda/bin/python
-E0729 14:27:07.985000 244851 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/0/error.json)
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1032, in <module>
-    main()
-    ~~~~^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-    return f(*args, **kwargs)
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1028, in main
-    run(args)
-    ~~~^^^^^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1019, in run
-    elastic_launch(
-    ~~~~~~~~~~~~~~~
-        config=config,
-        ~~~~~~~~~~~~~~
-        entrypoint=cmd,
-        ~~~~~~~~~~~~~~~
-    )(*cmd_args)
-    ~^^^^^^^^^^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
-    return launch_agent(
-        self._config,
-    ...<2 lines>...
-        health_check_server=self._health_check_server,
+但 FLA 的 Gated Delta Rule 需要：
+
+q, k, v: [B, L, H, D]
+g, beta: [B, L, H]
+
+第一版虽然对 xq/xk/xv 做了 view，但在早期修改过程中曾把未 reshape 的张量传入 FLA，导致：
+
+ValueError: not enough values to unpack (expected 5, got 4)
+最终修改
+xq = xq.reshape(bs, seqlen, -1, self.key_head_dim)
+xk = xk.reshape(bs, seqlen, -1, self.key_head_dim)
+xv = xv.reshape(bs, seqlen, -1, self.value_head_dim)
+xz = xz.reshape(bs, seqlen, -1, self.value_head_dim)
+
+beta = beta.reshape(bs, seqlen, -1)
+
+同时使用 reshape() 替代部分 view()。
+
+修改原因
+
+在 PP、FSDP、DTensor 环境下，张量未必连续。view() 要求底层内存布局兼容，而 reshape() 在必要时会创建连续副本，因此更稳健。
+
+2. 给 FLA kernel 增加显式形状检查
+
+新增：
+
+if q.ndim != 4 or k.ndim != 4 or v.ndim != 4:
+    raise ValueError(
+        "GatedDeltaKernel expects q/k/v to be 4-D tensors "
+        "[B, L, H, D]"
     )
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
-    raise ChildFailedError(
-    ...<2 lines>...
+
+if g.ndim != 3 or beta.ndim != 3:
+    raise ValueError(
+        "GatedDeltaKernel expects g/beta to be 3-D tensors [B, L, H]"
     )
-torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
-============================================================
-torchtitan.train FAILED
-------------------------------------------------------------
-Failures:
-[1]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 1 (local_rank: 1)
-  exitcode  : -15 (pid: 245467)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 245467
-[2]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 2 (local_rank: 2)
-  exitcode  : -15 (pid: 245468)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 245468
-[3]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 3 (local_rank: 3)
-  exitcode  : -15 (pid: 245469)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 245469
-[4]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 4 (local_rank: 4)
-  exitcode  : -15 (pid: 245470)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 245470
-[5]:
-  time      : 2026-07-29_14:27:06
-  host      : node-5-15
-  rank      : 5 (local_rank: 5)
-  exitcode  : -15 (pid: 245471)  (SIGTERM)
-  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/5/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-      raise RuntimeError(
-      ...<2 lines>...
-      )
-  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-  
-[6]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 6 (local_rank: 6)
-  exitcode  : -15 (pid: 245472)  (SIGTERM)
-  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/6/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-      raise RuntimeError(
-      ...<2 lines>...
-      )
-  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-  
-[7]:
-  time      : 2026-07-29_14:27:07
-  host      : node-5-15
-  rank      : 7 (local_rank: 7)
-  exitcode  : -15 (pid: 245473)  (SIGTERM)
-  error_file: <N/A>
-  traceback : Signal 15 (SIGTERM) received by PID 245473
-------------------------------------------------------------
-Root Cause (first observed failure):
-[0]:
-  time      : 2026-07-29_14:27:05
-  host      : node-5-15
-  rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 245466) 
-  error_file: /tmp/torchelastic_j4cpho7o/none_mf7zyy3a/attempt_0/0/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
-      model = model_spec.parallelize_fn(
-          model,
-      ...<5 lines>...
-          dump_folder=config.dump_folder,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 181, in parallelize_qwen3_5
-      raise RuntimeError(
-      ...<2 lines>...
-      )
-  RuntimeError: Qwen35Model.enable_context_parallel() is missing. Replace model.py and parallelize.py as a matched pair.
-  
-============================================================
-(base) f00913055@node-5-15:~/k50063112/torchtitan$ 
+修改原因
+
+原 FLA 报错发生在 kernel 内部：
+
+B, T, H, K, HV = *k.shape, beta.shape[2]
+
+错误信息不能直接说明是哪个输入维度错了。增加检查后，可以在进入 Triton/FLA 前显示：
+
+q=(...), k=(...), v=(...), g=(...), beta=(...)
+
+便于定位模型侧问题。
+
+3. 保证传入 FLA 的张量连续
+
+第一版直接传入：
+
+result = _fla_chunk_gated_delta_rule(q, k, v, g, beta)
+
+修改为：
+
+result = _fla_chunk_gated_delta_rule(
+    q.contiguous(),
+    k.contiguous(),
+    v.contiguous(),
+    g.contiguous(),
+    beta.contiguous(),
+    use_qk_l2norm_in_kernel=True,
+)
+
+Q/K 扩展后也改成：
+
+q = q.repeat_interleave(repeat, dim=2).contiguous()
+k = k.repeat_interleave(repeat, dim=2).contiguous()
+修改原因
+
+reshape、transpose、repeat_interleave 和 DTensor local shard 都可能产生非标准 stride。FLA/Triton kernel 通常要求输入具有可预期的连续布局。
+
+4. 将 FLA 输出转回 BF16
+
+第一版直接：
+
+return result[0]
+
+最终改为：
+
+out = result[0]
+
+if out.dtype != q.dtype:
+    out = out.to(q.dtype)
+
+return out
+修改原因
+
+训练配置是：
+
+--training.mixed-precision-param bfloat16
+--training.mixed-precision-reduce float32
+
+这里的含义应是：
+
+参数和主要前向激活：BF16；
+梯度通信/reduce：FP32。
+
+FLA 内部为了稳定性会使用 FP32 累积，但如果它把 FP32 输出直接传到后续层，就会使部分参数梯度变成 FP32，最终导致 FSDP 报：
+
+FSDP expects uniform original parameter dtype
+
+或者 reduce-scatter 梯度 dtype 不一致。
+
+因此应当：
+
+FLA 内部：FP32 累积
+FLA 输出：恢复为 BF16
+FSDP reduce：FP32
+5. 显式初始化 Norm 和 DeltaNet 参数
+
+第一版使用：
+
+self.weight = nn.Parameter(torch.empty(config.dim))
+self.A_log = nn.Parameter(torch.empty(n_value_heads))
+self.dt_bias = nn.Parameter(torch.empty(n_value_heads))
+
+最终改成：
+
+# OffsetRMSNorm
+self.weight = nn.Parameter(torch.zeros(config.dim))
+
+# RMSNormGated
+self.weight = nn.Parameter(torch.ones(config.dim))
+
+# DeltaNet
+self.A_log = nn.Parameter(torch.zeros(n_value_heads))
+self.dt_bias = nn.Parameter(torch.zeros(n_value_heads))
+修改原因
+
+这与模块定义的数学含义一致：
+
+OffsetRMSNorm:
+(1 + weight) × RMSNorm(x)
+
+当 weight=0 时初始缩放为 1。
+
+RMSNormGated:
+weight × RMSNorm(x) × SiLU(gate)
+
+当 weight=1 时不会额外缩放。
+
+显式初始化也避免模型初始化流程、meta materialization 或自定义构建路径没有及时覆盖 torch.empty() 时留下未初始化值。
+
+6. 重写两个 RMSNorm 的 Tensor/DTensor 兼容路径
+第一版问题
+
+第一版直接执行：
+
+return ((1.0 + self.weight.float()) * x).to(input_dtype)
+
+但 PP/FSDP 元数据推断过程中出现过：
+
+x           = DTensor
+self.weight = torch.Tensor
+
+于是报错：
+
+aten.mul.Tensor got mixed torch.Tensor and DTensor
+最终修改
+
+把纯数学计算独立为 local 函数：
+
+@staticmethod
+def _forward_local(x, weight, eps):
+    input_dtype = x.dtype
+    x_fp32 = x.float()
+    variance = x_fp32.pow(2).mean(-1, keepdim=True)
+    x_fp32 = x_fp32 * torch.rsqrt(variance + eps)
+    return ((1.0 + weight.float()) * x_fp32).to(input_dtype)
+
+DTensor 输入时：
+
+mesh = x.device_mesh
+placements = x.placements
+
+x_local = x.to_local()
+weight_local = (
+    weight.to_local()
+    if isinstance(weight, DTensor)
+    else weight
+)
+
+out_local = self._forward_local(x_local, weight_local, self.eps)
+
+return DTensor.from_local(
+    out_local,
+    mesh,
+    placements,
+    run_check=False,
+)
+
+RMSNormGated 对 x、gate、weight 采用相同处理。
+
+修改原因
+
+自定义 Norm 算子不一定被 DTensor dispatcher 完整支持。这里需要：
+
+在 local Tensor 上完成 Norm；
+不改变原来的 DeviceMesh；
+不改变原来的 placement；
+返回与输入一致的 DTensor。
+
+这样可以避免 Tensor/DTensor 混用，同时不会破坏后续 RowwiseParallel、FSDP 或 PP placement。
+
+7. 修复 DTensor 下的 depthwise causal Conv1d
+第一版逻辑
+
+第一版先做：
+
+x = F.pad(x.transpose(1, 2), ...)
+
+然后才判断是否是 DTensor。
+
+这会让 transpose/pad 后的 placement 和卷积权重 placement 更难保持一致。
+
+最终逻辑
+
+把完整的局部卷积流程放入 local_map：
+
+def _conv(x_local, w_local):
+    x_local = x_local.transpose(1, 2)
+    x_local = F.pad(
+        x_local,
+        [self.conv_kernel_size - 1, 0],
+    )
+
+    out = F.conv1d(
+        x_local,
+        w_local,
+        None,
+        conv.stride,
+        conv.padding,
+        conv.dilation,
+        w_local.size(0),
+    )
+
+    return out.transpose(1, 2)
+
+并处理普通权重：
+
+if not isinstance(w, DTensor):
+    w = DTensor.from_local(
+        w,
+        x.device_mesh,
+        w_plc,
+        run_check=False,
+    )
+修改原因
+
+Qwen3.5 的 DeltaNet 使用 depthwise causal Conv1d。DTensor 对分组卷积的自动 placement 推导并不总是可靠，因此在每个 local shard 上显式完成：
+
+[B,L,D]
+→ transpose
+→ 左侧 causal padding
+→ depthwise Conv1d
+→ transpose 回 [B,L,D]
+
+然后由 local_map 恢复 DTensor。
+
+8. 保持门控参数的 dtype 一致
+
+修改为：
+
+g = -torch.exp(self.A_log.float()) * F.softplus(
+    xa.float() + self.dt_bias.float()
+)
+g = g.to(xa.dtype)
+
+beta = torch.sigmoid(xb)
+修改原因
+
+A_log 和 dt_bias 在 FP32 中计算更稳定，但最终传入 FLA 的 g 应与 BF16 的 Q/K/V 保持兼容，避免 FP32 沿网络继续传播。
+
+9. 为 PP 增加受控的 DTensor 兼容桥接
+
+PP shape metadata inference 中，stage 输入有时是普通 Tensor，而该 stage 参数已经是 DTensor。
+
+最终在 Qwen35Model.forward() 中加入：
+
+if cp_mesh is None and not isinstance(x, DTensor):
+    mesh_param = next(self.parameters())
+
+    if isinstance(mesh_param, DTensor):
+        x = DTensor.from_local(
+            x,
+            mesh_param.device_mesh,
+            [Replicate()] * mesh_param.device_mesh.ndim,
+            run_check=False,
+        )
+
+每层输出后也进行必要检查。
+
+修改原因
+
+原来出现过：
+
+aten.mm.default got mixed torch.Tensor and DTensor
+
+即：
+
+activation       = Tensor
+out_proj.weight  = DTensor
+
+该桥接只在 非 CP 路径启用，因为 CP 路径需要使用普通 local Tensor 执行显式序列通信。
+
+10. 增加 loss_kwargs 参数
+
+第一版：
+
+def forward(...):
+
+最终：
+
+def forward(
+    ...,
+    loss_kwargs: dict | None = None,
+) -> torch.Tensor:
+    del loss_kwargs
+修改原因
+
+Pipeline Schedule 会把一些与 loss 相关的额外关键字传递到 stage/model 调用中。模型本身不使用它，但需要接受该参数，避免 PP 调用签名不匹配。
+
+11. 修复视觉占位符为空时的越界
+
+第一版默认：
+
+start = int(region_starts[i].item())
+
+如果数据中没有对应的 image/video placeholder，就会越界。
+
+最终增加：
+
+if len(region_starts) == 0:
+    return []
+
+for i in range(num_tokens_per_item.shape[0]):
+    if i < len(region_starts):
+        ...
+修改原因
+
+cc12m-test 或混合数据中，视觉张量与 placeholder 数量可能不完全一致。空检测避免：
+
+IndexError
+12. 对 Vision Encoder 输出增加 .clone()
+
+第一版：
+
+merged_embeds = self.vision_encoder(
+    pixel_values,
+    grid_thw=grid_thw,
+)
+
+最终：
+
+merged_embeds = self.vision_encoder(
+    pixel_values,
+    grid_thw=grid_thw,
+).clone()
+修改原因
+
+FSDP2 警告 Vision Encoder 返回了 view tensor：
+
+FSDP2-wrapped module returned a view tensor
+
+后面又会执行视觉 token 的切片写入。对输出 .clone() 可以解除 view alias，避免 FSDP pre-backward hook 因后续原位操作被跳过。
+
+三、CP 在 model.py 中的实现
+1. 增加 CP mesh 状态
+self._cp_mesh: DeviceMesh | None = None
+
+def enable_context_parallel(
+    self,
+    cp_mesh: DeviceMesh,
+) -> None:
+    self._cp_mesh = cp_mesh
+原因
+
+parallelize.py 在构建 CP 后，需要把 CP DeviceMesh 传给模型，使模型知道：
+
+CP world size；
+当前 CP local rank；
+CP 通信 group。
+2. 增加可微序列 all-gather
+
+新增：
+
+def _cp_all_gather_sequence(x, cp_mesh):
+    parts = autograd_all_gather(
+        x.contiguous(),
+        group=cp_mesh.get_group(),
+    )
+    return torch.cat(tuple(parts), dim=1)
+原因
+
+普通 Attention 的 CP 可以让不同 rank 分别处理序列片段，但 GatedDeltaNet 是沿序列递归的：
+
+state_t 依赖 state_(t-1)
+
+因此后半段 token 不能脱离前半段独立计算。
+
+当前正确性优先方案是：
+
+局部序列
+→ 可微 all-gather
+→ 完整序列
+→ 运行 DeltaNet
+→ 切回本 rank 的局部序列
+3. 增加局部序列切片
+
+新增：
+
+def _cp_local_sequence_slice(
+    x,
+    cp_mesh,
+    local_seq_len=None,
+):
+    start = cp_mesh.get_local_rank() * local_seq_len
+    return x.narrow(
+        1,
+        start,
+        local_seq_len,
+    ).contiguous()
+
+并检查全局序列长度是否能整除 CP degree。
+
+原因
+
+DeltaNet 全序列计算后，每个 rank 只应保留自己负责的连续 token 区间，供后续层继续执行 CP。
+
+4. 多模态 scatter 前恢复完整 token 序列
+
+最终逻辑：
+
+embedding_tokens = _cp_all_gather_sequence(
+    tokens,
+    cp_mesh,
+)
+
+x = self._prepare_multimodal_embeds(
+    embedding_tokens,
+    ...
+)
+
+x = _cp_local_sequence_slice(
+    x,
+    cp_mesh,
+    local_seq_len,
+)
+原因
+
+视觉 placeholder 的位置是全局序列位置。如果先把 token 分到不同 CP rank，再执行视觉 token scatter：
+
+placeholder 可能在另一个 rank；
+一个视觉区间可能跨 rank；
+vision_start 会从全局位置变成本地位置；
+MRoPE 位置也会错位。
+
+因此必须：
+
+恢复完整 token
+→ 写入视觉 embedding
+→ 再分回局部序列
+5. 修复 CP 下的 MRoPE 长度
+
+新增判断：
+
+if cp_mesh is not None and rope_positions.size(1) != x.size(1):
+    expected_global = x.size(1) * cp_mesh.size()
+
+    if rope_positions.size(1) == expected_global:
+        rope_positions = _cp_local_sequence_slice(
+            rope_positions,
+            cp_mesh,
+            x.size(1),
+        )
+原因
+
+普通 positions 可能已由 TorchTitan 自动 CP 切分，但三维 mrope_positions 仍可能保持全局长度。必须确保：
+
+hidden states 的 local sequence length
+==
+MRoPE 的 local sequence length
+四、parallelize.py 的修改
+1. TP=1 时也允许执行 model.parallelize()
+
+第一版：
+
+if parallel_dims.tp_enabled or parallel_dims.ep_enabled:
+    model.parallelize(parallel_dims)
+
+你的配置：
+
+TP=1
+EP=1
+
+因此：
+
+tp_enabled=False
+ep_enabled=False
+
+导致整个 ShardingConfig 没有安装。
+
+最终改为：
+
+if (
+    parallelism.spmd_backend == "spmd_types"
+    or parallel_dims.tp_enabled
+    or parallel_dims.ep_enabled
+):
+    model.parallelize(parallel_dims)
+修改原因
+
+即便 TP degree 为 1，Qwen3.5 的自定义模块仍依赖 ShardingConfig 来描述：
+
+Norm 权重 Replicate；
+GatedDelta kernel 的 local_map；
+out_proj 的 Rowwise placement；
+激活和参数的 DTensor 类型。
+
+如果跳过，就会出现：
+
+Tensor activation × DTensor weight
+2. 删除原来的 CP 硬性禁用
+
+第一版直接：
+
+if parallel_dims.cp_enabled:
+    raise NotImplementedError(
+        "Context Parallel is not yet supported for Qwen3.5."
+    )
+
+最终替换为实验性 CP 实现。
+
+原因
+
+原代码并不是 CP 参数设置错误，而是模型侧主动拒绝 CP。
+
+3. Full Attention 和 DeltaNet 分别处理
+
+遍历每个 block：
+
+for block in model.layers.values():
+    if block.full_attn:
+        full_attention_modules.append(
+            block.attn.inner_attention
+        )
+    else:
+        deltanet_modules.append(block.attn)
+
+Full Attention：
+
+apply_cp_to_forward(
+    full_attention_modules,
+    cp_mesh,
+)
+
+DeltaNet：
+
+_apply_cp_to_deltanet(
+    deltanet_modules,
+    cp_mesh,
+)
+原因
+
+Qwen3.5 是混合架构：
+
+约 25%：普通 Full Attention
+约 75%：GatedDeltaNet
+
+两者的 CP 方法不同：
+
+Full Attention 可以使用 TorchTitan 现有 CP；
+DeltaNet 必须恢复完整因果序列。
+4. DeltaNet CP wrapper
+
+核心逻辑：
+
+local_seq_len = x.size(1)
+
+parts = autograd_all_gather(
+    x.contiguous(),
+    group=cp_group,
+)
+
+full_x = torch.cat(tuple(parts), dim=1)
+full_out = original_forward(full_x, ...)
+
+start = cp_rank * local_seq_len
+
+return full_out.narrow(
+    1,
+    start,
+    local_seq_len,
+).contiguous()
+修改原因
+
+保证 DeltaNet 的：
+
+causal Conv1d；
+recurrent state；
+gated delta update；
+
+都在完整、原始顺序的序列上执行。
+
+代价是每个 CP rank 都重复计算完整 DeltaNet，所以这是正确性验证实现，并非高性能 CP。
+
+5. 禁用 headtail CP load balancer
+
+最终增加：
+
+if parallelism.context_parallel_load_balancer is not None:
+    parallelism.context_parallel_load_balancer = None
+修改原因
+
+headtail 会把序列头部和尾部分配到同一 rank，使每个 rank 持有的 token 不是简单连续区间。
+
+当前 DeltaNet CP 使用：
+
+rank 顺序 all-gather
+
+它要求：
+
+rank 0 = 序列前半段
+rank 1 = 序列后半段
+
+因此必须使用连续切分。
+
+6. 限制不支持的 CP 组合
+
+实验性 CP 当前限制：
+
+PP = 1
+TP = 1
+EP = 1
+torch.compile = off
+spmd_backend = default
+
+代码中增加了显式检查。
+
+修改原因
+
+避免用户使用尚未验证的组合后得到静默错误：
+
+PP + CP
+TP + CP
+EP + CP
+spmd_types + CP
+
+其中 PP+CP 不只是 GPU 数量问题，还涉及 stage boundary 上的序列 placement 和通信语义。
+
+7. 检查 model.py 与 parallelize.py 是否匹配
+
+新增：
+
+if not hasattr(model, "enable_context_parallel"):
+    raise RuntimeError(
+        "Qwen35Model.enable_context_parallel() is missing. "
+        "Replace model.py and parallelize.py as a matched pair."
+    )
+修改原因
+
+你实际运行时曾出现：
+
+parallelize.py 已更新
+model.py 仍是旧版
+
+这项检查可以快速指出文件版本不一致，而不是进入 forward 后产生更难理解的错误。
+
+五、sharding.py 的修改
+1. 自定义 Norm 参数名从 input 改为 x
+
+第一版：
+
+in_src_shardings={"input": head_plc}
+in_dst_shardings={"input": head_plc}
+
+但自定义 Norm 的签名是：
+
+def forward(self, x):
+
+最终改为：
+
+in_src_shardings={"x": head_plc}
+in_dst_shardings={"x": head_plc}
+
+Decoder Norm 同样改为：
+
+in_src_shardings={"x": activation_layout}
+修改原因
+
+TorchTitan 的并行包装器会按 forward() 的参数名匹配 ShardingConfig：
+
+src_layout = in_src_shardings.get(name)
+
+当实际参数叫 x、配置却写 input 时，配置不会生效。
+
+2. FFN Norm 不再使用通用 norm_config
+
+第一版：
+
+layer_cfg.ffn_norm.sharding_config = norm_config(
+    enable_sp=True
+)
+
+最终：
+
+layer_cfg.ffn_norm.sharding_config = _decoder_norm_sharding(
+    dense_sequence_parallel_placement()
+)
+修改原因
+
+通用 norm_config 面向标准 Norm，默认参数名和 placement 不完全适合自定义 OffsetRMSNorm.forward(x)。
+
+改用专用配置后，FFN Norm 与 Attention Norm 使用一致的：
+
+参数 Replicate；
+激活 placement；
+输入参数名 x。
+六、PP 的负 loss 没有修改模型计算
+
+PP 日志中曾同时出现：
+
+loss: 13.02085
+loss: -4.00000
+
+真正的模型 loss 是：
+
+13.02085
+
+-4 来自非末级 PP stage：
+
+loss = torch.tensor([-1.0])
+
+在 4 个 FSDP rank 上汇总：
+
+-1 × 4 = -4
+
+所以这里没有修改交叉熵、标签或 logits。只是通过：
+
+--local-ranks-filter=4
+
+或设置最后一个 PP stage 的日志 rank，避免显示占位 loss。
+
+七、环境和启动参数的修改
+1. PyTorch 升级
+
+旧版本 PipelineStage 不支持：
+
+get_mesh=...
+
+升级到支持当前 TorchTitan Pipeline API 的 PyTorch 后，PP 初始化通过。
+
+2. NCCL ABI 对齐
+
+PyTorch 升级后曾加载系统旧版：
+
+/usr/local/lib/libnccl.so.2
+
+导致：
+
+undefined symbol: ncclGetLsaMultimemDevicePointer
+
+安装并优先加载：
+
+nvidia-nccl-cu12==2.29.3
+
+解决 PyTorch 与 NCCL 的 ABI 不匹配。
+
+3. 混合精度参数
+
+最终配置：
+
+--training.mixed-precision-param bfloat16
+--training.mixed-precision-reduce float32
+
+含义是：
+
+模型参数/主要激活：BF16
+FSDP 梯度通信：FP32
+
+这也是为什么必须把 FLA 输出重新转换为 BF16。
