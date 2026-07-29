@@ -30,1014 +30,1050 @@ PYTHONPATH=. python -m torch.distributed.run \
 
 
 
-
-            flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[2]:
-  time      : 2026-07-29_19:58:38
-  host      : node-5-15
-  rank      : 1 (local_rank: 1)
-  exitcode  : 1 (pid: 2705145) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[3]:
-  time      : 2026-07-29_19:58:39
-  host      : node-5-15
-  rank      : 2 (local_rank: 2)
-  exitcode  : 1 (pid: 2705146) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/2/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[4]:
-  time      : 2026-07-29_19:58:39
-  host      : node-5-15
-  rank      : 4 (local_rank: 4)
-  exitcode  : 1 (pid: 2705148) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/4/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[5]:
-  time      : 2026-07-29_19:58:39
-  host      : node-5-15
-  rank      : 5 (local_rank: 5)
-  exitcode  : 1 (pid: 2705149) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/5/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[6]:
-  time      : 2026-07-29_19:58:38
-  host      : node-5-15
-  rank      : 6 (local_rank: 6)
-  exitcode  : 1 (pid: 2705150) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/6/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-[7]:
-  time      : 2026-07-29_19:58:39
-  host      : node-5-15
-  rank      : 7 (local_rank: 7)
-  exitcode  : 1 (pid: 2705151) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/7/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
-  
-  Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-  
-  
-------------------------------------------------------------
-Root Cause (first observed failure):
-[0]:
-  time      : 2026-07-29_19:58:38
-  host      : node-5-15
-  rank      : 3 (local_rank: 3)
-  exitcode  : 1 (pid: 2705147) 
-  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/3/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
-      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
-      raise BackendCompilerFailed(
-          self.compiler_fn, e, inspect.currentframe()
-      ).with_traceback(e.__traceback__) from None
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
-      compiled_fn = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
-      compiled_gm = compiler_fn(gm, example_inputs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
-      return self.compiler_fn(model_, inputs_, **self.kwargs)
-             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
-      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
-      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
-      ) = aot_dispatch_autograd_graph(
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          flat_fn,
-          ^^^^^^^^
-      ...<3 lines>...
-          fw_metadata=aot_state.fw_metadata,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
-      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-          joint_fn_to_trace,
-          ^^^^^^^^^^^^^^^^^^
-      ...<2 lines>...
-          aot_config=aot_config,
-          ^^^^^^^^^^^^^^^^^^^^^^
-      )
-      ^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
-      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
-      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
-      fx_g = make_fx(
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
       ...<4 lines>...
-          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
-      )(*args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
-      return make_fx_tracer.trace(f, *args)
-             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
-      return self._trace_inner(f, *args)
-             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
-      t = dispatch_trace(
-          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
-          tracer=self.fx_tracer,
-          concrete_args=tuple(phs),
+          for a in args
       )
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
-      return disable_fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
-      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
-      return fn(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
-      (self.create_arg(fn(*args)),),
-                       ~~^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
-      tree_out = root_fn(*tree_args)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
-      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
-      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
-      return treespec.unflatten(map(func, *flat_args))
-             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
-      leaves = list(leaves)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
-      return func(x)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
-      return get_proxy_slot(t, tracer).force()
-             ~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
-      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
-      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
-      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
-                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
-      out = func(*args)
-  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
-  TypeError: mul expected 2 arguments, got 3
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_thunk.py", line 27, in force
+      self.r = self.f()
+               ~~~~~~^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2103, in _compute_proxy
+      n_args = tuple(
+          (
+      ...<4 lines>...
+          for a in args
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2105, in <genexpr>
+      get_proxy_slot(a, tracer).force().node
+      ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 459, in get_proxy_slot
+      elif isinstance(obj, _AnyScriptObject) or is_opaque_value(obj):
+                                                ~~~~~~~~~~~~~~~^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_library/opaque_object.py", line 276, in is_opaque_value
+      if is_opaque_type(type(value)):
+         ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_library/opaque_object.py", line 318, in is_opaque_type
+      info = _resolve_opaque_type_info(cls)
+  torch._dynamo.exc.BackendCompilerFailed: backend='aot_eager' raised:
+  RecursionError: maximum recursion depth exceeded
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
