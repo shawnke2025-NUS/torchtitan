@@ -1,3 +1,33 @@
+cd ~/k50063112/torchtitan
+python - <<'PY'
+import sys
+import inspect
+import torch
+from torch.distributed.pipelining import PipelineStage
+
+print("Python executable:", sys.executable)
+print("Torch path:", torch.__file__)
+print("Torch version:", torch.__version__)
+print("Torch CUDA:", torch.version.cuda)
+print("CUDA available:", torch.cuda.is_available())
+print("GPU count:", torch.cuda.device_count())
+print("PipelineStage signature:")
+print(inspect.signature(PipelineStage.__init__))
+print(
+    "get_mesh supported:",
+    "get_mesh" in inspect.signature(PipelineStage.__init__).parameters,
+)
+PY
+
+
+
+
+
+
+
+
+
+
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
 PYTHONPATH=. python -m torch.distributed.run \
