@@ -1,0 +1,810 @@
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+cd ~/k50063112/torchtitan
+
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --training.local-batch-size 4 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 1 \
+    --parallelism.data_parallel_shard_degree 4 \
+    --parallelism.context_parallel_degree 2 \
+    --parallelism.tensor_parallel_degree 1 \
+    --parallelism.pipeline_parallel_degree 1 \
+    --parallelism.fsdp_reshard_after_forward always \
+    --dataloader.dataset cc12m-test
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+[titan] 2026-07-29 13:30:37,480 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,042 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,162 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,250 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,335 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,559 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,671 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:38,734 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:30:39,909 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:39,960 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:39,961 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-133039-5YQM2G.jsonl
+[titan] 2026-07-29 13:30:40,149 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,154 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,189 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,190 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:40,196 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:40,268 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,318 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,319 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-133040-B3UNHN.jsonl
+[titan] 2026-07-29 13:30:40,449 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:40,509 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,512 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,518 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:40,518 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank3]:   File "<frozen runpy>", line 88, in _run_code
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank3]:     main()
+[rank3]:     ~~~~^^
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank3]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank3]:     return self._owner(config=replace(self))
+[rank3]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank3]:     return f(*args, **kwargs)
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank3]:     model = model_spec.parallelize_fn(
+[rank3]:         model,
+[rank3]:     ...<5 lines>...
+[rank3]:         dump_folder=config.dump_folder,
+[rank3]:     )
+[rank3]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank3]:     raise NotImplementedError(
+[rank3]:     ...<3 lines>...
+[rank3]:     )
+[rank3]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:40,543 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,544 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:40,550 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:40,579 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,630 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,631 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-133040-R7B3MK.jsonl
+[titan] 2026-07-29 13:30:40,659 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,711 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,712 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-133040-RHFQQ8.jsonl
+[titan] 2026-07-29 13:30:40,806 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:40,879 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:40,879 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank7]:   File "<frozen runpy>", line 88, in _run_code
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank7]:     main()
+[rank7]:     ~~~~^^
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank7]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank7]:     return self._owner(config=replace(self))
+[rank7]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank7]:     return f(*args, **kwargs)
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank7]:     model = model_spec.parallelize_fn(
+[rank7]:         model,
+[rank7]:     ...<5 lines>...
+[rank7]:         dump_folder=config.dump_folder,
+[rank7]:     )
+[rank7]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank7]:     raise NotImplementedError(
+[rank7]:     ...<3 lines>...
+[rank7]:     )
+[rank7]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:40,893 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,944 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,945 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-133040-PNDLW1.jsonl
+[titan] 2026-07-29 13:30:40,952 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:40,955 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:40,965 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:40,991 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:40,994 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,003 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,014 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,015 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-133041-MRZOIE.jsonl
+[titan] 2026-07-29 13:30:41,088 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,091 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:41,094 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,121 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:41,122 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,128 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,143 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,144 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-133041-4F7TJN.jsonl
+[titan] 2026-07-29 13:30:41,168 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,224 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:41,242 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:30:41,244 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-133041-B1NX9S.jsonl
+[titan] 2026-07-29 13:30:41,280 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:41,280 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank6]:   File "<frozen runpy>", line 88, in _run_code
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank6]:     main()
+[rank6]:     ~~~~^^
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank6]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank6]:     return self._owner(config=replace(self))
+[rank6]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank6]:     return f(*args, **kwargs)
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank6]:     model = model_spec.parallelize_fn(
+[rank6]:         model,
+[rank6]:     ...<5 lines>...
+[rank6]:         dump_folder=config.dump_folder,
+[rank6]:     )
+[rank6]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank6]:     raise NotImplementedError(
+[rank6]:     ...<3 lines>...
+[rank6]:     )
+[rank6]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:41,346 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:30:41,407 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:30:41,407 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[rank2]:     main()
+[rank2]:     ~~~~^^
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[rank2]:     trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[rank2]:     return self._owner(config=replace(self))
+[rank2]:            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[rank2]:     return f(*args, **kwargs)
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+[rank2]:     model = model_spec.parallelize_fn(
+[rank2]:         model,
+[rank2]:     ...<5 lines>...
+[rank2]:         dump_folder=config.dump_folder,
+[rank2]:     )
+[rank2]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+[rank2]:     raise NotImplementedError(
+[rank2]:     ...<3 lines>...
+[rank2]:     )
+[rank2]: NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+[titan] 2026-07-29 13:30:41,499 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,502 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+[titan] 2026-07-29 13:30:41,540 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'cp', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:30:41,541 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:30:41,548 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:30:41,683 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:30:41,686 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=4, cp=2, tp=1, ep=1
+W0729 13:30:41.689000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159305 closing signal SIGTERM
+W0729 13:30:41.691000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159306 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159307 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159309 closing signal SIGTERM
+W0729 13:30:41.692000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159310 closing signal SIGTERM
+W0729 13:30:41.693000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159311 closing signal SIGTERM
+W0729 13:30:41.693000 4158694 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 4159312 closing signal SIGTERM
+E0729 13:30:42.524000 4158694 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 3 (pid: 4159308) of binary: /home/f00913055/conda/bin/python
+E0729 13:30:42.581000 4158694 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/3/error.json)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+    ~~~~^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+    ~~~^^^^^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+        self._config,
+    ...<2 lines>...
+        health_check_server=self._health_check_server,
+    )
+  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+torchtitan.train FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-07-29_13:30:42
+  host      : node-5-15
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 4159305)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159305
+[2]:
+  time      : 2026-07-29_13:30:42
+  host      : node-5-15
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 4159306)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159306
+[3]:
+  time      : 2026-07-29_13:30:41
+  host      : node-5-15
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 4159307)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/2/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
+[4]:
+  time      : 2026-07-29_13:30:42
+  host      : node-5-15
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 4159309)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159309
+[5]:
+  time      : 2026-07-29_13:30:42
+  host      : node-5-15
+  rank      : 5 (local_rank: 5)
+  exitcode  : -15 (pid: 4159310)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 4159310
+[6]:
+  time      : 2026-07-29_13:30:41
+  host      : node-5-15
+  rank      : 6 (local_rank: 6)
+  exitcode  : -15 (pid: 4159311)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/6/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
+[7]:
+  time      : 2026-07-29_13:30:40
+  host      : node-5-15
+  rank      : 7 (local_rank: 7)
+  exitcode  : -15 (pid: 4159312)  (SIGTERM)
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/7/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-07-29_13:30:40
+  host      : node-5-15
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 4159308) 
+  error_file: /tmp/torchelastic_xgfwh36y/none_h3dlth7l/attempt_0/3/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 500, in __init__
+      model = model_spec.parallelize_fn(
+          model,
+      ...<5 lines>...
+          dump_folder=config.dump_folder,
+      )
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/parallelize.py", line 87, in parallelize_qwen3_5
+      raise NotImplementedError(
+      ...<3 lines>...
+      )
+  NotImplementedError: Context Parallel is not yet supported for Qwen3.5. GatedDeltaNet (75% of layers) requires full-sequence allgather, and multimodal CP needs vision scatter before CP sharding.
+  
+============================================================
+(base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+cd ~/k50063112/torchtitan
+
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --training.local-batch-size 4 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 1 \
+    --parallelism.data_parallel_shard_degree 4 \
+    --parallelism.tensor_parallel_degree 1 \
+    --parallelism.pipeline_parallel_degree 2 \
+    --parallelism.pipeline_parallel_schedule 1F1B \
+    --parallelism.pipeline_parallel_microbatch_size 1 \
+    --parallelism.fsdp_reshard_after_forward always \
+    --dataloader.dataset cc12m-test
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+>>> Successfully patched flex_attention to use bfloat16 internally. <<<
+[titan] 2026-07-29 13:33:16,911 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,079 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,180 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,232 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,286 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,685 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:17,940 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:18,066 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[titan] 2026-07-29 13:33:19,149 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,199 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,200 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_3.20260729-133319-H1SJ9M.jsonl
+[titan] 2026-07-29 13:33:19,384 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:19,388 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:19,420 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:19,421 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:19,428 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:19,437 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,438 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,487 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,487 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_2.20260729-133319-98B1JR.jsonl
+[titan] 2026-07-29 13:33:19,492 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,493 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_4.20260729-133319-IY65A3.jsonl
+[titan] 2026-07-29 13:33:19,495 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,505 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,545 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,546 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_5.20260729-133319-WJ9TAD.jsonl
+[titan] 2026-07-29 13:33:19,554 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:19,555 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260729-133319-080VD8.jsonl
+[titan] 2026-07-29 13:33:19,677 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:19,746 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:19,746 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:19,874 - root - INFO - PP rank 0 is building stage_idx 0 with modules ['vision_encoder', 'tok_embeddings', 'layers.0', 'layers.1', 'layers.2', 'layers.3', 'layers.4', 'layers.5', 'layers.6', 'layers.7', 'layers.8', 'layers.9', 'layers.10', 'layers.11', 'layers.12', 'layers.13', 'layers.14', 'layers.15']
+[titan] 2026-07-29 13:33:19,875 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:19,875 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:19,999 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:19,999 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,039 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:20,093 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:20,094 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_1.20260729-133320-LE1KEV.jsonl
+[titan] 2026-07-29 13:33:20,099 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,104 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,105 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,105 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,107 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,108 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,109 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,113 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,116 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,117 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,121 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,124 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,125 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,130 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,149 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,152 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,153 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,155 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,160 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,163 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,277 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,280 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,296 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,302 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,309 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,310 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,314 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,386 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,386 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:20,398 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,398 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:20,414 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,422 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,463 - root - INFO - PP rank 1 is building stage_idx 1 with modules ['layers.16', 'layers.17', 'layers.18', 'layers.19', 'layers.20', 'layers.21', 'layers.22', 'layers.23', 'layers.24', 'layers.25', 'layers.26', 'layers.27', 'layers.28', 'layers.29', 'layers.30', 'layers.31', 'norm', 'lm_head']
+[titan] 2026-07-29 13:33:20,464 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,476 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:20,487 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,510 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,510 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:20,516 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,517 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:20,526 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:20,526 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,526 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:20,527 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_7.20260729-133320-DB3HK8.jsonl
+[titan] 2026-07-29 13:33:20,541 - root - INFO - PP rank 0 is building stage_idx 0 with modules ['vision_encoder', 'tok_embeddings', 'layers.0', 'layers.1', 'layers.2', 'layers.3', 'layers.4', 'layers.5', 'layers.6', 'layers.7', 'layers.8', 'layers.9', 'layers.10', 'layers.11', 'layers.12', 'layers.13', 'layers.14', 'layers.15']
+[titan] 2026-07-29 13:33:20,542 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,542 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,561 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,561 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:20,632 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:20,636 - root - INFO - PP rank 0 is building stage_idx 0 with modules ['vision_encoder', 'tok_embeddings', 'layers.0', 'layers.1', 'layers.2', 'layers.3', 'layers.4', 'layers.5', 'layers.6', 'layers.7', 'layers.8', 'layers.9', 'layers.10', 'layers.11', 'layers.12', 'layers.13', 'layers.14', 'layers.15']
+[titan] 2026-07-29 13:33:20,637 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,638 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,653 - root - INFO - PP rank 1 is building stage_idx 1 with modules ['layers.16', 'layers.17', 'layers.18', 'layers.19', 'layers.20', 'layers.21', 'layers.22', 'layers.23', 'layers.24', 'layers.25', 'layers.26', 'layers.27', 'layers.28', 'layers.29', 'layers.30', 'layers.31', 'norm', 'lm_head']
+[titan] 2026-07-29 13:33:20,654 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,683 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:20,683 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:20,687 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:20,690 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:20,690 - root - INFO - PP rank 0 is building stage_idx 0 with modules ['vision_encoder', 'tok_embeddings', 'layers.0', 'layers.1', 'layers.2', 'layers.3', 'layers.4', 'layers.5', 'layers.6', 'layers.7', 'layers.8', 'layers.9', 'layers.10', 'layers.11', 'layers.12', 'layers.13', 'layers.14', 'layers.15']
+[titan] 2026-07-29 13:33:20,690 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:20,691 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,691 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:20,717 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:20,720 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:20,736 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:20,737 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,744 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:20,744 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,745 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:20,746 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:20,750 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:20,813 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:20,813 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,830 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:20,830 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:20,923 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:20,996 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:20,996 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:21,003 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,009 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,059 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,060 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_6.20260729-133321-5STTSH.jsonl
+[titan] 2026-07-29 13:33:21,067 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,067 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:21,068 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,069 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,069 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,129 - root - INFO - PP rank 1 is building stage_idx 1 with modules ['layers.16', 'layers.17', 'layers.18', 'layers.19', 'layers.20', 'layers.21', 'layers.22', 'layers.23', 'layers.24', 'layers.25', 'layers.26', 'layers.27', 'layers.28', 'layers.29', 'layers.30', 'layers.31', 'norm', 'lm_head']
+[titan] 2026-07-29 13:33:21,129 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:21,145 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:21,173 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,173 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:21,174 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:21,193 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:21,194 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+[titan] 2026-07-29 13:33:21,271 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
+[titan] 2026-07-29 13:33:21,274 - root - INFO - Building device mesh with parallelism: pp=2, dp_replicate=1, dp_shard=4, cp=1, tp=1, ep=1
+[titan] 2026-07-29 13:33:21,301 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,309 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:21,310 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,310 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:21,316 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:21,396 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,396 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:21,397 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,398 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,399 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,399 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,402 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,402 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,403 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,408 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,409 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,444 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,444 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,449 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,451 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,452 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,489 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:21,500 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:21,515 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,516 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:21,516 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:21,561 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,562 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,570 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,576 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,576 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,580 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:21,587 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,673 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:21,673 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:21,677 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,677 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:21,681 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,684 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,685 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,826 - root - INFO - PP rank 1 is building stage_idx 1 with modules ['layers.16', 'layers.17', 'layers.18', 'layers.19', 'layers.20', 'layers.21', 'layers.22', 'layers.23', 'layers.24', 'layers.25', 'layers.26', 'layers.27', 'layers.28', 'layers.29', 'layers.30', 'layers.31', 'norm', 'lm_head']
+[titan] 2026-07-29 13:33:21,827 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:21,889 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:21,917 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:21,917 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:21,925 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,925 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:21,926 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,029 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:22,036 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,066 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,066 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,066 - root - INFO - Training starts at step 1
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,072 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,072 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,072 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,167 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:22,175 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,193 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,193 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,194 - root - INFO - Training starts at step 1
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,212 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,212 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,213 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,404 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:22,471 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:22,472 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:22,477 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:22,480 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:22,480 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:23,059 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:23,092 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:23,092 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:23,092 - root - INFO - Training starts at step 1
+[rank0]:[W729 13:33:25.485480019 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank2]:[W729 13:33:25.600835810 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank1]:[W729 13:33:25.734922770 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank3]:[W729 13:33:25.930586706 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank4]:[W729 13:33:25.279885710 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank5]:[W729 13:33:26.433932423 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank6]:[W729 13:33:26.497188275 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank7]:[W729 13:33:26.545775094 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank0]:[W729 13:33:26.926824199 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank4]:[W729 13:33:26.928546412 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank1]:[W729 13:33:27.370269452 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank5]:[W729 13:33:27.371175044 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank6]:[W729 13:33:27.552517130 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank2]:[W729 13:33:27.563673123 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank3]:[W729 13:33:27.572288184 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank7]:[W729 13:33:27.572651760 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+[titan] 2026-07-29 13:33:21,301 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,309 - root - INFO - Successfully created meshes with active dimensions: ['pp', 'batch', 'loss', 'efsdp', 'fsdp']
+[titan] 2026-07-29 13:33:21,310 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,310 - root - INFO - [GC] Initial GC collection took 0.00 seconds
+[titan] 2026-07-29 13:33:21,316 - root - INFO - Building qwen3_5 9B
+[titan] 2026-07-29 13:33:21,396 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,396 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:21,397 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,398 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,399 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,399 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,402 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,402 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,403 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,408 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,409 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,444 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,444 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,449 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,451 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,452 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,489 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:21,500 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:21,515 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,516 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:21,516 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:21,561 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,562 - root - INFO - CUDA memory usage for model: 4.66GiB(5.88%)
+[titan] 2026-07-29 13:33:21,570 - root - INFO - Optimizer AdamW (model_part=0): 702 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,576 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,576 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,580 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
+[titan] 2026-07-29 13:33:21,587 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:21,673 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
+[titan] 2026-07-29 13:33:21,673 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
+[titan] 2026-07-29 13:33:21,677 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:21,677 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:21,681 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:21,684 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:21,685 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:21,826 - root - INFO - PP rank 1 is building stage_idx 1 with modules ['layers.16', 'layers.17', 'layers.18', 'layers.19', 'layers.20', 'layers.21', 'layers.22', 'layers.23', 'layers.24', 'layers.25', 'layers.26', 'layers.27', 'layers.28', 'layers.29', 'layers.30', 'layers.31', 'norm', 'lm_head']
+[titan] 2026-07-29 13:33:21,827 - root - INFO - Applied FullAC activation checkpointing to the model
+[titan] 2026-07-29 13:33:21,889 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:21,917 - root - INFO - Applied FSDP to the model
+[titan] 2026-07-29 13:33:21,917 - root - INFO - Using pipeline schedule 1F1B with 4 microbatches and 2 stages.
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:21,925 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:21,925 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:21,926 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,029 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:22,036 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,066 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,066 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,066 - root - INFO - Training starts at step 1
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,072 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,072 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,072 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,167 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+[titan] 2026-07-29 13:33:22,175 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,193 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,193 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,194 - root - INFO - Training starts at step 1
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:22,212 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:22,212 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:22,213 - root - INFO - Training starts at step 1
+[titan] 2026-07-29 13:33:22,404 - root - WARNING - Pipeline Parallel loss is not visible. Please add rank 4 to LOG_RANK environment variable in run_train.sh.
+[titan] 2026-07-29 13:33:22,471 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
+[titan] 2026-07-29 13:33:22,472 - root - INFO - CUDA memory usage for model: 8.70GiB(10.99%)
+[titan] 2026-07-29 13:33:22,477 - root - INFO - Optimizer AdamW (model_part=0): 262 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
+[titan] 2026-07-29 13:33:22,480 - root - WARNING - Warmup steps (20) exceed total steps (1). Adjusting warmup steps to 1.
+[titan] 2026-07-29 13:33:22,480 - root - INFO - Loading tokenizer from tokenizer.json
+[titan] 2026-07-29 13:33:23,059 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
+/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
+  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
+[titan] 2026-07-29 13:33:23,092 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[titan] 2026-07-29 13:33:23,092 - root - INFO - Trainer is initialized with local batch size 4, global batch size 16, gradient accumulation steps 1, sequence length 4096, total steps 1 (warmup 20)
+[titan] 2026-07-29 13:33:23,092 - root - INFO - Training starts at step 1
+[rank0]:[W729 13:33:25.485480019 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank2]:[W729 13:33:25.600835810 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank1]:[W729 13:33:25.734922770 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank3]:[W729 13:33:25.930586706 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank4]:[W729 13:33:25.279885710 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank5]:[W729 13:33:26.433932423 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank6]:[W729 13:33:26.497188275 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank7]:[W729 13:33:26.545775094 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank0]:[W729 13:33:26.926824199 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank4]:[W729 13:33:26.928546412 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank1]:[W729 13:33:27.370269452 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank5]:[W729 13:33:27.371175044 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank6]:[W729 13:33:27.552517130 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank2]:[W729 13:33:27.563673123 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank3]:[W729 13:33:27.572288184 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+[rank7]:[W729 13:33:27.572651760 ProcessGroupNCCL.cpp:4173] Warning: An unbatched P2P op (send/recv) was called on this ProcessGroup with size 2.  In lazy initialization mode, this will result in a new 2-rank NCCL communicator to be created. (function operator())
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
+  output = self._register_pre_backward_hook(output)
+[titan] 2026-07-29 13:33:45,381 - root - INFO - step:  1  loss: 13.02085  grad_norm: 15.5194  memory: 45.17GiB(57.08%)  tps: 329  tflops: 17.11  mfu: 5.49%
+[titan] 2026-07-29 13:33:45,381 - root - INFO - step:  1  loss: 13.02085  grad_norm: 15.5194  memory: 45.17GiB(57.08%)  tps: 346  tflops: 17.95  mfu: 5.75%
+[titan] 2026-07-29 13:33:45,381 - root - INFO - step:  1  loss: 13.02085  grad_norm: 15.5194  memory: 45.17GiB(57.08%)  tps: 328  tflops: 17.03  mfu: 5.46%
+[titan] 2026-07-29 13:33:45,382 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:45,382 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:45,382 - root - INFO - step:  1  loss: 13.02085  grad_norm: 15.5194  memory: 45.17GiB(57.08%)  tps: 336  tflops: 17.45  mfu: 5.59%
+[titan] 2026-07-29 13:33:45,382 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:45,383 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:47,194 - root - INFO - step:  1  loss: -4.00000  grad_norm: 15.5194  memory: 46.19GiB(58.37%)  tps: 308  tflops: 15.98  mfu: 5.12%
+[titan] 2026-07-29 13:33:47,194 - root - INFO - step:  1  loss: -4.00000  grad_norm: 15.5194  memory: 46.23GiB(58.41%)  tps: 298  tflops: 15.51  mfu: 4.97%
+[titan] 2026-07-29 13:33:47,195 - root - INFO - step:  1  loss: -4.00000  grad_norm: 15.5194  memory: 46.23GiB(58.41%)  tps: 306  tflops: 15.88  mfu: 5.09%
+[titan] 2026-07-29 13:33:47,195 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:47,195 - root - INFO - step:  1  loss: -4.00000  grad_norm: 15.5194  memory: 46.19GiB(58.37%)  tps: 307  tflops: 15.96  mfu: 5.11%
+[titan] 2026-07-29 13:33:47,195 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:47,195 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:47,195 - root - INFO - Synchronizing and adjusting timeout for all ProcessGroups to 0:01:40
+[titan] 2026-07-29 13:33:48,238 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,238 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,238 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,238 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,239 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,239 - root - INFO - Sleeping 2 seconds for other ranks to complete
+[titan] 2026-07-29 13:33:48,239 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:48,239 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:50,239 - root - INFO - Training completed
+[titan] 2026-07-29 13:33:51,349 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,678 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,728 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,773 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,791 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,802 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,805 - root - INFO - Process group destroyed
+[titan] 2026-07-29 13:33:51,811 - root - INFO - Process group destroyed
