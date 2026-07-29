@@ -4,7 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-#version1：2026.7.29 10:29
+#version1：2026.7.29 9：57
 
 from dataclasses import dataclass
 from typing import Literal
@@ -1020,5 +1020,3 @@ class Qwen35Model(Decoder):
             return out
             
         return x
-
-
