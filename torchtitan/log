@@ -21,6 +21,27 @@ PYTHONPATH=. python -m torch.distributed.run \
     --dataloader.dataset cc12m-test
 
 
+cd ~/k50063112/torchtitan
+# 先检查错误行
+grep -n "MRoPE\|from \.rope" \
+    torchtitan/distributed/pipeline_parallel.py
+# 备份
+cp torchtitan/distributed/pipeline_parallel.py \
+   torchtitan/distributed/pipeline_parallel.py.bak
+# 删除错误导入
+sed -i '/from \.rope import MRoPE/d' \
+    torchtitan/distributed/pipeline_parallel.py
+# 清理缓存
+find torchtitan/distributed -type d -name "__pycache__" \
+    -prune -exec rm -rf {} +
+# 检查语法
+python -m py_compile \
+    torchtitan/distributed/pipeline_parallel.py
+# 检查模块能否正常导入
+PYTHONPATH=. python -c \
+'import torchtitan.distributed.pipeline_parallel as p; print("Import OK:", p.__file__)'
+
+
 (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 cd ~/k50063112/torchtitan
 PYTHONPATH=. python -m torch.distributed.run \
