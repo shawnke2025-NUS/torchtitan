@@ -26,7 +26,33 @@ PYTHONPATH=. python -m torch.distributed.run \
     --compile.backend aot_eager \
     --dataloader.dataset cc12m-test
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export TORCH_LOGS="graph_breaks,recompiles"
 
+cd ~/k50063112/torchtitan
+
+PYTHONPATH=. python -m torch.distributed.run \
+    --nproc_per_node=8 \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=localhost:0 \
+    --local-ranks-filter=0 \
+    --tee=3 \
+    -m torchtitan.train \
+    --module qwen3_5 \
+    --config qwen35_9b \
+    --debug.seed 32 \
+    --debug.print-config \
+    --training.local-batch-size 1 \
+    --training.mixed-precision-param bfloat16 \
+    --training.mixed-precision-reduce float32 \
+    --training.steps 3 \
+    --parallelism.data-parallel-shard-degree 8 \
+    --parallelism.tensor-parallel-degree 1 \
+    --parallelism.fsdp-reshard-after-forward always \
+    --compile.enable \
+    --compile.components model \
+    --compile.backend aot_eager \
+    --dataloader.dataset cc12m-test
 
 
 
