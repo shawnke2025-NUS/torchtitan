@@ -32,30 +32,61 @@ FakeTensorMode.__init__ = torch.compiler.disable(  # type: ignore[method-assign]
 _regional_inductor_enabled: bool = False
 
 
-def apply_compile(model: nn.Module, compile_config: CompileConfig) -> None:
+def apply_compile(
+    model: nn.Module,
+    compile_config: CompileConfig,
+    *,
+    layer_filter: Callable[[str, nn.Module], bool] | None = None,
+) -> None:
     """
-    Apply torch.compile to each TransformerBlock, which makes compilation efficient due to
-    repeated structure. Alternatively one can compile the whole model (after applying DP).
+    Apply torch.compile to selected TransformerBlocks.
+
+    By default, every block under ``model.layers`` is compiled. ``layer_filter``
+    can keep unsupported blocks in eager mode. The callback receives the layer
+    ID and the underlying TransformerBlock. If activation checkpointing has
+    already wrapped the block, this function unwraps
+    ``_checkpoint_wrapped_module`` for filtering while compiling the outer
+    checkpoint wrapper itself.
     """
-    # Needed for torch.compile to handle data-dependent dynamic shapes in
-    # token-choice MoE dispatch. Harmless for dense models.
     torch._dynamo.config.capture_scalar_outputs = True
-    # Skip replaying forward side effects (e.g. RoPE cache updates) during
-    # the AC recompute in backward. Eager AC replays the forward python
-    # side-effects in backward, but torch.compile has no easy way to reapply
-    # python mutations in the backward. Setting this flag accepts this eager
-    # and compile divergence by skipping reapplication of side effects.
     torch._dynamo.config.skip_fwd_side_effects_in_bwd_under_checkpoint = (
         True  # pyrefly: ignore [bad-assignment]
     )
 
     backend = _maybe_regional_inductor_backend(model, compile_config.backend)
 
+    compiled_layers: list[str] = []
+    skipped_layers: list[str] = []
+
     # pyrefly: ignore [missing-attribute]
     for layer_id, transformer_block in model.layers.named_children():
-        transformer_block.compile(backend=backend, fullgraph=True)
+        filter_target = getattr(
+            transformer_block,
+            "_checkpoint_wrapped_module",
+            transformer_block,
+        )
 
-    logger.info("Compiling each TransformerBlock with torch.compile")
+        if layer_filter is not None and not layer_filter(layer_id, filter_target):
+            skipped_layers.append(layer_id)
+            continue
+
+        transformer_block.compile(backend=backend, fullgraph=True)
+        compiled_layers.append(layer_id)
+
+    if not compiled_layers:
+        logger.warning(
+            "torch.compile did not select any TransformerBlock layers; "
+            "skipped layers=%s",
+            skipped_layers,
+        )
+        return
+
+    logger.info(
+        "Compiled TransformerBlock layers=%s with backend=%s; skipped layers=%s",
+        compiled_layers,
+        compile_config.backend,
+        skipped_layers,
+    )
 
 
 def _maybe_regional_inductor_backend(model: nn.Module, backend: str) -> str | Callable:
@@ -71,14 +102,9 @@ def _maybe_regional_inductor_backend(model: nn.Module, backend: str) -> str | Ca
     from torchtitan.models.common.attention import FlexAttention
 
     uses_flex = any(isinstance(m, FlexAttention) for m in model.modules())
-    # Non-flex models never need the scoop; the default inductor backend already
-    # lowers the flex region directly. Both are left on the unmodified backend.
     if not uses_flex or backend == "inductor":
         return backend
 
-    # FlexAttention only has an inductor lowering. Under a non-inductor backend
-    # other than aot_eager it would decompose to eager aten ops (no Triton
-    # kernel), which we can't transparently scoop here -- fail loudly.
     if backend != "aot_eager":
         raise ValueError(
             f"Model uses FlexAttention but compile backend {backend!r} is neither "
