@@ -30,186 +30,91 @@ PYTHONPATH=. python -m torch.distributed.run \
 
 
 
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[default0]:[rank0]:     return forward_call(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-[default0]:[rank0]:     outputs = fn(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-[default0]:[rank0]:     reshaped_cache = self._reshape_cache(query, positions)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-[default0]:[rank0]:     return self._compute_mrope_cache(positions)
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-[default0]:[rank0]:     return distribute_tensor(
-[default0]:[rank0]:     
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-[default0]:[rank0]:     local_tensor = Replicate._make_replicate_tensor(
-[default0]:[rank0]:     
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-[default0]:[rank0]:     mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-[default0]:[rank0]:     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-[default0]:[rank0]:     return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-[default0]:[rank0]:     return func(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-[default0]:[rank0]:     opts = BroadcastOptions()
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-[default0]:[rank0]:     obj = cls.__new__(cls, *args, **kwargs)
-[default0]:
-[default0]:[rank0]: Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-[default0]:
-W0729 19:41:41.191000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693763 closing signal SIGTERM
-W0729 19:41:41.193000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693764 closing signal SIGTERM
-W0729 19:41:41.194000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693765 closing signal SIGTERM
-W0729 19:41:41.194000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693766 closing signal SIGTERM
-W0729 19:41:41.194000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693767 closing signal SIGTERM
-W0729 19:41:41.194000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693768 closing signal SIGTERM
-W0729 19:41:41.194000 2693678 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 2693769 closing signal SIGTERM
-E0729 19:41:42.156000 2693678 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 2693762) of binary: /home/f00913055/conda/bin/python
-E0729 19:41:42.214000 2693678 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/0/error.json)
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1032, in <module>
-    main()
-    ~~~~^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-    return f(*args, **kwargs)
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1028, in main
-    run(args)
-    ~~~^^^^^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/run.py", line 1019, in run
-    elastic_launch(
-    ~~~~~~~~~~~~~~~
-        config=config,
-        ~~~~~~~~~~~~~~
-        entrypoint=cmd,
-        ~~~~~~~~~~~~~~~
-    )(*cmd_args)
-    ~^^^^^^^^^^^
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
-    return launch_agent(
-        self._config,
-    ...<2 lines>...
-        health_check_server=self._health_check_server,
-    )
-  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
-    raise ChildFailedError(
-    ...<2 lines>...
-    )
-torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
-============================================================
-torchtitan.train FAILED
-------------------------------------------------------------
-Failures:
-[1]:
-  time      : 2026-07-29_19:41:38
-  host      : node-5-15
-  rank      : 1 (local_rank: 1)
-  exitcode  : 1 (pid: 2693763) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
+
+            flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-      return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
-             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [2]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:38
   host      : node-5-15
-  rank      : 2 (local_rank: 2)
-  exitcode  : 1 (pid: 2693764) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/2/error.json
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 2705145) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/1/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -238,78 +143,111 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [3]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:39
   host      : node-5-15
-  rank      : 3 (local_rank: 3)
-  exitcode  : 1 (pid: 2693765) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/3/error.json
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 2705146) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/2/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -338,78 +276,111 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [4]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:39
   host      : node-5-15
   rank      : 4 (local_rank: 4)
-  exitcode  : 1 (pid: 2693766) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/4/error.json
+  exitcode  : 1 (pid: 2705148) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/4/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -438,78 +409,111 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [5]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:39
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : 1 (pid: 2693767) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/5/error.json
+  exitcode  : 1 (pid: 2705149) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/5/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -538,78 +542,111 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [6]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:38
   host      : node-5-15
   rank      : 6 (local_rank: 6)
-  exitcode  : 1 (pid: 2693768) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/6/error.json
+  exitcode  : 1 (pid: 2705150) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/6/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -638,78 +675,111 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
   
 [7]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:39
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : 1 (pid: 2693769) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/7/error.json
+  exitcode  : 1 (pid: 2705151) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/7/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -738,68 +808,101 @@ Failures:
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
@@ -807,11 +910,11 @@ Failures:
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-29_19:41:38
+  time      : 2026-07-29_19:58:38
   host      : node-5-15
-  rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 2693762) 
-  error_file: /tmp/torchelastic_hktov0zo/none_zjicuo1n/attempt_0/0/error.json
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 2705147) 
+  error_file: /tmp/torchelastic_n4cu7a7h/none_53c0vldr/attempt_0/3/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
@@ -840,68 +943,101 @@ Root Cause (first observed failure):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
       return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
              ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1177, in compile_wrapper
-      raise e.with_traceback(
-      ^^^^^^^^^^^^^^^^^^^^^^^
-          None
-          ^^^^
-      ) from e.__cause__  # User compiler error
-      ^^^^^^^^^^^^^^^^^^
-  torch._dynamo.exc.Unsupported: Attempted to call function marked as skipped
-    Higher Order Operator: torch.utils.checkpoint.checkpoint
-    Explanation: Dynamo does not know how to trace the builtin `<unknown module>.pybind11_object.__new__.` This function is either a Python builtin (e.g. _warnings.warn) or a third-party C/C++ Python extension (perhaps created with pybind).
-    Hint: If it is a Python builtin, please file an issue on GitHub so the PyTorch team can add support for it and see the next case for a workaround.
-    Hint: If it is a third-party C/C++ Python extension, please either wrap it into a PyTorch-understood custom operator (see https://pytorch.org/tutorials/advanced/custom_ops_landing_page.html for more details) or, if it is traceable, use `torch.compiler.allow_in_graph`.
-  
-    Developer debug context: module: <unknown module>, qualname: pybind11_object.__new__, skip reason: cannot determine source file for  (likely a C extension or builtin)
-  
-   For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0007.html
-  
-  from user code:
-     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/algorithms/_checkpoint/checkpoint_wrapper.py", line 169, in forward
-      return self.checkpoint_fn(  # type: ignore[misc]
-      
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 610, in forward
-      h = self.attn(h, attention_masks, positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 550, in forward
-      xq_rot, xk_rot = self.rope(xq_rot, xk_rot, positions)
-                       ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/protocols/module.py", line 291, in forward_with_redistribution
-      outputs = fn(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/common/rope.py", line 167, in forward
-      reshaped_cache = self._reshape_cache(query, positions)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 48, in _reshape_cache
-      return self._compute_mrope_cache(positions)
-             ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/rope.py", line 105, in _compute_mrope_cache
-      return distribute_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_api.py", line 994, in distribute_tensor
-      local_tensor = Replicate._make_replicate_tensor(
-      
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/placement_types.py", line 1481, in _make_replicate_tensor
-      mesh_broadcast(tensor, mesh, mesh_dim=mesh_dim, group_src=src_data_rank)
-      ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/tensor/_collective_utils.py", line 211, in mesh_broadcast
-      return broadcast(tensor, group=dim_group, async_op=async_op, group_src=group_src)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 3133, in broadcast
-      opts = BroadcastOptions()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/polyfills/__init__.py", line 505, in instantiate_user_defined_class_object
-      obj = cls.__new__(cls, *args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1183, in compile_wrapper
+      raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3147, in _call_user_compiler
+      raise BackendCompilerFailed(
+          self.compiler_fn, e, inspect.currentframe()
+      ).with_traceback(e.__traceback__) from None
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/output_graph.py", line 3119, in _call_user_compiler
+      compiled_fn = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/repro/after_dynamo.py", line 159, in __call__
+      compiled_gm = compiler_fn(gm, example_inputs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/__init__.py", line 2568, in __call__
+      return self.compiler_fn(model_, inputs_, **self.kwargs)
+             ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/backends/common.py", line 123, in __call__
+      cg = aot_module_simplified(gm, example_inputs, **self.kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/aot_autograd.py", line 1237, in aot_module_simplified
+      aot_graph_capture = aot_stage1_graph_capture(aot_state, functional_call)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_compile.py", line 248, in aot_stage1_graph_capture
+      ) = aot_dispatch_autograd_graph(
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          flat_fn,
+          ^^^^^^^^
+      ...<3 lines>...
+          fw_metadata=aot_state.fw_metadata,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 530, in aot_dispatch_autograd_graph
+      fx_g, saved_updated_joint_inputs = _create_graph_and_save_traced_inputs(
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+          joint_fn_to_trace,
+          ^^^^^^^^^^^^^^^^^^
+      ...<2 lines>...
+          aot_config=aot_config,
+          ^^^^^^^^^^^^^^^^^^^^^^
+      )
+      ^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 278, in _create_graph_and_save_traced_inputs
+      _create_graph(fn_to_trace, flat_args, flat_args_descs, aot_config=aot_config),
+      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_functorch/_aot_autograd/graph_capture.py", line 130, in _create_graph
+      fx_g = make_fx(
+      ...<4 lines>...
+          _disable_torch_fn_metadata_mode=aot_config._disable_torch_fn_metadata_mode,
+      )(*args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 3060, in wrapped
+      return make_fx_tracer.trace(f, *args)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2962, in trace
+      return self._trace_inner(f, *args)
+             ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 2923, in _trace_inner
+      t = dispatch_trace(
+          wrap_key(func, args, self.fx_tracer, self.pre_dispatch),
+          tracer=self.fx_tracer,
+          concrete_args=tuple(phs),
+      )
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_compile.py", line 54, in inner
+      return disable_fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1691, in dispatch_trace
+      graph = tracer.trace(root, concrete_args)  # type: ignore[arg-type]
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+      return fn(*args, **kwargs)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 914, in trace
+      (self.create_arg(fn(*args)),),
+                       ~~^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/_symbolic_trace.py", line 753, in flatten_fn
+      tree_out = root_fn(*tree_args)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1773, in wrapped
+      out = pytree.tree_map_only(py_sym_types, get_sym_proxy_slot, out)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1754, in tree_map_only
+      return tree_map(map_only(type_or_types_or_pred)(func), tree, is_leaf=is_leaf)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1578, in tree_map
+      return treespec.unflatten(map(func, *flat_args))
+             ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1313, in unflatten
+      leaves = list(leaves)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/utils/_pytree.py", line 1689, in wrapped
+      return func(x)
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 1771, in get_sym_proxy_slot
+      return get_proxy_slot(t, tracer).force()
+             ~~~~~~~~~~~~~~^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 482, in get_proxy_slot
+      _build_proxy_for_sym_expr(tracer, obj.node.expr, obj)
+      ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 661, in _build_proxy_for_sym_expr
+      if (arg_value := _build_proxy_for_sym_expr(tracer, arg)) is None:
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/fx/experimental/proxy_tensor.py", line 670, in _build_proxy_for_sym_expr
+      out = func(*args)
+  torch._dynamo.exc.BackendCompilerFailed: backend='compiler_fn' raised:
+  TypeError: mul expected 2 arguments, got 3
   
   Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
   
