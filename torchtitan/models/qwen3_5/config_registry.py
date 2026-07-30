@@ -219,7 +219,8 @@ def qwen35_9b() -> Trainer.Config:
             interval=500,
             last_save_model_only=False,
         ),
-        activation_checkpoint=FullAC.Config(),
+        #activation_checkpoint=FullAC.Config(),
+        activation_checkpoint=None,
     )
 
 
