@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
-
+#2026.7.30 9:28
 from typing import Any, TYPE_CHECKING
 
 import torch
@@ -69,12 +69,13 @@ def get_fsdp_reshard_after_forward_policy(
         case "never":
             return False
         case "default":
-            # For PP, by default do not reshard after forward to avoid per-microbatch
+            # For PP, by default do not reshard_after_forward to avoid per-microbatch
             # all-gathers, which can be expensive and non-overlapped
             return not pp_enabled
         case _:
             raise ValueError(
-                f"Invalid reshard_after_forward_policy: {reshard_after_forward_policy}."
+                f"Invalid fsdp_reshard_after_forward_policy: "
+                f"{reshard_after_forward_policy}."
             )
 
 
@@ -178,6 +179,17 @@ def apply_fsdp_to_decoder(
             )
 
     for layer_id, transformer_block in model.layers.items():
+        # FullAC replaces each entry in model.layers with a CheckpointWrapper.
+        # FSDP must be attached to the underlying TransformerBlock so that its
+        # pre-forward all-gather runs when checkpoint() invokes that block.
+        # Sharding only the outer wrapper may leave descendant parameters as
+        # DTensors inside the checkpointed call, causing Tensor/DTensor mm errors.
+        transformer_block = getattr(
+            transformer_block,
+            "_checkpoint_wrapped_module",
+            transformer_block,
+        )
+
         # NOTE: In an MoE layer, we use shard_placement_fn to apply different
         # FSDP mesh and shard placement to different parameters:
         # - When EP > 1: routed experts use edp_mesh, other params use dp_mesh
@@ -257,12 +269,13 @@ def apply_fsdp_to_decoder(
                 ) -> ShardPlacementResult:
                     if param in _expert_params:
                         return ShardPlacementResult(
-                            placement=_expert_placement, mesh_info=_edp_mesh_info
+                            placement=_expert_placement,
+                            mesh_info=_edp_mesh_info,
                         )
-                    else:
-                        return ShardPlacementResult(
-                            placement=Shard(0), mesh_info=_dp_mesh_info
-                        )
+                    return ShardPlacementResult(
+                        placement=Shard(0),
+                        mesh_info=_dp_mesh_info,
+                    )
 
                 fully_shard(
                     transformer_block,
@@ -298,19 +311,29 @@ def apply_fsdp_to_decoder(
     if ep_degree == 1:
         return
 
+    # Build the prefetch lists from the same underlying FSDP-wrapped blocks.
+    # This also handles model.layers entries wrapped by FullAC.
+    transformer_blocks = [
+        getattr(block, "_checkpoint_wrapped_module", block)
+        for block in model.layers.values()
+    ]
+
     # set up explicit prefetching when EP is enabled for forward
-    transformer_blocks = list(model.layers.values())
     next_transformer_blocks = transformer_blocks[1:] + [None]
 
-    if model.tok_embeddings is not None and len(model.layers) > 0:
-        model.tok_embeddings.set_modules_to_forward_prefetch([transformer_blocks[0]])
+    if model.tok_embeddings is not None and transformer_blocks:
+        model.tok_embeddings.set_modules_to_forward_prefetch(
+            [transformer_blocks[0]]
+        )
 
     for transformer_block, next_transformer_block in zip(
         transformer_blocks, next_transformer_blocks
     ):
         if next_transformer_block is not None:
             # pyrefly: ignore [not-callable]
-            transformer_block.set_modules_to_forward_prefetch([next_transformer_block])
+            transformer_block.set_modules_to_forward_prefetch(
+                [next_transformer_block]
+            )
         elif model.norm is not None and model.lm_head is not None:
             # pyrefly: ignore [not-callable]
             transformer_block.set_modules_to_forward_prefetch(
@@ -319,18 +342,28 @@ def apply_fsdp_to_decoder(
 
     # set up explicit prefetching when EP is enabled for backward
     # pyrefly: ignore [no-matching-overload]
-    reversed_transformer_blocks = list(reversed(model.layers.values()))
+    reversed_transformer_blocks = list(reversed(transformer_blocks))
     prev_transformer_blocks = reversed_transformer_blocks[1:] + [None]
 
-    if model.norm is not None and model.lm_head is not None and len(model.layers) > 0:
-        model.lm_head.set_modules_to_backward_prefetch([reversed_transformer_blocks[0]])
+    if (
+        model.norm is not None
+        and model.lm_head is not None
+        and reversed_transformer_blocks
+    ):
+        model.lm_head.set_modules_to_backward_prefetch(
+            [reversed_transformer_blocks[0]]
+        )
 
     for transformer_block, prev_transformer_block in zip(
         reversed_transformer_blocks, prev_transformer_blocks
     ):
         if prev_transformer_block is not None:
             # pyrefly: ignore [missing-attribute]
-            transformer_block.set_modules_to_backward_prefetch([prev_transformer_block])
+            transformer_block.set_modules_to_backward_prefetch(
+                [prev_transformer_block]
+            )
         elif model.tok_embeddings is not None:
             # pyrefly: ignore [missing-attribute]
-            transformer_block.set_modules_to_backward_prefetch([model.tok_embeddings])
+            transformer_block.set_modules_to_backward_prefetch(
+                [model.tok_embeddings]
+            )
