@@ -947,11 +947,18 @@ class Qwen35Model(Decoder):
             # Non-first PP stages receive hidden states in the `tokens` slot.
             x = tokens
 
-        # Keep the compatibility bridge that made FSDP+PP metadata inference
-        # work in the user's environment. Do not apply it to CP: CP sequence
-        # communication operates on ordinary local tensors.
+        # Only forward-SPMD parallelization (TP/EP/spmd_types) should turn
+        # activations into DTensors. FSDP2 also stores sharded parameters as
+        # DTensors between forwards, but its pre-forward hook materializes plain
+        # Tensor parameters for computation. Treating an FSDP storage parameter
+        # as an activation mesh would produce DTensor activations with Tensor
+        # weights and fail in Linear/Conv operators.
         mesh_param = None
-        if cp_mesh is None and not isinstance(x, DTensor):
+        if (
+            cp_mesh is None
+            and self._parallelized
+            and not isinstance(x, DTensor)
+        ):
             try:
                 mesh_param = next(self.parameters())
             except StopIteration:
@@ -981,6 +988,7 @@ class Qwen35Model(Decoder):
             x = layer(x, attention_masks, rope_positions)
             if (
                 cp_mesh is None
+                and self._parallelized
                 and not isinstance(x, DTensor)
                 and isinstance(mesh_param, DTensor)
             ):
