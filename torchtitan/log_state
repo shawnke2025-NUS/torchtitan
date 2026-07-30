@@ -56,7 +56,7 @@ PYTHONPATH=. python -m torch.distributed.run \
 
 
 
-(base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+   (base) f00913055@node-5-15:~/k50063112/torchtitan$ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export TORCH_LOGS="graph_breaks,recompiles"
 
 cd ~/k50063112/torchtitan
@@ -89,309 +89,41 @@ PYTHONPATH=. python -m torch.distributed.run \
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************
 [default0]:>>> Successfully patched flex_attention to use bfloat16 internally. <<<
-[default0]:[titan] 2026-07-30 09:53:11,138 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
-[default0]:[titan] 2026-07-30 09:53:13,515 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[default0]:[titan] 2026-07-30 09:53:13,565 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[default0]:[titan] 2026-07-30 09:53:13,566 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260730-095313-0IHK9W.jsonl
-[default0]:[titan] 2026-07-30 09:53:14,634 - root - WARNING - ENV[TORCH_NCCL_ASYNC_ERROR_HANDLING] = 1 will be overridden to 3 based on job config
-[default0]:[titan] 2026-07-30 09:53:14,644 - root - INFO - Running with configs: {
-[default0]:  "model_spec": {
-[default0]:    "name": "qwen3_5",
-[default0]:    "flavor": "9B"
-[default0]:  },
-[default0]:  "hf_assets_path": "./assets/hf/Qwen3.5-9B",
-[default0]:  "dump_folder": "./outputs",
-[default0]:  "profiler": {
-[default0]:    "enable_profiling": false,
-[default0]:    "save_traces_folder": "profiling/traces",
-[default0]:    "profile_freq": 10,
-[default0]:    "profiler_repeat": null,
-[default0]:    "profiler_skip_first": null,
-[default0]:    "profiler_skip_first_wait": null,
-[default0]:    "profiler_active": 1,
-[default0]:    "profiler_warmup": 3,
-[default0]:    "enable_memory_snapshot": false,
-[default0]:    "save_memory_snapshot_folder": "profiling/memory_snapshot",
-[default0]:    "memory_snapshot_max_entries": 1000000,
-[default0]:    "trace_post_processor": null
-[default0]:  },
-[default0]:  "metrics": {
-[default0]:    "log_freq": 10,
-[default0]:    "enable_tensorboard": false,
-[default0]:    "disable_color_printing": false,
-[default0]:    "save_tb_folder": "tb",
-[default0]:    "save_for_all_ranks": false,
-[default0]:    "enable_wandb": false
-[default0]:  },
-[default0]:  "tokenizer": {
-[default0]:    "image_token": "<|image_pad|>",
-[default0]:    "video_token": "<|video_pad|>",
-[default0]:    "vision_start_token": "<|vision_start|>",
-[default0]:    "vision_end_token": "<|vision_end|>",
-[default0]:    "pad_token": "<|endoftext|>"
-[default0]:  },
-[default0]:  "dataloader": {
-[default0]:    "dataset": "cc12m-test",
-[default0]:    "dataset_path": null,
-[default0]:    "num_workers": 0,
-[default0]:    "persistent_workers": false,
-[default0]:    "pin_memory": false,
-[default0]:    "prefetch_factor": null,
-[default0]:    "dataset_subset": "",
-[default0]:    "infinite": true,
-[default0]:    "packing_buffer_size": 0,
-[default0]:    "max_images_per_batch": 128,
-[default0]:    "patch_size": 16,
-[default0]:    "temporal_patch_size": 2,
-[default0]:    "spatial_merge_size": 2,
-[default0]:    "min_pixels": 65536,
-[default0]:    "max_pixels": 16777216,
-[default0]:    "image_mean": [
-[default0]:      0.5,
-[default0]:      0.5,
-[default0]:      0.5
-[default0]:    ],
-[default0]:    "image_std": [
-[default0]:      0.5,
-[default0]:      0.5,
-[default0]:      0.5
-[default0]:    ],
-[default0]:    "video_dir": "",
-[default0]:    "video_fps": 2.0,
-[default0]:    "video_min_frames": 4,
-[default0]:    "video_max_frames": 768,
-[default0]:    "build_mrope_positions": true
-[default0]:  },
-[default0]:  "optimizer": {
-[default0]:    "param_groups": [
-[default0]:      {
-[default0]:        "pattern": ".*",
-[default0]:        "optimizer_name": "AdamW",
-[default0]:        "optimizer_kwargs": {
-[default0]:          "lr": 0.0005,
-[default0]:          "betas": [
-[default0]:            0.9,
-[default0]:            0.95
-[default0]:          ],
-[default0]:          "eps": 1e-08,
-[default0]:          "weight_decay": 0.1
-[default0]:        }
-[default0]:      }
-[default0]:    ],
-[default0]:    "implementation": "fused"
-[default0]:  },
-[default0]:  "lr_scheduler": {
-[default0]:    "warmup_steps": 20,
-[default0]:    "total_steps": null,
-[default0]:    "decay_ratio": null,
-[default0]:    "decay_type": "linear",
-[default0]:    "min_lr_factor": 0.0
-[default0]:  },
-[default0]:  "training": {
-[default0]:    "local_batch_size": 1,
-[default0]:    "global_batch_size": -1,
-[default0]:    "seq_len": 4096,
-[default0]:    "max_norm": 1.0,
-[default0]:    "steps": 3,
-[default0]:    "enable_cpu_offload": false,
-[default0]:    "dtype": "float32",
-[default0]:    "mixed_precision_param": "bfloat16",
-[default0]:    "mixed_precision_reduce": "float32",
-[default0]:    "gc_freq": 50,
-[default0]:    "gc_debug": false
-[default0]:  },
-[default0]:  "parallelism": {
-[default0]:    "data_parallel_replicate_degree": 1,
-[default0]:    "data_parallel_shard_degree": 8,
-[default0]:    "fsdp_reshard_after_forward": "always",
-[default0]:    "enable_fsdp_symm_mem": false,
-[default0]:    "tensor_parallel_degree": 1,
-[default0]:    "enable_async_tensor_parallel": false,
-[default0]:    "enable_sequence_parallel": true,
-[default0]:    "spmd_backend": "default",
-[default0]:    "pipeline_parallel_degree": 1,
-[default0]:    "module_fqns_per_model_part": null,
-[default0]:    "pipeline_parallel_first_stage_less_layers": 1,
-[default0]:    "pipeline_parallel_last_stage_less_layers": 1,
-[default0]:    "pipeline_parallel_layers_per_stage": null,
-[default0]:    "pipeline_parallel_schedule": "1F1B",
-[default0]:    "pipeline_parallel_schedule_csv": "",
-[default0]:    "pipeline_parallel_microbatch_size": 1,
-[default0]:    "context_parallel_degree": 1,
-[default0]:    "context_parallel_load_balancer": "headtail",
-[default0]:    "expert_parallel_degree": 1
-[default0]:  },
-[default0]:  "checkpoint": {
-[default0]:    "enable": false,
-[default0]:    "folder": "checkpoint",
-[default0]:    "interval": 500,
-[default0]:    "initial_load_path": null,
-[default0]:    "initial_load_model_only": true,
-[default0]:    "initial_load_in_hf": false,
-[default0]:    "initial_load_in_hf_quantized": false,
-[default0]:    "last_save_model_only": false,
-[default0]:    "last_save_in_hf": false,
-[default0]:    "export_dtype": "float32",
-[default0]:    "async_mode": "disabled",
-[default0]:    "keep_latest_k": 10,
-[default0]:    "load_step": -1,
-[default0]:    "exclude_from_loading": [],
-[default0]:    "enable_first_step_checkpoint": false,
-[default0]:    "create_seed_checkpoint": false,
-[default0]:    "load_only": false
-[default0]:  },
-[default0]:  "activation_checkpoint": null,
-[default0]:  "compile": {
-[default0]:    "enable": true,
-[default0]:    "components": [
-[default0]:      "model"
-[default0]:    ],
-[default0]:    "backend": "aot_eager"
-[default0]:  },
-[default0]:  "comm": {
-[default0]:    "init_timeout_seconds": 300,
-[default0]:    "train_timeout_seconds": 100,
-[default0]:    "trace_buf_size": 20000,
-[default0]:    "save_traces_folder": "comm_traces",
-[default0]:    "save_traces_file_prefix": "rank_",
-[default0]:    "mode": "default"
-[default0]:  },
-[default0]:  "validator": {
-[default0]:    "freq": 10,
-[default0]:    "enable": false,
-[default0]:    "steps": -1,
-[default0]:    "dataloader": {
-[default0]:      "dataset": "c4_validation",
-[default0]:      "dataset_path": null,
-[default0]:      "num_workers": 0,
-[default0]:      "persistent_workers": false,
-[default0]:      "pin_memory": false,
-[default0]:      "prefetch_factor": null,
-[default0]:      "infinite": false
-[default0]:    }
-[default0]:  },
-[default0]:  "debug": {
-[default0]:    "seed": 32,
-[default0]:    "spmd_typechecking": false,
-[default0]:    "deterministic": false,
-[default0]:    "deterministic_warn_only": false,
-[default0]:    "moe_force_load_balance": false,
-[default0]:    "detect_anomaly": false,
-[default0]:    "batch_invariant": false,
-[default0]:    "print_config": true,
-[default0]:    "save_config_file": null,
-[default0]:    "enable_structured_logging": true
-[default0]:  },
-[default0]:  "override": {
-[default0]:    "imports": []
-[default0]:  },
-[default0]:  "loss": {
-[default0]:    "num_chunks": 8,
-[default0]:    "loss_fn": {
-[default0]:      "global_vocab_size": 248320
-[default0]:    }
-[default0]:  }
-[default0]:}
-[default0]:[titan] 2026-07-30 09:53:14,645 - root - INFO - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=8, cp=1, tp=1, ep=1
-[default0]:[titan] 2026-07-30 09:53:14,660 - root - INFO - Successfully created meshes with active dimensions: ['batch', 'loss', 'efsdp', 'fsdp']
-[default0]:[titan] 2026-07-30 09:53:14,663 - root - INFO - [GC] Initial GC collection took 0.00 seconds
-[default0]:[titan] 2026-07-30 09:53:14,675 - root - INFO - Building qwen3_5 9B
-[default0]:[titan] 2026-07-30 09:53:14,853 - root - INFO - CUDA capacity: NVIDIA A100-SXM4-80GB with 79.14GiB memory
-[default0]:[titan] 2026-07-30 09:53:14,938 - root - INFO - Total parameter count: dense 9,409,813,744, sparse 0, active 9,409,813,744
-[default0]:[titan] 2026-07-30 09:53:14,938 - root - INFO - Model qwen3_5 9B size: 9,409,813,744 total parameters
-[default0]:[titan] 2026-07-30 09:53:14,939 - root - INFO - regional_inductor is enabled
-[default0]:[titan] 2026-07-30 09:53:14,953 - root - INFO - Compiled TransformerBlock layers=['3', '7', '11', '15', '19', '23', '27', '31'] with backend=aot_eager; skipped layers=['0', '1', '2', '4', '5', '6', '8', '9', '10', '12', '13', '14', '16', '17', '18', '20', '21', '22', '24', '25', '26', '28', '29', '30']
-[default0]:[titan] 2026-07-30 09:53:14,957 - root - INFO - Compiled TransformerBlock layers=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26'] with backend=aot_eager; skipped layers=[]
-[default0]:[titan] 2026-07-30 09:53:15,134 - root - INFO - Applied FSDP to the model
-[default0]:[titan] 2026-07-30 09:53:15,981 - root - INFO - Peak FLOPS used for computing MFU: 3.120e+14
-[default0]:[titan] 2026-07-30 09:53:15,981 - root - INFO - CUDA memory usage for model: 6.66GiB(8.41%)
-[default0]:[titan] 2026-07-30 09:53:15,986 - root - INFO - Optimizer AdamW (model_part=0): 964 params [.*] {'fused': True, 'foreach': False, 'lr': 0.0005, 'betas': (0.9, 0.95), 'eps': 1e-08, 'weight_decay': 0.1}
-[default0]:[titan] 2026-07-30 09:53:15,988 - root - WARNING - Warmup steps (20) exceed total steps (3). Adjusting warmup steps to 3.
-[default0]:[titan] 2026-07-30 09:53:15,988 - root - INFO - Loading tokenizer from tokenizer.json
-[default0]:/home/f00913055/.local/lib/python3.13/site-packages/torchdata/stateful_dataloader/stateful_dataloader.py:379: UserWarning: 'set_vital' is deprecated, please do not call
-[default0]:  torch.set_vital("Dataloader", "enabled", "True")  # type: ignore[attr-defined]
-[default0]:[titan] 2026-07-30 09:53:16,463 - root - INFO - Preparing cc12m-test dataset from tests/assets/cc12m_test
-[default0]:[titan] 2026-07-30 09:53:16,490 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
-[default0]:[titan] 2026-07-30 09:53:16,491 - root - INFO - Trainer is initialized with local batch size 1, global batch size 8, gradient accumulation steps 1, sequence length 4096, total steps 3 (warmup 20)
-[default0]:[titan] 2026-07-30 09:53:16,491 - root - INFO - Training starts at step 1
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles] Recompiling function create_block_mask in /home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py:1838
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     triggered by the following guard failure(s):
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     - 0/0: Q_LEN == 4096                                            # m = torch.arange(0, Q_LEN, device=device)  # nn/attention/flex_attention.py:1728 in create_mask
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     - User stack trace:
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py", line 1934, in create_block_mask
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -     mask_tensor = create_mask(mask_mod, B, H, Q_LEN, KV_LEN, device)
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/attention/flex_attention.py", line 1728, in create_mask
-[default0]:[rank0]:V0730 09:53:22.837000 3490766 torch/_dynamo/guards.py:5396] [0/1] [__recompiles]     -     m = torch.arange(0, Q_LEN, device=device)
-[default0]:/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/fsdp/_fully_shard/_fsdp_state.py:331: UserWarning: FSDP2-wrapped module (FSDPQwen35VisionEncoder) returned a view tensor. An in-place op on this view (e.g., `x += y`) will silently drop the pre-backward hook and skip the all-gather, which can cause backward to fail or produce wrong gradients. Use out-of-place ops (`out = out + y`, not `out += y`) or `.clone()` the output before any in-place op.
-[default0]:  output = self._register_pre_backward_hook(output)
-[default0]:[rank0]: Traceback (most recent call last):
-[default0]:[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
-[default0]:[rank0]:   File "<frozen runpy>", line 88, in _run_code
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
-[default0]:[rank0]:     main()
-[default0]:[rank0]:     ~~~~^^
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 66, in main
-[default0]:[rank0]:     trainer.train()
-[default0]:[rank0]:     ~~~~~~~~~~~~~^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-[default0]:[rank0]:     return f(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-[default0]:[rank0]:     self.train_step(data_iterator)
-[default0]:[rank0]:     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-[default0]:[rank0]:     loss = self.forward_backward_step(
-[default0]:[rank0]:         input_dict=input_dict,
-[default0]:[rank0]:         labels=labels,
-[default0]:[rank0]:         global_valid_tokens=global_valid_tokens,
-[default0]:[rank0]:     )
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-[default0]:[rank0]:     return func(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-[default0]:[rank0]:     pred = model_parts[0](inputs, **extra_kwargs)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[default0]:[rank0]:     return inner()
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[default0]:[rank0]:     result = forward_call(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-[default0]:[rank0]:     x = layer(x, attention_masks, rope_positions)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-[default0]:[rank0]:     return inner()
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-[default0]:[rank0]:     result = forward_call(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-[default0]:[rank0]:     h = self.attn(h)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[default0]:[rank0]:     return forward_call(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-[default0]:[rank0]:     xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-[default0]:[rank0]:                            ~~~~~~~~~~~~~~^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-[default0]:[rank0]:     return self._call_impl(*args, **kwargs)
-[default0]:[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-[default0]:[rank0]:     return forward_call(*args, **kwargs)
-[default0]:[rank0]:   File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-[default0]:[rank0]:     return F.linear(input, self.weight, self.bias)
-[default0]:[rank0]:            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[default0]:[rank0]: RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-W0730 09:53:29.867000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490766 closing signal SIGTERM
-W0730 09:53:29.869000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490767 closing signal SIGTERM
-W0730 09:53:29.870000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490768 closing signal SIGTERM
-W0730 09:53:29.870000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490769 closing signal SIGTERM
-W0730 09:53:29.870000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490771 closing signal SIGTERM
-W0730 09:53:29.870000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490772 closing signal SIGTERM
-W0730 09:53:29.870000 3490473 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3490773 closing signal SIGTERM
-E0730 09:53:31.450000 3490473 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 4 (pid: 3490770) of binary: /home/f00913055/conda/bin/python
-E0730 09:53:31.507000 3490473 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/4/error.json)
+[default0]:/home/f00913055/.local/lib/python3.13/site-packages/fla/utils/_device.py:100: UserWarning: Triton is not supported on current platform, roll back to CPU.
+[default0]:  _cpu_device_warning()
+[default0]:/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py:1112: UserWarning: Can't initialize NVML
+[default0]:  raw_cnt = _raw_device_count_nvml()
+[default0]:[titan] 2026-07-30 10:16:39,841 - root - INFO - torchtitan version: 0.2.2 (0.0.0 means __version__ is not defined correctly).
+[default0]:[titan] 2026-07-30 10:16:42,128 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[default0]:Traceback (most recent call last):
+[default0]:  File "<frozen runpy>", line 198, in _run_module_as_main
+[default0]:  File "<frozen runpy>", line 88, in _run_code
+[default0]:  File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 80, in <module>
+[default0]:    main()
+[default0]:    ~~~~^^
+[default0]:  File "/home/f00913055/k50063112/torchtitan/torchtitan/train.py", line 52, in main
+[default0]:    trainer = config.build()  # pyrefly: ignore [missing-attribute]
+[default0]:  File "/home/f00913055/k50063112/torchtitan/torchtitan/config/configurable.py", line 151, in build
+[default0]:    return self._owner(config=replace(self))
+[default0]:           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+[default0]:[titan] 2026-07-30 10:16:42,177 - root - WARNING - initial_load_model_only=True has no effect without an initial_load_path.
+[default0]:  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+[default0]:    return f(*args, **kwargs)
+[default0]:[titan] 2026-07-30 10:16:42,178 - torchtitan.observability.structured_logger.jsonl_handler - INFO - Structured logging -> JSONL: /home/f00913055/k50063112/torchtitan/outputs/structured_logs/training.global_rank_0.20260730-101642-4PH1RS.jsonl
+[default0]:  File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+[default0]:    device_module.set_device(self.device)
+[default0]:    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+[default0]:  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+[default0]:    torch._C._cuda_setDevice(device)
+[default0]:    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+[default0]:  File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+[default0]:    torch._C._cuda_init()
+[default0]:    ~~~~~~~~~~~~~~~~~~~^^
+[default0]:RuntimeError: No CUDA GPUs are available
+W0730 10:16:43.636000 3690673 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3701706 closing signal SIGTERM
+W0730 10:16:43.638000 3690673 torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 3701709 closing signal SIGTERM
+E0730 10:16:43.830000 3690673 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 3701705) of binary: /home/f00913055/conda/bin/python
+E0730 10:16:43.886000 3690673 torch/distributed/elastic/multiprocessing/errors/error_handler.py:145] no error file defined for parent, to copy child error file (/tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/0/error.json)
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
@@ -428,469 +160,165 @@ torchtitan.train FAILED
 ------------------------------------------------------------
 Failures:
 [1]:
-  time      : 2026-07-30_09:53:27
-  host      : node-5-15
-  rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 3490766) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/0/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-  
-[2]:
-  time      : 2026-07-30_09:53:27
-  host      : node-5-15
-  rank      : 1 (local_rank: 1)
-  exitcode  : 1 (pid: 3490767) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/1/error.json
-  traceback : Traceback (most recent call last):
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
-      return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
-  
-[3]:
-  time      : 2026-07-30_09:53:27
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
   rank      : 2 (local_rank: 2)
-  exitcode  : 1 (pid: 3490768) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/2/error.json
+  exitcode  : 1 (pid: 3701707) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/2/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
-[4]:
-  time      : 2026-07-30_09:53:27
+[2]:
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
   rank      : 3 (local_rank: 3)
-  exitcode  : 1 (pid: 3490769) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/3/error.json
+  exitcode  : 1 (pid: 3701708) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/3/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
-[5]:
-  time      : 2026-07-30_09:53:27
+[3]:
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
   rank      : 5 (local_rank: 5)
-  exitcode  : 1 (pid: 3490771) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/5/error.json
+  exitcode  : 1 (pid: 3701710) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/5/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
-[6]:
-  time      : 2026-07-30_09:53:27
+[4]:
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
   rank      : 6 (local_rank: 6)
-  exitcode  : 1 (pid: 3490772) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/6/error.json
+  exitcode  : 1 (pid: 3701711) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/6/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
-[7]:
-  time      : 2026-07-30_09:53:27
+[5]:
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
   rank      : 7 (local_rank: 7)
-  exitcode  : 1 (pid: 3490773) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/7/error.json
+  exitcode  : 1 (pid: 3701712) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/7/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
+  
+[6]:
+  time      : 2026-07-30_10:16:42
+  host      : node-5-15
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 3701706)  (SIGTERM)
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/1/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
+  
+[7]:
+  time      : 2026-07-30_10:16:42
+  host      : node-5-15
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 3701709)  (SIGTERM)
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/4/error.json
+  traceback : Traceback (most recent call last):
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+      return f(*args, **kwargs)
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
 ------------------------------------------------------------
 Root Cause (first observed failure):
 [0]:
-  time      : 2026-07-30_09:53:27
+  time      : 2026-07-30_10:16:42
   host      : node-5-15
-  rank      : 4 (local_rank: 4)
-  exitcode  : 1 (pid: 3490770) 
-  error_file: /tmp/torchelastic_dgi8arkg/none_wb0s8zht/attempt_0/4/error.json
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3701705) 
+  error_file: /tmp/torchelastic_zv0d2zu9/none_hk6380hh/attempt_0/0/error.json
   traceback : Traceback (most recent call last):
     File "/home/f00913055/.local/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
       return f(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 984, in train
-      self.train_step(data_iterator)
-      ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 877, in train_step
-      loss = self.forward_backward_step(
-          input_dict=input_dict,
-          labels=labels,
-          global_valid_tokens=global_valid_tokens,
-      )
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/observability/structured_logger/structured_logging.py", line 441, in sync_wrapper
-      return func(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 826, in forward_backward_step
-      pred = model_parts[0](inputs, **extra_kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 981, in forward
-      x = layer(x, attention_masks, rope_positions)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
-      return inner()
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1832, in inner
-      result = forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 612, in forward
-      h = self.attn(h)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/k50063112/torchtitan/torchtitan/models/qwen3_5/model.py", line 446, in forward
-      xq = self._causal_conv(self.in_proj_q(x), self.conv_q)
-                             ~~~~~~~~~~~~~~^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
-      return self._call_impl(*args, **kwargs)
-             ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
-      return forward_call(*args, **kwargs)
-    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
-      return F.linear(input, self.weight, self.bias)
-             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  RuntimeError: aten.mm.default got mixed torch.Tensor and DTensor, need to convert all torch.Tensor to DTensor before calling distributed operators!
+    File "/home/f00913055/k50063112/torchtitan/torchtitan/trainer.py", line 239, in __init__
+      device_module.set_device(self.device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 689, in set_device
+      torch._C._cuda_setDevice(device)
+      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+    File "/home/f00913055/.local/lib/python3.13/site-packages/torch/cuda/__init__.py", line 529, in _lazy_init
+      torch._C._cuda_init()
+      ~~~~~~~~~~~~~~~~~~~^^
+  RuntimeError: No CUDA GPUs are available
   
 ============================================================
