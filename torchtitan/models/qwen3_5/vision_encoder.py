@@ -315,7 +315,7 @@ class PatchMerger(Module):
 
 
 class VisionAttention(Module):
-    """Multi-head attention with FlexAttention for efficient batched processing."""
+    """Multi-head attention with SDPA (avoids flex_attention compile bug for head_dim=72)."""
 
     @dataclass(kw_only=True, slots=True)
     class Config(Module.Config):
@@ -325,19 +325,25 @@ class VisionAttention(Module):
         wk: Linear.Config
         wv: Linear.Config
         proj: Linear.Config
-        inner_attention: Module.Config = field(default_factory=FlexAttention.Config)
+        # 保留字段以兼容 config_registry，但不再使用
+        inner_attention: Module.Config = field(default_factory=lambda: Module.Config())
 
     def __init__(self, config: Config):
         super().__init__()
         self.dim = config.dim
         self.num_heads = config.num_heads
         self.head_dim = self.dim // self.num_heads
-
         self.wq = config.wq.build()
         self.wk = config.wk.build()
         self.wv = config.wv.build()
         self.proj = config.proj.build()
-        self.flex_attention = config.inner_attention.build()
+        # 优先用 FlashAttention / cuDNN 后端，回退到 math
+        self._backends = [
+            SDPBackend.CUDNN_ATTENTION,
+            SDPBackend.FLASH_ATTENTION,
+            SDPBackend.EFFICIENT_ATTENTION,
+            SDPBackend.MATH,
+        ]
 
     def forward(
         self,
@@ -347,15 +353,41 @@ class VisionAttention(Module):
         attention_mask: BlockMask,
     ) -> torch.Tensor:
         bs, seqlen, _ = x.shape
-
         xq = self.wq(x).view(bs, seqlen, -1, self.head_dim)
         xk = self.wk(x).view(bs, seqlen, -1, self.head_dim)
         xv = self.wv(x).view(bs, seqlen, -1, self.head_dim)
-
         xq, xk = CosSinRoPE.apply_rotary_emb(xq, xk, rope_cache)
 
-        output = self.flex_attention(xq, xk, xv, attention_masks=attention_mask)
-        output = output.reshape(bs, seqlen, -1)
+                # 将 BlockMask 转成 dense bool mask: (B, 1, L_mask, L_mask)
+        attn_mask = attention_mask.to_dense().to(torch.bool)
+
+        # BlockMask 可能因为内容稀疏被 flex_attention 自动截断长度，
+        # 这里需要 pad 到与 xq 相同的 seqlen，否则 SDPA 会报维度不匹配
+        mask_len = attn_mask.shape[-1]
+        if mask_len < seqlen:
+            pad_size = seqlen - mask_len
+            # 在最后两个维度上 pad False，屏蔽 padding 区域
+            attn_mask = F.pad(attn_mask, (0, pad_size, 0, pad_size), value=False)
+        elif mask_len > seqlen:
+            attn_mask = attn_mask[:, :, :seqlen, :seqlen]
+
+        # 转置到 (B, N, L, H) 供 SDPA 使用
+        xq = xq.transpose(1, 2)
+        xk = xk.transpose(1, 2)
+        xv = xv.transpose(1, 2)
+
+        with sdpa_kernel(self._backends, set_priority=True):
+            out = F.scaled_dot_product_attention(
+                xq, xk, xv,
+                attn_mask=attn_mask,
+                is_causal=False,
+            )
+
+
+        # 转回 (B, L, N, H) 再 flatten
+        out = out.transpose(1, 2).reshape(bs, seqlen, -1)
+        return self.proj(out)
+seqlen, -1)
         return self.proj(output)
 
 
