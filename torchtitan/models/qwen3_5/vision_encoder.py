@@ -358,9 +358,9 @@ class VisionAttention(Module):
         xv = self.wv(x).view(bs, seqlen, -1, self.head_dim)
         xq, xk = CosSinRoPE.apply_rotary_emb(xq, xk, rope_cache)
 
-                # 将 BlockMask 转成 dense bool mask: (B, 1, L_mask, L_mask)
+        # 将 BlockMask 转成 dense bool mask: (B, 1, L_mask, L_mask)
         attn_mask = attention_mask.to_dense().to(torch.bool)
-
+        
         # BlockMask 可能因为内容稀疏被 flex_attention 自动截断长度，
         # 这里需要 pad 到与 xq 相同的 seqlen，否则 SDPA 会报维度不匹配
         mask_len = attn_mask.shape[-1]
@@ -376,19 +376,44 @@ class VisionAttention(Module):
         xk = xk.transpose(1, 2)
         xv = xv.transpose(1, 2)
 
-        with sdpa_kernel(self._backends, set_priority=True):
-            out = F.scaled_dot_product_attention(
-                xq, xk, xv,
-                attn_mask=attn_mask,
-                is_causal=False,
+        # ==========================================
+        # 修改部分: 处理 DTensor 以避免类型混合报错
+        # ==========================================
+        if isinstance(xq, DTensor):
+            # 提取当前卡上的本地张量
+            xq_local = xq._local_tensor
+            xk_local = xk._local_tensor
+            xv_local = xv._local_tensor
+            
+            # 确保 attn_mask 也在同一张 GPU 上
+            attn_mask = attn_mask.to(xq_local.device)
+            
+            with sdpa_kernel(self._backends, set_priority=True):
+                out_local = F.scaled_dot_product_attention(
+                    xq_local, xk_local, xv_local,
+                    attn_mask=attn_mask,
+                    is_causal=False,
+                )
+            
+            # 将本地计算的结果重新包装为 DTensor，保持原本的分布策略
+            out = DTensor.from_local(
+                out_local,
+                xq.device_mesh,
+                xq.placements,
             )
-
+        else:
+            # 非并行情况下的正常计算
+            with sdpa_kernel(self._backends, set_priority=True):
+                out = F.scaled_dot_product_attention(
+                    xq, xk, xv,
+                    attn_mask=attn_mask,
+                    is_causal=False,
+                )
+        # ==========================================
 
         # 转回 (B, L, N, H) 再 flatten
         out = out.transpose(1, 2).reshape(bs, seqlen, -1)
         return self.proj(out)
-seqlen, -1)
-        return self.proj(output)
 
 
 class VisionMLP(Module):
